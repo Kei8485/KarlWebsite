@@ -1,0 +1,9 @@
+<ion-button
+  [fill]="variant === 'primary' ? 'solid' : 'outline'"
+  [disabled]="disabled"
+  expand="block"
+  (click)="clicked.emit()"
+  class="app-btn app-btn--{{ variant }}"
+>
+  {{ label }}
+</ion-button>

@@ -1,2 +1,31 @@
 // For information on how to create your own theme, please refer to:
 // https://ionicframework.com/docs/theming/
+// ─── ApexEng Design Tokens ───────────────────────────────
+:root {
+  // Backgrounds
+  --bg-dark:       #0f172a;
+  --bg-surface:    #1e293b;
+  --bg-light:      #f8fafc;
+  // Primary
+  --primary:       #2563eb;
+  --primary-dark:  #1d4ed8;
+  // Text
+  --text-white:    #ffffff;
+  --text-secondary:#94a3b8;
+  --text-dark:     #0f172a;
+  --text-muted:    #64748b;
+  // Borders
+  --border-dark:   #334155;
+  --border-light:  #e2e8f0;
+  // Badges
+  --success:       #22c55e;
+  --warning:       #f59e0b;
+  --danger:        #ef4444;
+  // Override Ionic primary color
+  --ion-color-primary:          #2563eb;
+  --ion-color-primary-shade:    #1d4ed8;
+  --ion-color-primary-tint:     #3b82f6;
+  // Override Ionic background
+  --ion-background-color:       #0f172a;
+  --ion-text-color:             #ffffff;
+}

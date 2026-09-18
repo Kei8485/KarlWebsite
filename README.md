@@ -57,3 +57,10 @@ steps
             -check in postman if the urls are working (the GET and POST)
 
 2.  Front end
+    -run ionic start tas ionic serve
+    -delete ung home.page folder
+    -replace and run these: (automatically creates templete )
+    *ionic generate page pages/login
+    *ionic generate page pages/subjects
+    \*ionic generate page pages/topic-detail
+    -run for atomic folder - ionic generate component components/atoms/app-button

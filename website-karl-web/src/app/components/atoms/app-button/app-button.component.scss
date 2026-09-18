@@ -1,0 +1,33 @@
+.app-btn {
+  --border-radius: 8px;
+  font-weight: 600;
+
+  &--primary {
+    --background: var(--primary);
+    --color: var(--text-white);
+  }
+
+  &--outline {
+    --border-color: var(--primary);
+    --color: var(--primary);
+    --background: transparent;
+  }
+
+  &--small {
+    --padding-top: 6px;
+    --padding-bottom: 6px;
+    font-size: 12px;
+  }
+
+  &--medium {
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    font-size: 15px;
+  }
+
+  &--large {
+    --padding-top: 18px;
+    --padding-bottom: 18px;
+    font-size: 18px;
+  }
+}

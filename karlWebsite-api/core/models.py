@@ -39,7 +39,7 @@ class Topic(models.Model):
     order = models.IntegerField(default=0)
     
     
-    class Meta:
+    class Meta: # meta is for setting a rule
         ordering = ['order']
     def __str__(self):
         return f"{self.subject.title} — {self.title}"

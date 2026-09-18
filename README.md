@@ -45,8 +45,11 @@ steps
         - add email config in the settings.py
         - putting the auto email in the admin
 
-    *Building the API
+    *Done Building the API
         -create new file inside core folder -  | serializers.py | - converting obj to json
         -Current data flow:
             Database -> Models -> Serializer(converts the python obj to json) -> HTTP response (sends the data from backend to frontend) ->Angular (frontend dito lalabas)
+
+    *Done Connecting the URL
         -Go to the views.py and create the api (when creating a API function snake_casing is better)
+        -Create new urls.py (putting the paths of the url)

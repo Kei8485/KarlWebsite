@@ -23,7 +23,7 @@ class User(models.Model):
     def __str__(self): # '__str__' (built-in function) for turning the obj into a string
         return self.email    
     
-class Subject(models.Model): # ex. calculus
+class Subject(models.Model): 
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     

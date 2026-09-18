@@ -34,8 +34,14 @@ steps
 
     *Done the Model
     *Done Migration
-        run for migration - |python manage.py makemigrations | - creates migration folder and related files
-        | python manage.py migrate | - creates the sql queries na naka base sa model mo (automatic)
+        run for migration - |python manage.py makemigrations | - creates migration files (inside the migration folder) and related files (uulitin ulit command nato pag may naupdate sa model)
+        | python manage.py migrate | - creates the sql queries na naka base sa model mo (automatic) (ran this if there is a updated model this will create a updated database)
         | python manage.py createsuperuser |- for the super admin - bypass all permision (different from admin)
 
-    *Current admin setup
+    *Done admin setup
+        - register the models
+
+    *Current Gmail API
+        - add email config in the settings.py
+        - putting the auto email in the admin
+        -

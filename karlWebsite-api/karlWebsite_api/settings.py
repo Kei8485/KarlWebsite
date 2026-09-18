@@ -128,3 +128,19 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+# Email config
+MAILERS = {
+   "default": {
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": "smtp.gmail.com",
+            "port": 587,
+            "username": "ynandandrei.bautista.200625@gmail.com",        
+            "password": "novy mlwi rdbe xjch",   
+            "use_tls": True,
+        },
+    },
+}
+
+DEFAULT_FROM_EMAIL = "ynandandrei.bautista.200625@gmail.com"    

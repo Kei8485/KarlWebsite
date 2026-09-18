@@ -41,7 +41,12 @@ steps
     *Done admin setup
         - register the models
 
-    *Current Gmail API
+    *Done Gmail API
         - add email config in the settings.py
         - putting the auto email in the admin
-        -
+
+    *Building the API
+        -create new file inside core folder -  | serializers.py | - converting obj to json
+        -Current data flow:
+            Database -> Models -> Serializer(converts the python obj to json) -> HTTP response (sends the data from backend to frontend) ->Angular (frontend dito lalabas)
+        -Go to the views.py and create the api (when creating a API function snake_casing is better)

@@ -64,3 +64,7 @@ steps
     *ionic generate page pages/subjects
     \*ionic generate page pages/topic-detail
     -run for atomic folder - ionic generate component components/atoms/app-button
+
+    -gagawin bukas-
+    -unahin ung typography
+    -then lahat ng atoms next is molecule - tas ung organism kung kaya (identify muna mga kukunin na design sa atom)

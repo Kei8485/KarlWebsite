@@ -1,10 +1,13 @@
 .app-btn {
-  --border-radius: 8px;
+  --border-radius: var(--radius); /* Uses your new --radius variable */
+  
+  /* Apply your newly linked IBM Plex Sans font to the button */
+  font-family: var(--font-sans);
   font-weight: 600;
 
   &--primary {
     --background: var(--primary);
-    --color: var(--text-white);
+    --color: var(--primary-foreground);
   }
 
   &--outline {
@@ -16,18 +19,18 @@
   &--small {
     --padding-top: 6px;
     --padding-bottom: 6px;
-    font-size: 12px;
+    font-size: 0.875rem; /* 14px - matches text-body-sm */
   }
 
   &--medium {
     --padding-top: 12px;
     --padding-bottom: 12px;
-    font-size: 15px;
+    font-size: 1rem; /* 16px - matches text-body */
   }
 
   &--large {
     --padding-top: 18px;
     --padding-bottom: 18px;
-    font-size: 18px;
+    font-size: 1.125rem; /* 18px - matches text-body-lg */
   }
 }

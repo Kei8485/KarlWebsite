@@ -35,3 +35,79 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+:root {
+  /* Add your custom fonts from your CSS */
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* =======================================================
+   TYPOGRAPHY SYSTEM
+   ======================================================= */
+
+/* Headings (Uses your Display Font + your custom letter spacing) */
+.text-h1 {
+  font-family: var(--font-display);
+  font-size: 2.5rem; 
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.015em; 
+  color: var(--foreground);
+}
+
+.text-h2 {
+  font-family: var(--font-display);
+  font-size: 1.875rem; 
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em; 
+  color: var(--foreground);
+}
+
+.text-h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem; 
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em; 
+  color: var(--foreground);
+}
+
+/* Body Text (Uses your Sans Font) */
+.text-body-lg {
+  font-family: var(--font-sans);
+  font-size: 1.125rem; 
+  line-height: 1.6;
+  color: var(--foreground);
+}
+
+.text-body {
+  font-family: var(--font-sans);
+  font-size: 1rem; 
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
+.text-body-sm {
+  font-family: var(--font-sans);
+  font-size: 0.875rem; 
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
+/* Specialty Text */
+.text-muted {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.text-label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
+}

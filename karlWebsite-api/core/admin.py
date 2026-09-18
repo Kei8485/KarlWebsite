@@ -105,4 +105,7 @@ class UserAdmin(admin.ModelAdmin):
             
             
 admin.site.register(Subject)
-admin.site.register(Topic)
+@admin.register(Topic)
+class TopicAdmin(admin.ModelAdmin):
+    list_display = ['title', 'subject', 'order']
+    list_filter = ['subject']

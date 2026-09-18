@@ -10,10 +10,6 @@ manage.py - eto ung pinaka irurun parang sa java main class
 
 for installing the jdongo frame work - pip install django djangorestframework django-cors-headers
 
-run for migration - |python manage.py makemigrations | - creates migration folder and related files
-| python manage.py migrate | - creates the sql queries na naka base sa model mo (automatic)
-| python manage.py createsuperuser |- for the super admin - bypass all permision (different from admin)
-
 steps
 1.create the backend first
 \*run this commands (setup na ginawa ko) - mkdir name of folder (pang create ng folder) - cd name of folder
@@ -23,7 +19,7 @@ steps
         - pip install django djangorestframework django-cors-headers (need to install para maconnect ung backend and frontend)
 
         - django-admin startproject project_name .  (creates the folder structure parang ionic start) (ex. setting.py)
-        - python manage.py startapp core   (runs the manage.py) (run once)
+        - python manage.py startapp core   (runs the manage.py) (ex. , migrations, models,apps) (run once)
         - python manage.py runserver (run in the server)
 
         - lalagay to sa setting.py
@@ -38,5 +34,8 @@ steps
 
     *Done the Model
     *Done Migration
+        run for migration - |python manage.py makemigrations | - creates migration folder and related files
+        | python manage.py migrate | - creates the sql queries na naka base sa model mo (automatic)
+        | python manage.py createsuperuser |- for the super admin - bypass all permision (different from admin)
 
     *Current admin setup

@@ -9,29 +9,45 @@
   }
 
   .app-input {
-  --background: var(--card);
-  --color: black;
-  --placeholder-color: var(--muted-foreground);
-  --placeholder-opacity: 1;
-  --padding-start: 12px;
-  --padding-end: 12px;
-  --padding-top: 12px;
-  --padding-bottom: 12px;
-  --border-width: 1px;
-  --border-style: solid;
-  --border-color: var(--border);
-  --border-radius: var(--radius);
-  --border-width: 2px;    
-  
+    --background: var(--card);
+    --color: var(--primary);
+    --placeholder-color: var(--muted-foreground);
+    --placeholder-opacity: 1;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    --border-style: solid;
+    --border-color: var(--border);
+    --border-radius: var(--radius);
+    --border-width: 1px;
+    
+    font-family: var(--font-sans);
+    font-size: var(--text-size-body);
 
-  font-family: var(--font-sans);
-  font-size: var(--text-size-body);
+    /* == NEW: Hover State == */
+    &:hover {
+      --border-color: var(--primary);
+    }
 
-  &.has-error {
-    --border-color: var(--destructive);
-    --background: var(--destructive-foreground);
+    /* == NEW: Focus State (when typing) == */
+    &.has-focus {
+      --border-color: var(--primary);
+      --border-width: 2px;
+    }
+
+    &.has-error {
+      --border-color: var(--destructive);
+      --background: var(--destructive-foreground);
+    }
   }
-}
+
+  /* Explicitly style the icons so they never disappear */
+  .app-input-icon {
+    color: var(--muted-foreground);
+    font-size: 20px;
+    margin-right: 8px; /* Spacing between icon and text */
+  }
 
   .app-input-error {
     font-family: var(--font-sans);

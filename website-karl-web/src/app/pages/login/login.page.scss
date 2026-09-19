@@ -1,0 +1,98 @@
+ion-content {
+    position: relative;
+    background-color: #0e1a33;
+    background-image:
+    linear-gradient(rgba(159, 179, 209, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(159, 179, 209, 0.16) 1px, transparent 1px),
+    linear-gradient(rgba(159, 179, 209, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(159, 179, 209, 0.06) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+}
+
+.login-container {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 5%;
+
+  p {
+    font-size: 1rem;
+  }
+
+  // readable muted text on the dark left side
+  ion-col:first-child .text-muted {
+    color: #9fb3d1;
+  }
+
+  ion-grid{
+    background-color: #222f4b81;     
+    border-radius: 10px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+  }
+
+  
+
+}
+
+.path-art {
+  display: block;
+  width: 30%;
+  max-width: 338px;
+  height: auto;
+  margin-top: 16px;
+  position: absolute;
+  right: 402px;
+  bottom: 260px;
+  text {
+    font-family: 'Space Grotesk', sans-serif; // use your heading font
+  }
+}
+
+.login-card {
+  background: rgb(255, 255, 255);
+  padding: 40px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow:
+    rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+
+  .text-h1 {
+    color: var(--primary);
+  }
+
+  .text-h3 {
+    color: var(--primary);
+    line-height: 1;
+    margin: 0;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: inline-block;
+
+    &:hover {
+      opacity: 0.8;
+      text-decoration: underline;
+    }
+
+    &:active {
+      opacity: 0.6;
+      transform: scale(0.98);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+
+    ion-content::part(scroll) {
+    overflow-y: visible;
+  }
+  .login-card {
+    padding: 24px;
+  }
+
+  .path-art{
+    display: none;
+  }
+}

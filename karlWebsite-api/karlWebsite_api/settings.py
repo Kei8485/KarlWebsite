@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -144,3 +145,4 @@ MAILERS = {
 }
 
 DEFAULT_FROM_EMAIL = "ynandandrei.bautista.200625@gmail.com"    
+CORS_ALLOW_ALL_ORIGINS = True

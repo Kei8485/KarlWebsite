@@ -64,11 +64,9 @@ steps
     *ionic generate page pages/subjects
     \*ionic generate page pages/topic-detail
     -run for atomic folder - ionic generate component components/atoms/app-button
-    -run for craeting a page - ionic generate page pages/dev-preview
+    -run for creating a page - ionic generate page pages/dev-preview
 
-    -gagawin bukas-
-    -unahin ung typography
-    -then lahat ng atoms next is molecule - tas ung organism kung kaya (identify muna mga kukunin na design sa atom)
+    -run for generating auth - ionic generate service services/auth
 
 front end lesson na natutunan:
 
@@ -112,3 +110,5 @@ ex.
 the &-- will find it if you set it inside your = in the export which is the primary and outline
 
 then the last part ung sa dulo ay = thats the default
+
+next and error for http request (like try and catch in java but for internet)

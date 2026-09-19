@@ -16,10 +16,10 @@ const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
   },
-  // {
-  //   path: 'subjects',
-  //   loadComponent: () => import('./pages/subjects/subjects.page').then(m => m.SubjectsPage)
-  // },
+  {
+    path: 'subjects',
+    loadComponent: () => import('./pages/subjects/subjects.page').then(m => m.SubjectsPage)
+  },
   // {
   // path: 'topic-detail/:id',
   // loadComponent: () => import('./pages/topic-detail/topic-detail.page').then(m => m.TopicDetailPage)

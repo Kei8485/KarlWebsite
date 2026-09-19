@@ -114,7 +114,12 @@
         </ion-col>
 
         <!-- RIGHT SIDE -->
-        <ion-col size-xs="12" size-md="5" class="ion-padding">
+        <ion-col
+          size-xs="12"
+          size-md="5"
+          class="ion-padding"
+          [class.shake-error]="isShaking"
+        >
           <div class="login-card">
             <h2 class="text-h1" style="margin-bottom: 8px">Welcome back</h2>
             <p class="text-body text-muted" style="margin-bottom: 32px">
@@ -127,6 +132,7 @@
               placeholder="Enter your email"
               icon="mail-outline"
               [(value)]="email"
+              [errorMessage]="loginError"
             ></app-input>
 
             <app-input
@@ -135,13 +141,14 @@
               placeholder="Enter your 8-character code"
               icon="key-outline"
               [(value)]="accessCode"
+              [errorMessage]="loginError"
             ></app-input>
 
             <a class="text-h3" role="button" tabindex="0" (click)="onForgot()">
               Forgot your access code?
             </a>
 
-            <div style="margin-top: 15px">
+            <div style="margin-top: 15px" [class.shake-error]="isShaking">
               <app-button
                 label="Sign In"
                 size="large"

@@ -1,5 +1,4 @@
 ion-content {
-    position: relative;
     background-color: #0e1a33;
     background-image:
     linear-gradient(rgba(159, 179, 209, 0.16) 1px, transparent 1px),
@@ -20,6 +19,11 @@ ion-content {
   }
 
   // readable muted text on the dark left side
+  ion-col{
+    position: relative;
+
+  }
+
   ion-col:first-child .text-muted {
     color: #9fb3d1;
   }
@@ -36,16 +40,14 @@ ion-content {
 
 .path-art {
   display: block;
-  width: 30%;
-  max-width: 338px;
+  width: 100%;           
+  max-width: 270px;      
   height: auto;
-  margin-top: 16px;
-  position: absolute;
-  right: 402px;
-  bottom: 260px;
+  margin-bottom: 24px;    
   text {
     font-family: 'Space Grotesk', sans-serif; // use your heading font
   }
+   
 }
 
 .login-card {

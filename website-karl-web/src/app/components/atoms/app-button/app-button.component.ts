@@ -11,7 +11,7 @@ import { IonButton, IonIcon } from '@ionic/angular';
 })
 export class AppButtonComponent {
   @Input() label: string = 'Button';
-  @Input() variant: 'primary' | 'outline' | 'transparent' = 'primary';
+  @Input() variant: 'primary' | 'outline' | 'transparent'|'muted' = 'primary';
   @Input() disabled: boolean = false;
   @Input() size: 'small' | 'medium' | 'large' = 'medium';
   @Input() icon: string = '';           

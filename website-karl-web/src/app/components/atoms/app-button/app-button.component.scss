@@ -23,6 +23,12 @@
     --background-hover: var(--muted);
   }
 
+  &--muted{
+    --background: #1C2740;
+    --color: #8B96AB;
+    --background-hover: white;
+  }
+
   &--small {
     --padding-top: 6px;
     --padding-bottom: 6px;

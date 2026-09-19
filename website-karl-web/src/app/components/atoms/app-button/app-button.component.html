@@ -4,7 +4,9 @@
       ? 'solid'
       : variant === 'outline'
         ? 'outline'
-        : 'clear'
+        : variant === 'muted'
+          ? 'solid'
+          : 'clear'
   "
   [disabled]="disabled"
   (click)="clicked.emit()"

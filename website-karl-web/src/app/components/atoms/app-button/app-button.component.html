@@ -1,9 +1,24 @@
 <ion-button
-  [fill]="variant === 'primary' ? 'solid' : 'outline'"
+  [fill]="
+    variant === 'primary'
+      ? 'solid'
+      : variant === 'outline'
+        ? 'outline'
+        : 'clear'
+  "
   [disabled]="disabled"
-  expand="block"
   (click)="clicked.emit()"
-  class="app-btn app-btn--{{ variant }}"
+  class="app-btn app-btn--{{ variant }} app-btn--{{ size }}"
 >
+  <ion-icon
+    *ngIf="icon && iconPosition === 'start'"
+    [name]="icon"
+    slot="start"
+  ></ion-icon>
   {{ label }}
+  <ion-icon
+    *ngIf="icon && iconPosition === 'end'"
+    [name]="icon"
+    slot="end"
+  ></ion-icon>
 </ion-button>

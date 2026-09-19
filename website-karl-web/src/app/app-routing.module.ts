@@ -2,15 +2,20 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [ 
+  // pag gagawa ng bagong page gagawing loadComponent tas gagawing Page ung dulo
  {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'dev-preview',
     pathMatch: 'full'
   },
   {
-    path: 'login',
-    loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
+    path: 'dev-preview',
+    loadComponent: () => import('./pages/dev-preview/dev-preview.page').then( m => m.DevPreviewPage)
   },
+  // {
+  //   path: 'login',
+  //   loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
+  // },
   // {
   //   path: 'subjects',
   //   loadComponent: () => import('./pages/subjects/subjects.page').then(m => m.SubjectsPage)

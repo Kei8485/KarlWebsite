@@ -1,0 +1,41 @@
+.app-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+
+  .app-input-label {
+    font-family: var(--font-sans);
+  }
+
+  .app-input {
+  --background: var(--card);
+  --color: black;
+  --placeholder-color: var(--muted-foreground);
+  --placeholder-opacity: 1;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: var(--border);
+  --border-radius: var(--radius);
+  --border-width: 2px;    
+  
+
+  font-family: var(--font-sans);
+  font-size: var(--text-size-body);
+
+  &.has-error {
+    --border-color: var(--destructive);
+    --background: var(--destructive-foreground);
+  }
+}
+
+  .app-input-error {
+    font-family: var(--font-sans);
+    font-size: var(--text-size-sm);
+    color: var(--destructive);
+  }
+}

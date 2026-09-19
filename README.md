@@ -64,7 +64,51 @@ steps
     *ionic generate page pages/subjects
     \*ionic generate page pages/topic-detail
     -run for atomic folder - ionic generate component components/atoms/app-button
+    -run for craeting a page - ionic generate page pages/dev-preview
 
     -gagawin bukas-
     -unahin ung typography
     -then lahat ng atoms next is molecule - tas ung organism kung kaya (identify muna mga kukunin na design sa atom)
+
+front end lesson na natutunan:
+
+how to properly build components
+
+complete the component.ts to set the setting of that app
+set the:
+selector: 'app-button',
+templateUrl: './app-button.component.html',
+styleUrls: ['./app-button.component.scss'],
+standalone: true,
+imports: [CommonModule, IonButton]
+
+this is for connecting your html and css component
+app-button is your new element name <app-button> - your template
+
+then:
+
+export class AppButtonComponent {
+@Input() label: string = 'Button';
+@Input() variant: 'primary' | 'outline' = 'primary';
+@Input() disabled: boolean = false;
+@Input() size: 'small' | 'medium' | 'large' = 'medium';
+@Output() clicked = new EventEmitter<void>();
+}
+
+the input are your scss
+
+the label, variant, disable, size, clicked are your properties which chooses the setting
+
+the label: string = 'Button'; - is your label
+
+the variant: 'primary' | 'outline' = 'primary'; - you will set your scss variable here
+ex.
+
+&--primary {
+--background: var(--primary);
+--color: var(--primary-foreground);
+}
+
+the &-- will find it if you set it inside your = in the export which is the primary and outline
+
+then the last part ung sa dulo ay = thats the default

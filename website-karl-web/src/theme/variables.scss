@@ -1,11 +1,16 @@
 :root {
+  /* Fonts */
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+
   /* Global border radius for buttons, inputs, and cards */
   --radius: 0.5rem;
   
   /* === 1. Base Layout === */
   /* Main page background and default text color */
-  --background: oklch(0.985 0.004 247);
-  --foreground: oklch(0.21 0.035 258);
+  --background: oklch(0.24 0.045 259);
+  --white-bg: #F8FAFD;
+  --foreground: oklch(0.97 0.008 247);
 
   /* === 2. Surfaces & Cards === */
   /* Background and text for cards (like the Subject cards) */
@@ -34,11 +39,11 @@
 
   /* === 4. UI Elements & Inputs === */
   /* Subtle gray for disabled backgrounds and caption text */
-  --muted: oklch(0.955 0.011 247);
+  --muted: oklch(100% 0.00011 271.152);
   --muted-foreground: oklch(0.52 0.031 257);
   
   /* Lines, borders, and input fields */
-  --border: oklch(0.9 0.015 250);
+  --border: oklch(90.021% 0.01515 251.306 / 0.548);
   --input: oklch(0.9 0.015 250);
   /* The glow/ring around an input when you click it */
   --ring: oklch(0.55 0.1 250);
@@ -66,68 +71,15 @@
   --ion-text-color: var(--foreground);
   --ion-color-primary: var(--primary);
   --ion-color-primary-contrast: var(--primary-foreground);
+
+   /* Text sizes — reused by both typography classes below AND components (e.g. app-button) */
+  --text-size-h1: 2.5rem;
+  --text-size-h2: 1.875rem;
+  --text-size-h3: 1.5rem;
+  --text-size-lg: 1.125rem;   /* matches text-body-lg */
+  --text-size-body: 1rem;     /* matches text-body */
+  --text-size-sm: 0.875rem;   /* matches text-body-sm / text-muted */
+  --text-size-label: 0.75rem; /* matches text-label */
 }
 
 
-/* =======================================================
-   DARK MODE 
-   (Activates when the device is in dark mode)
-   ======================================================= */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* 1. Base Layout */
-    --background: oklch(0.17 0.03 259); /* Dark Navy Background */
-    --foreground: oklch(0.97 0.008 247); /* White Text */
-    
-    /* 2. Surfaces & Cards */
-    --card: oklch(0.22 0.038 259);
-    --card-foreground: oklch(0.97 0.008 247);
-    --popover: oklch(0.22 0.038 259);
-    --popover-foreground: oklch(0.97 0.008 247);
-    
-    /* 3. Brand & Buttons */
-    --primary: oklch(0.68 0.13 244); /* Bright Blue */
-    --primary-foreground: oklch(0.17 0.03 259); /* Dark text inside blue button */
-    
-    --secondary: oklch(0.27 0.04 259);
-    --secondary-foreground: oklch(0.97 0.008 247);
-    
-    --accent: oklch(0.3 0.055 250);
-    --accent-foreground: oklch(0.97 0.008 247);
-    
-    --destructive: oklch(0.65 0.19 24);
-    --destructive-foreground: oklch(0.97 0.008 247);
-    
-    /* 4. UI Elements & Inputs */
-    --muted: oklch(0.27 0.04 259);
-    --muted-foreground: oklch(0.72 0.03 255); /* Gray caption text */
-    
-    --border: oklch(1 0 0 / 12%); /* Transparent white borders */
-    --input: oklch(1 0 0 / 16%);
-    --ring: oklch(0.6 0.1 248);
-    
-    /* 5. ApexEng Custom Brand Colors */
-    --navy: oklch(0.22 0.038 259);
-    --navy-foreground: oklch(0.97 0.008 247);
-    --blueprint: oklch(0.68 0.13 244);
-    
-    /* Difficulty Badges */
-    --level-basic: oklch(0.7 0.15 158);
-    --level-mid: oklch(0.78 0.15 78);
-    --level-hard: oklch(0.68 0.18 22);
-
-    /* Data Visualization / Charts */
-    --chart-1: oklch(0.68 0.13 244);
-    --chart-2: oklch(0.7 0.15 158);
-    --chart-3: oklch(0.78 0.15 78);
-    --chart-4: oklch(0.68 0.18 22);
-    --chart-5: oklch(0.6 0.1 248);
-
-    /* 6. Ionic Overrides */
-    /* Forces Ionic components to use your Dark Mode colors */
-    --ion-background-color: var(--background);
-    --ion-text-color: var(--foreground);
-    --ion-color-primary: var(--primary);
-    --ion-color-primary-contrast: var(--primary-foreground);
-  }
-}

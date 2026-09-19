@@ -1,0 +1,85 @@
+:root {
+  /* Fonts */
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Global border radius for buttons, inputs, and cards */
+  --radius: 0.5rem;
+  
+  /* === 1. Base Layout === */
+  /* Main page background and default text color */
+  --background: oklch(0.24 0.045 259);
+  --white-bg: #F8FAFD;
+  --foreground: oklch(0.97 0.008 247);
+
+  /* === 2. Surfaces & Cards === */
+  /* Background and text for cards (like the Subject cards) */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.035 258);
+  /* Background and text for dropdowns/popups */
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.035 258);
+
+  /* === 3. Brand & Buttons === */
+  /* Primary brand color (Blue) - used for main buttons and active links */
+  --primary: oklch(0.42 0.11 252);
+  --primary-foreground: oklch(0.985 0.004 247);
+  
+  /* Secondary actions - usually a subtle gray/light background */
+  --secondary: oklch(0.955 0.011 247);
+  --secondary-foreground: oklch(0.28 0.05 258);
+
+  /* Hover states or subtle accents */
+  --accent: oklch(0.93 0.035 232);
+  --accent-foreground: oklch(0.28 0.06 252);
+
+  /* Error states, delete buttons (Red) */
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.985 0.004 247);
+
+  /* === 4. UI Elements & Inputs === */
+  /* Subtle gray for disabled backgrounds and caption text */
+  --muted: oklch(100% 0.00011 271.152);
+  --muted-foreground: oklch(0.52 0.031 257);
+  
+  /* Lines, borders, and input fields */
+  --border: oklch(90.021% 0.01515 251.306 / 0.548);
+  --input: oklch(0.9 0.015 250);
+  /* The glow/ring around an input when you click it */
+  --ring: oklch(0.55 0.1 250);
+
+  /* === 5. ApexEng Custom Brand Colors === */
+  --navy: oklch(0.24 0.045 259);
+  --navy-foreground: oklch(0.97 0.008 247);
+  --blueprint: oklch(0.58 0.11 240);
+  
+  /* Difficulty Badges (Basic = Green, Mid = Yellow, Hard = Red) */
+  --level-basic: oklch(0.52 0.13 158);
+  --level-mid: oklch(0.6 0.14 76);
+  --level-hard: oklch(0.53 0.2 22);
+
+  /* Data Visualization / Charts */
+  --chart-1: oklch(0.42 0.11 252);
+  --chart-2: oklch(0.52 0.13 158);
+  --chart-3: oklch(0.6 0.14 76);
+  --chart-4: oklch(0.53 0.2 22);
+  --chart-5: oklch(0.58 0.11 240);
+
+  /* === 6. Ionic Overrides === */
+  /* This forces Ionic's built-in components to use your Light Mode colors */
+  --ion-background-color: var(--background);
+  --ion-text-color: var(--foreground);
+  --ion-color-primary: var(--primary);
+  --ion-color-primary-contrast: var(--primary-foreground);
+
+   /* Text sizes — reused by both typography classes below AND components (e.g. app-button) */
+  --text-size-h1: 2.5rem;
+  --text-size-h2: 1.875rem;
+  --text-size-h3: 1.5rem;
+  --text-size-lg: 1.125rem;   /* matches text-body-lg */
+  --text-size-body: 1rem;     /* matches text-body */
+  --text-size-sm: 0.875rem;   /* matches text-body-sm / text-muted */
+  --text-size-label: 0.75rem; /* matches text-label */
+}
+
+

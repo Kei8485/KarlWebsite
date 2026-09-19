@@ -1,0 +1,165 @@
+<ion-content [fullscreen]="true" [scrollY]="false">
+  <div class="login-container">
+    <ion-grid
+      class="ion-no-padding"
+      style="max-width: 1100px; margin: 0 auto; width: 100%"
+    >
+      <ion-row class="ion-align-items-center ion-justify-content-evenly">
+        <!-- LEFT SIDE -->
+        <ion-col size-xs="12" size-md="6" class="ion-padding">
+          <svg
+            class="path-art"
+            viewBox="24 0 552 460"
+            fill="none"
+            role="img"
+            aria-label="Graph of y = x³ − 3x² + x + 2 with its tangent line at P(2, 0)"
+          >
+            <path
+              d="M238 20 V441 M368 20 V441 M498 20 V441 M30 429 H550 M30 305 H550 M30 243 H550 M30 181 H550 M30 119 H550 M30 57 H550"
+              stroke="#5C7BAA"
+              stroke-width="1"
+              opacity=".28"
+            />
+
+            <g stroke="#9FB3D1" stroke-width="1.8" stroke-linecap="round">
+              <path d="M30 367 H548" />
+              <path d="M108 441 V22" />
+              <path d="M238 361 V373" />
+              <path d="M368 361 V373" />
+              <path d="M498 361 V373" />
+              <path d="M102 429 H114" />
+              <path d="M102 305 H114" />
+              <path d="M102 243 H114" />
+              <path d="M102 181 H114" />
+              <path d="M102 119 H114" />
+              <path d="M102 57 H114" />
+            </g>
+            <path d="M556 367 l-14 -6 v12 z" fill="#9FB3D1" />
+            <path d="M108 14 l-6 14 h12 z" fill="#9FB3D1" />
+
+            <path
+              d="M238 429 L537 286.4"
+              stroke="#fff"
+              stroke-width="2.5"
+              stroke-dasharray="9 7"
+              stroke-linecap="round"
+            />
+            <path
+              d="M49.5 314.2 C201.2 2.6 352.8 792.3 504.5 25.1"
+              stroke="#F5B82E"
+              stroke-width="4"
+              stroke-linecap="round"
+            />
+
+            <g fill="#0E1A33" stroke="#fff" stroke-width="2.5">
+              <circle cx="108" cy="243" r="6" />
+              <circle cx="238" cy="305" r="6" />
+              <circle cx="498" cy="57" r="6" />
+            </g>
+            <circle
+              cx="368"
+              cy="367"
+              r="8"
+              fill="#fff"
+              stroke="#F5B82E"
+              stroke-width="4"
+            />
+
+            <g fill="#9FB3D1" font-size="16">
+              <text x="238" y="393" text-anchor="middle">1</text>
+              <text x="368" y="393" text-anchor="middle">2</text>
+              <text x="498" y="393" text-anchor="middle">3</text>
+              <text x="94" y="435" text-anchor="end">−1</text>
+              <text x="94" y="311" text-anchor="end">1</text>
+              <text x="94" y="187" text-anchor="end">3</text>
+              <text x="94" y="125" text-anchor="end">4</text>
+              <text x="94" y="63" text-anchor="end">5</text>
+              <text x="94" y="393" text-anchor="end">0</text>
+            </g>
+            <g fill="#9FB3D1" font-size="18" font-style="italic">
+              <text x="122" y="26">y</text>
+              <text x="546" y="397">x</text>
+            </g>
+            <g fill="#fff" font-size="19" font-weight="600">
+              <text x="92" y="233" text-anchor="end">(0, 2)</text>
+              <text x="254" y="291">(1, 1)</text>
+              <text x="382" y="417">P (2, 0)</text>
+              <text x="512" y="67">(3, 5)</text>
+              <text x="512" y="34" fill="#F5B82E">f(x)</text>
+            </g>
+            <text x="140" y="90" fill="#fff" font-size="21">
+              y = x³ − 3x² + x + 2
+            </text>
+            <text
+              transform="translate(448.6 312.6) rotate(-25.5)"
+              fill="#fff"
+              font-size="17"
+            >
+              Tangent line
+            </text>
+          </svg>
+
+          <h1 class="text-h1">
+            Build Your Engineering Foundation.
+            <span class="text-primary" style="display: block">
+              Master What Comes Next.
+            </span>
+          </h1>
+
+          <p class="text-body-lg text-muted" style="max-width: 500px">
+            ApexEng turns first-year calculus, physics, statics, drawing and
+            chemistry into one progressive path — Basic, then Intermediate, then
+            exam-level — so nothing you rely on later is left half-learned.
+          </p>
+        </ion-col>
+
+        <!-- RIGHT SIDE -->
+        <ion-col
+          size-xs="12"
+          size-md="5"
+          class="ion-padding"
+          [class.shake-error]="isShaking"
+        >
+          <div class="login-card">
+            <h2 class="text-h1" style="margin-bottom: 8px">Welcome back</h2>
+            <p class="text-body text-muted" style="margin-bottom: 32px">
+              Please sign in to continue learning.
+            </p>
+
+            <app-input
+              label="Email Address"
+              type="email"
+              placeholder="Enter your email"
+              icon="mail-outline"
+              [(value)]="email"
+              [errorMessage]="loginError"
+            ></app-input>
+
+            <app-input
+              label="Access Code"
+              type="password"
+              placeholder="Enter your 8-character code"
+              icon="key-outline"
+              [(value)]="accessCode"
+              [errorMessage]="loginError"
+            ></app-input>
+
+            <a class="text-h3" role="button" tabindex="0" (click)="onForgot()">
+              Forgot your access code?
+            </a>
+
+            <div style="margin-top: 15px" [class.shake-error]="isShaking">
+              <app-button
+                label="Sign In"
+                size="large"
+                variant="primary"
+                (clicked)="onLogin()"
+              >
+              </app-button>
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

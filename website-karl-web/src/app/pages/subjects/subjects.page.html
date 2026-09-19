@@ -1,0 +1,53 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="header-toolbar">
+    <div class="nav-container">
+      <!-- 1. Brand & Logo -->
+      <div class="nav-brand">
+        <div class="logo-icon">
+          <!-- Using a placeholder icon, you can swap with a custom SVG later! -->
+          <ion-icon name="construct-outline"></ion-icon>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">ApexEng</span>
+          <span class="brand-subtitle">APEX ENGINEERING</span>
+        </div>
+      </div>
+
+      <!-- 2. Navigation Links -->
+      <div class="nav-links">
+        <app-button
+          label="Subjects"
+          [variant]="router.url.includes('/subjects') ? 'primary' : 'transparent'"
+          [disabled]="router.url.includes('/subjects')"
+          routerLink="/subjects"
+        ></app-button>
+
+        <app-button
+          label="Planner"
+          [variant]="router.url.includes('/planner') ? 'primary' : 'transparent'"
+          [disabled]="router.url.includes('/planner')"
+          routerLink="/planner"
+        ></app-button>
+
+        <app-button
+          label="Profile"
+          [variant]="router.url.includes('/profile') ? 'primary' : 'transparent'"
+          [disabled]="router.url.includes('/profile')"
+          routerLink="/profile"
+        ></app-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="subjects-container">
+    <p class="text-body">Catalogue</p>
+    <h1 class="text-h1" style="color: var(--primary-foreground)">
+      Select a Subject
+    </h1>
+    <p class="text-muted">Choose a module to continue your engineering path.</p>
+
+    <!-- We will build the subject cards here next! -->
+  </div>
+</ion-content>

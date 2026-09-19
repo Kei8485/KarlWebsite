@@ -1,0 +1,38 @@
+<div class="app-input-wrapper">
+  <label *ngIf="label" class="app-input-label text-label">{{ label }}</label>
+
+  <ion-input
+    [type]="inputType"
+    fill="outline"
+    [placeholder]="placeholder"
+    [value]="value"
+    [disabled]="disabled"
+    [class.has-error]="errorMessage"
+    (ionInput)="onInput($event)"
+    class="app-input"
+  >
+    <ion-icon
+      *ngIf="icon && iconPosition === 'start'"
+      [name]="icon"
+      slot="start"
+      class="app-input-icon"
+    ></ion-icon>
+
+    <ion-icon
+      *ngIf="type === 'password'"
+      [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+      slot="end"
+      class="app-input-icon app-input-icon--clickable"
+      (click)="togglePasswordVisibility()"
+    ></ion-icon>
+
+    <ion-icon
+      *ngIf="icon && iconPosition === 'end' && type !== 'password'"
+      [name]="icon"
+      slot="end"
+      class="app-input-icon"
+    ></ion-icon>
+  </ion-input>
+
+  <span *ngIf="errorMessage" class="app-input-error">{{ errorMessage }}</span>
+</div>

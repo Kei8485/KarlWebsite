@@ -1,0 +1,25 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title class="text-h1">TEST TEST</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <app-input
+    label="Email"
+    type="email"
+    placeholder="you@email.com"
+    icon="mail-outline"
+    iconPosition="start"
+    [(value)]="email"
+  ></app-input>
+  <app-input
+    label="Password"
+    type="password"
+    placeholder="you@email.com"
+    icon="key-outline"
+    iconPosition="start"
+    [(value)]="password"
+    errorMessage="Invalid Password"
+  ></app-input>
+</ion-content>

@@ -1,7 +1,8 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// Consolidate all Ionic imports into one line from '@ionic/angular'
-import { IonContent, IonGrid, IonRow, IonCol } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { personOutline, keyOutline, mailOutline, lockClosedOutline } from 'ionicons/icons';
+import { IonContent, IonGrid, IonRow, IonCol, IonIcon } from '@ionic/angular';
 import { Router } from '@angular/router';  
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
 import { AppInputComponent } from '../../components/atoms/app-input/app-input.component';
@@ -19,25 +20,26 @@ import { AuthService } from '../../services/auth';
     IonRow, 
     IonCol, 
     AppButtonComponent, 
-    AppInputComponent
+    AppInputComponent,
+    IonIcon
   ]
 })
 export class LoginPage {
   email: string = '';
   accessCode: string = '';
   
-  // Variables to show loading spinner or error message
   isLoading: boolean = false;
   loginError: string = '';
   isShaking: boolean = false;
 
-  // Inject AuthService and Router here
   constructor(
     private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef  
-
-  ) {}
+  ) {
+    // 2. FIXED: Moved addIcons INSIDE the curly braces!
+    addIcons({ personOutline, keyOutline, mailOutline, lockClosedOutline });
+  }
 
   onLogin() {
     if (!this.email || !this.accessCode) {
@@ -74,7 +76,6 @@ export class LoginPage {
   }
 
   onForgot() {
-    // navigate to your reset flow
     console.log('Forgot password clicked');
   }
 }

@@ -2,7 +2,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router'; 
 import { HttpClient, HttpClientModule } from '@angular/common/http'; 
-
+import { addIcons } from 'ionicons';
+import { arrowForwardOutline } from 'ionicons/icons';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonGrid, IonRow, IonCol } from '@ionic/angular';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
 import { AppCardComponent } from '../../components/molecules/app-card/app-card.component';
@@ -44,6 +45,7 @@ export class SubjectsPage implements OnInit {
     private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {
+    addIcons({ arrowForwardOutline });
     const savedName = localStorage.getItem('userName');
     if (savedName) {
       this.currentUserName = savedName;

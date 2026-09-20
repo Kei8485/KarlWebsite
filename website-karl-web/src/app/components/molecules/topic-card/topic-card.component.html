@@ -1,0 +1,21 @@
+<div class="topic-card">
+  <div class="topic-header">
+    <div class="topic-number">
+      <span>TOPIC {{ index + 1 }}</span>
+    </div>
+  </div>
+
+  <div class="topic-content">
+    <h3 class="topic-title">{{ topic.title }}</h3>
+    <p class="topic-notes">
+      {{
+        topic.notes ||
+          "Master the fundamentals of this topic to progress further."
+      }}
+    </p>
+  </div>
+
+  <div class="topic-action">
+    <app-button label="Start Learning" variant="primary"></app-button>
+  </div>
+</div>

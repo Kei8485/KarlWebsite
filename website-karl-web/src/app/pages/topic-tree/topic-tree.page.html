@@ -1,59 +1,44 @@
-<ion-content [fullscreen]="true">
-  <div style="max-width: 900px; margin: 0 auto; padding: 24px">
-    <ion-grid class="ion-no-padding">
-      <ion-row>
-        <!-- We use 'let i = index' to get the current loop number (0, 1, 2...) -->
-        <ion-col
-          size="12"
-          *ngFor="let topic of topics; let i = index"
-          style="margin-bottom: 16px"
-        >
-          <app-card>
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
-              "
-            >
-              <div>
-                <!-- Display Topic 1, Topic 2, etc by adding 1 to the index -->
-                <span
-                  style="
-                    color: #2563eb;
-                    font-weight: 600;
-                    font-size: 11px;
-                    letter-spacing: 1px;
-                    text-transform: uppercase;
-                  "
-                >
-                  Topic {{ topic.order || (i + 1) }}
-                </span>
+<ion-content class="ion-padding">
+  <div class="page-container">
+    <!-- Modern Hero Section (Only shows when data loads) -->
+    <div class="subject-hero" *ngIf="subjectData">
+      <div class="breadcrumb">
+        <span>SUBJECT JOURNEY</span>
+      </div>
 
-                <h2
-                  style="
-                    margin: 6px 0 0 0;
-                    color: white;
-                    font-size: 1.2rem;
-                    font-weight: 500;
-                  "
-                >
-                  {{ topic.title }}
-                </h2>
-              </div>
+      <!-- Uses your awesome split trick for a 2-tone title! -->
+      <h1 class="page-title">
+        <span class="accent-code">{{ subjectData.title.split('-')[0] }}</span>
+        <span class="divider">/</span>
+        {{ subjectData.title.split('-')[1] }}
+      </h1>
 
-              <!-- Ready to route to the individual video/learning page! -->
-              <app-button
-                variant="primary"
-                label="Start Learning"
-                [routerLink]="['/topic', topic.id]"
-              >
-              </app-button>
-            </div>
-          </app-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+      <!-- Glassmorphism Description Card -->
+      <div class="desc-card">
+        <div class="glow-bar"></div>
+        <p>{{ subjectData.description }}</p>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading module data...</p>
+    </div>
+
+    <!-- Empty State (if no topics in DB) -->
+    <div *ngIf="!isLoading && topics.length === 0" class="empty-state">
+      <p>No topics have been added to this subject yet!</p>
+    </div>
+
+    <!-- The actual list of Topic Cards -->
+    <div class="topics-grid" *ngIf="topics.length > 0">
+      <app-topic-card
+        *ngFor="let topic of topics; let i = index"
+        [topic]="topic"
+        [index]="i"
+      >
+      </app-topic-card>
+    </div>
   </div>
 </ion-content>

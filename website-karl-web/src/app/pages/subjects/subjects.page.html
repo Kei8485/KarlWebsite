@@ -1,44 +1,41 @@
 <ion-content [fullscreen]="true">
   <div class="subjects-container">
+    <!-- Modern Header -->
     <p class="text-body">Catalogue</p>
-    <h1 class="text-h1" style="color: var(--primary-foreground)">
-      Select a Subject
-    </h1>
+    <h1 class="text-h1">Select a Subject</h1>
     <p class="text-muted">Choose a module to continue your engineering path.</p>
 
-    <!-- We will build the subject cards here next! -->
-
-    <!-- Grid Layout to hold our cards -->
-    <!-- 2x2 Grid Layout -->
+    <!-- Cards Grid -->
     <ion-grid style="margin-top: 40px; padding: 0">
       <ion-row>
-        <!-- Card 1 (Differential Calculus) -->
-        <!-- The *ngFor loop creates one card for every subject in your database! -->
         <ion-col size="12" size-md="6" *ngFor="let subject of databaseSubjects">
-          <app-card>
-            <!-- Category Tag -->
+          <app-card class="modern-card">
+            <!-- Sleek Category Tag -->
             <span class="subject-tag">Mathematics</span>
 
-            <!-- The Title Trick: We use .split('-') to chop your title in half! -->
+            <!-- Split Title -->
             <h2 class="subject-title">
               <span class="code-accent">{{ subject.title.split('-')[0] }}</span>
-              <span class="code-divider">•</span>
+              <span class="code-divider">/</span>
               {{ subject.title.split('-')[1] }}
             </h2>
 
-            <!-- The Dynamic Description -->
+            <!-- Description -->
             <p class="subject-desc">{{ subject.description }}</p>
 
-            <!-- Footer with Dynamic Topic Count! -->
+            <!-- Footer with glowing dot -->
             <div class="subject-footer">
-              <span class="meta-text">{{ subject.topics.length }} topics</span>
+              <span class="meta-text"
+                >{{ subject.topics.length || 0 }} topics</span
+              >
+
               <app-button
                 variant="primary"
                 label="Open topic tree"
-                (clicked)="goToTopicTree(subject.id)"
+                routerLink="/topic-tree/{{subject.id}}"
+                icon="arrow-forward-outline"
               >
-                ></app-button
-              >
+              </app-button>
             </div>
           </app-card>
         </ion-col>

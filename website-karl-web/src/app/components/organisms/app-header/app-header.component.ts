@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // Added ChangeDetectorRef
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router'; // Added NavigationEnd
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon } from '@ionic/angular';
 import { AppButtonComponent } from '../../atoms/app-button/app-button.component'; 
 
-// 1. ADDED THIS: Import the icon tools
 import { addIcons } from 'ionicons';
 import { constructOutline, personCircleOutline } from 'ionicons/icons';
 
@@ -22,14 +21,24 @@ import { constructOutline, personCircleOutline } from 'ionicons/icons';
 })
 export class AppHeaderComponent implements OnInit {
   currentUserName: string = 'Username';
+  currentUrl: string = ''; // 1. We will track the URL here
 
-  constructor(public router: Router) {
-    // 2. ADDED THIS: Register the specific icons we want to use!
+  constructor(public router: Router, private cdr: ChangeDetectorRef) {
     addIcons({ constructOutline, personCircleOutline });
+    
+    // Grab the URL immediately on load
+    this.currentUrl = window.location.pathname;
+
+    // 2. Listen for page changes and FORCE the buttons to redraw!
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.currentUrl = event.urlAfterRedirects;
+        this.cdr.detectChanges(); 
+      }
+    });
   }
 
   ngOnInit() {
-    // It grabs the username itself so your pages don't have to!
     const savedName = localStorage.getItem('userName');
     if (savedName) {
       this.currentUserName = savedName;

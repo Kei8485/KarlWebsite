@@ -6,7 +6,7 @@ from .models import User, Subject, Topic
 
 @admin.register(User) # for connecting this function and the userAdmin class
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['email', 'codePass', 'role', 'created_at'] # ung asa datamodel
+    list_display = ['id', 'userName' ,'email', 'codePass', 'role', 'created_at'] # ung asa datamodel
     readonly_fields = ['codePass', 'created_at']
     def save_model(self, request, obj, form, change): # kasama sa library, pang add ng bagong user
         #request - http request
@@ -22,9 +22,25 @@ class UserAdmin(admin.ModelAdmin):
             html_content = f'''
                 <!DOCTYPE html>
                 <html>
-                <head>
+                                <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                
+                <!-- FORCE DARK MODE ONLY -->
+                <meta name="color-scheme" content="dark">
+                <meta name="supported-color-schemes" content="dark">
+                
+                <style>
+                    /* Forces Apple Mail to stop auto-coloring text and links */
+                    a[x-apple-data-detectors] {
+                        color: inherit !important;
+                        text-decoration: none !important;
+                        font-size: inherit !important;
+                        font-family: inherit !important;
+                        font-weight: inherit !important;
+                        line-height: inherit !important;
+                    }
+                </style>
                 </head>
                 <body style="margin:0;padding:0;background-color:#0f172a;font-family:'Segoe UI',Arial,sans-serif;">
                 <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;padding:40px 0;">
@@ -103,9 +119,14 @@ class UserAdmin(admin.ModelAdmin):
         else:
             obj.save()
             
-            
-admin.site.register(Subject)
+
+@admin.register(Subject)
+class SubjectAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'description']
+                
+
+
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ['title', 'subject', 'order']
+    list_display = ['id','title', 'subject', 'order']
     list_filter = ['subject']

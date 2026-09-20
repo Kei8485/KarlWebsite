@@ -57,6 +57,7 @@ steps
             -check in postman if the urls are working (the GET and POST)
 
 2.  Front end
+    (development ng login page)
     -run ionic start tas ionic serve
     -delete ung home.page folder
     -replace and run these: (automatically creates templete )
@@ -65,8 +66,10 @@ steps
     \*ionic generate page pages/topic-detail
     -run for atomic folder - ionic generate component components/atoms/app-button
     -run for creating a page - ionic generate page pages/dev-preview
+    -run for generating auth - ionic generate service services/auth (kailangan to para ibigay ng frontend ung data sa backend)
 
-    -run for generating auth - ionic generate service services/auth
+    (Development of Subject page)
+    - added username in the model and in the database
 
 front end lesson na natutunan:
 

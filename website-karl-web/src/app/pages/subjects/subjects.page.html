@@ -28,13 +28,15 @@
           [disabled]="router.url.includes('/planner')"
           routerLink="/planner"
         ></app-button>
+      </div>
 
-        <app-button
-          label="Profile"
-          [variant]="router.url.includes('/profile') ? 'primary' : 'transparent'"
-          [disabled]="router.url.includes('/profile')"
-          routerLink="/profile"
-        ></app-button>
+      <!-- 3. User Profile (far right) -->
+      <div class="user-profile" routerLink="/profile">
+        <ion-icon
+          name="person-circle-outline"
+          class="user-profile-icon"
+        ></ion-icon>
+        <span class="user-profile-name"> {{currentUserName }}</span>
       </div>
     </div>
   </ion-toolbar>

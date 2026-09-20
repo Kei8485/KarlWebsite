@@ -26,7 +26,12 @@ import { AppButtonComponent } from '../../components/atoms/app-button/app-button
 })
 export class SubjectsPage {
   
-  // 2. ADD THE CONSTRUCTOR HERE INSIDE THE CLASS
-  constructor(public router: Router) {}
+  currentUserName: string = 'Username';
+  constructor(public router: Router) {
+    const savedName = localStorage.getItem('userName');
+    if (savedName) {
+      this.currentUserName = savedName;
+    }
+  }
   
 }

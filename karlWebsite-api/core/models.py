@@ -12,6 +12,7 @@ class User(models.Model):
     ]
      
     email = models.EmailField(unique=True)
+    userName= models.CharField(max_length=50, default='')
     codePass = models.CharField(max_length=16, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
     created_at = models.DateTimeField(auto_now_add=True)

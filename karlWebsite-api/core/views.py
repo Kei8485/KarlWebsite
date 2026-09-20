@@ -40,7 +40,7 @@ def login(request):
     code = request.data.get('code')
     try:
         user = User.objects.get(email=email, codePass=code)
-        return Response({'success': True, 'role': user.role})
+        return Response({'success': True, 'role': user.role, 'userName': user.userName})
     except User.DoesNotExist:
         return Response({'error': 'Invalid email or code'}, status=status.HTTP_401_UNAUTHORIZED)
 

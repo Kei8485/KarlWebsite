@@ -1,0 +1,59 @@
+<ion-content [fullscreen]="true">
+  <div style="max-width: 900px; margin: 0 auto; padding: 24px">
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <!-- We use 'let i = index' to get the current loop number (0, 1, 2...) -->
+        <ion-col
+          size="12"
+          *ngFor="let topic of topics; let i = index"
+          style="margin-bottom: 16px"
+        >
+          <app-card>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+              "
+            >
+              <div>
+                <!-- Display Topic 1, Topic 2, etc by adding 1 to the index -->
+                <span
+                  style="
+                    color: #2563eb;
+                    font-weight: 600;
+                    font-size: 11px;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
+                  "
+                >
+                  Topic {{ topic.order || (i + 1) }}
+                </span>
+
+                <h2
+                  style="
+                    margin: 6px 0 0 0;
+                    color: white;
+                    font-size: 1.2rem;
+                    font-weight: 500;
+                  "
+                >
+                  {{ topic.title }}
+                </h2>
+              </div>
+
+              <!-- Ready to route to the individual video/learning page! -->
+              <app-button
+                variant="primary"
+                label="Start Learning"
+                [routerLink]="['/topic', topic.id]"
+              >
+              </app-button>
+            </div>
+          </app-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

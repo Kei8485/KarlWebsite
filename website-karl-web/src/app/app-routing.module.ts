@@ -20,10 +20,10 @@ const routes: Routes = [
     path: 'subjects',
     loadComponent: () => import('./pages/subjects/subjects.page').then(m => m.SubjectsPage)
   },
-  // {
-  // path: 'topic-detail/:id',
-  // loadComponent: () => import('./pages/topic-detail/topic-detail.page').then(m => m.TopicDetailPage)
-  // },
+  {
+    path: 'topic-tree/:id',
+    loadComponent: () => import('./pages/topic-tree/topic-tree.page').then( m => m.TopicTreePage)
+  },
 ];
 
 @NgModule({

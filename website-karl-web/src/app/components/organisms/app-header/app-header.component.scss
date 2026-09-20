@@ -1,0 +1,108 @@
+/* Custom Toolbar Styling */
+.header-toolbar {
+  --background: #091222; /* Deep dark blue for the navbar */
+  --min-height: 70px;
+  padding: 0px 40px;
+  margin: 0;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px, rgba(0, 0, 0, 0.05) 0px 5px 10px;
+}
+
+/* The main flex container for the navbar */
+.nav-container {
+  display: flex;
+  align-items: center;
+  gap: 60px; /* Space between logo and links */
+  height: 100%;
+}
+
+/* 1. Brand Logo Box */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .logo-icon {
+    background-color: var(--primary); 
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    ion-icon {
+      color: white;
+      font-size: 20px;
+      transform: rotate(45deg);
+    }
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    
+    .brand-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.1;
+    }
+    
+    .brand-subtitle {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      color: #7b94b7;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+  }
+}
+
+/* 2. Navigation Link Styles */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  app-button {
+    /* Muted text for inactive buttons by default */
+    --color: #9fb3d1; 
+    transition: all 0.2s ease;
+
+    /* THE ACTIVE STATE - Angular applies this automatically! */
+  /* THE ACTIVE STATE */
+    &.active-link {
+      /* We use !important to overpower the 'transparent' variant */
+      --background: #253351 !important; 
+      --color: white !important;
+      
+      /* Force it deep into the internal ion-button */
+      ::ng-deep ion-button {
+        --background: #253351 !important;
+        --color: white !important;
+      }
+    }
+  }
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;  /* pushes this element to the far right */
+  cursor: pointer;
+  color: var(--foreground);
+
+  .user-profile-icon {
+    font-size: 40px;
+  }
+
+  .user-profile-name {
+    font-size: var(--text-size-body);
+    font-weight: 600;
+    font-family: var(--font-display);
+
+  }
+}

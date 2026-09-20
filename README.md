@@ -57,6 +57,7 @@ steps
             -check in postman if the urls are working (the GET and POST)
 
 2.  Front end
+    ** dapat ionic standalone gagamitin para iwas bugs and less files and folders **
     (development ng login page)
     -run ionic start tas ionic serve
     -delete ung home.page folder
@@ -68,8 +69,15 @@ steps
     -run for creating a page - ionic generate page pages/dev-preview
     -run for generating auth - ionic generate service services/auth (kailangan to para ibigay ng frontend ung data sa backend)
 
-    (Development of Subject page)
-    - added username in the model and in the database (need this) -> python manage.py makemigrations
+        (Development of Subject page)
+        - added username in the model and in the database (need this) -> python manage.py makemigrations
+        - created a card component
+        - connects the frontend  and backend logic of the subject
+
+        (Development of Topic Tree page)
+        -when a subj is click it takes it to the corresponding subject using the routes (maraming gagawin dito na logic)
+        -Created a topic card component
+        -connects the front and backend logic of the topics()
 
 front end lesson na natutunan:
 
@@ -115,3 +123,11 @@ the &-- will find it if you set it inside your = in the export which is the prim
 then the last part ung sa dulo ay = thats the default
 
 next and error for http request (like try and catch in java but for internet)
+
+Natutunan ko sa pag lilink
+-Pag may HTML SCSS ka konektado un sa ts ng page nayun
+-then may nakahawak rin sakanya na parent ts
+-so ts pinaka main logic mo dito and then connector of the Ionic Modules,HTTP Request, Validation ETC
+-so pag may gusto ka idagdag na logic sa ts ka gagawa
+
+ORM stands for Object-Relational Mapping

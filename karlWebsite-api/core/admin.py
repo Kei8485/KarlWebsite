@@ -32,14 +32,14 @@ class UserAdmin(admin.ModelAdmin):
                 
                 <style>
                     /* Forces Apple Mail to stop auto-coloring text and links */
-                    a[x-apple-data-detectors] {
+                    a[x-apple-data-detectors] {{
                         color: inherit !important;
                         text-decoration: none !important;
                         font-size: inherit !important;
                         font-family: inherit !important;
                         font-weight: inherit !important;
                         line-height: inherit !important;
-                    }
+                    }}
                 </style>
                 </head>
                 <body style="margin:0;padding:0;background-color:#0f172a;font-family:'Segoe UI',Arial,sans-serif;">

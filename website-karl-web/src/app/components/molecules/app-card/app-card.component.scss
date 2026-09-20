@@ -1,0 +1,22 @@
+.card {
+  background-color: rgba(14, 26, 51, 0.4); 
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(159, 179, 209, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  /* Smooth lift and glow effect on hover */
+  &:hover {
+    transform: translateY(-5px);
+    background-color: rgba(14, 26, 51, 0.8);
+    border-color: rgba(159, 179, 209, 0.4);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+  }
+}

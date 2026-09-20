@@ -69,7 +69,7 @@ steps
     -run for generating auth - ionic generate service services/auth (kailangan to para ibigay ng frontend ung data sa backend)
 
     (Development of Subject page)
-    - added username in the model and in the database
+    - added username in the model and in the database (need this) -> python manage.py makemigrations
 
 front end lesson na natutunan:
 

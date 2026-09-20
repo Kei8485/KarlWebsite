@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-// 1. ADD THIS IMPORT FOR THE ROUTER
 import { Router } from '@angular/router'; 
+import { HttpClient, HttpClientModule } from '@angular/common/http'; 
 
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonGrid, IonRow, IonCol } from '@ionic/angular';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
+import { AppCardComponent } from '../../components/molecules/app-card/app-card.component';
 
 @Component({
   selector: 'app-subjects',
@@ -14,6 +14,7 @@ import { AppButtonComponent } from '../../components/atoms/app-button/app-button
   standalone: true,
   imports: [
     CommonModule, 
+    HttpClientModule, // The quick hack to allow HTTP requests here
     IonHeader, 
     IonToolbar, 
     IonTitle, 
@@ -21,17 +22,47 @@ import { AppButtonComponent } from '../../components/atoms/app-button/app-button
     IonButtons,
     IonButton,
     IonIcon,
-    AppButtonComponent
+    IonRow,
+    IonCol,
+    IonGrid,
+    AppButtonComponent,
+    AppCardComponent
   ] 
 })
-export class SubjectsPage {
+export class SubjectsPage implements OnInit {
   
   currentUserName: string = 'Username';
-  constructor(public router: Router) {
+  databaseSubjects: any[] = []; 
+
+  constructor(
+    public router: Router,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
+  ) {
     const savedName = localStorage.getItem('userName');
     if (savedName) {
       this.currentUserName = savedName;
     }
+  }
+
+  ngOnInit() {
+    this.fetchSubjects();
+  }
+
+  fetchSubjects() {
+    // If your backend uses /api/, make sure to add it here!
+    const url = 'http://127.0.0.1:8000/api/subjects/';
+
+    this.http.get(url).subscribe({
+      next: (response: any) => {
+        this.databaseSubjects = response;
+        this.cdr.detectChanges(); // Force the screen to update
+        console.log('Database loaded!', this.databaseSubjects);
+      },
+      error: (err) => {
+        console.error('Error fetching subjects', err);
+      }
+    });
   }
   
 }

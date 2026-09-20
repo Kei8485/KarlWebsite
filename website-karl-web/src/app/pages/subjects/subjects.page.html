@@ -51,5 +51,39 @@
     <p class="text-muted">Choose a module to continue your engineering path.</p>
 
     <!-- We will build the subject cards here next! -->
+
+    <!-- Grid Layout to hold our cards -->
+    <!-- 2x2 Grid Layout -->
+    <ion-grid style="margin-top: 40px; padding: 0">
+      <ion-row>
+        <!-- Card 1 (Differential Calculus) -->
+        <!-- The *ngFor loop creates one card for every subject in your database! -->
+        <ion-col size="12" size-md="6" *ngFor="let subject of databaseSubjects">
+          <app-card>
+            <!-- Category Tag -->
+            <span class="subject-tag">Mathematics</span>
+
+            <!-- The Title Trick: We use .split('-') to chop your title in half! -->
+            <h2 class="subject-title">
+              <span class="code-accent">{{ subject.title.split('-')[0] }}</span>
+              <span class="code-divider">•</span>
+              {{ subject.title.split('-')[1] }}
+            </h2>
+
+            <!-- The Dynamic Description -->
+            <p class="subject-desc">{{ subject.description }}</p>
+
+            <!-- Footer with Dynamic Topic Count! -->
+            <div class="subject-footer">
+              <span class="meta-text">{{ subject.topics.length }} topics</span>
+              <app-button
+                variant="primary"
+                label="Open topic tree"
+              ></app-button>
+            </div>
+          </app-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </div>
 </ion-content>

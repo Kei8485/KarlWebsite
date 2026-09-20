@@ -163,3 +163,69 @@ ion-content {
   }
 }
 
+
+// subj cards
+
+/* Subject Card Layout Styles */
+.subject-title {
+  color: white;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.4rem;
+  margin: 0 0 12px 0;
+}
+
+.subject-desc {
+  color: #9fb3d1;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin: 0 0 24px 0;
+  
+  /* MAGIC CSS: Limits text to exactly 4 lines and adds ... */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.subject-footer {
+  margin-top: auto; /* Pushes the footer to the absolute bottom of the card */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(159, 179, 209, 0.1);
+  padding-top: 16px;
+
+  .meta-text {
+    font-family: monospace;
+    color: #64748b;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+}
+
+/* The beautiful pill-shaped tag */
+.subject-tag {
+  display: inline-block;
+  background: rgba(20, 58, 141, 0.144); /* Transparent blue */
+  color: #7aa7ff;
+  border: 1px solid rgba(37, 99, 235, 0.3);
+  border-radius: 50px;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+
+/* Two-tone title colors */
+.code-accent {
+  color: var(--chart-5);
+}
+
+.code-divider {
+  color: #475569;
+  font-weight: 300;
+  margin: 0 6px;
+}

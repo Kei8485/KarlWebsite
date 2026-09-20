@@ -1,13 +1,15 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonInput, IonIcon } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';  
+
 
 @Component({
   selector: 'app-input',
   templateUrl: './app-input.component.html',
   styleUrls: ['./app-input.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonIcon, IonInput]
+  imports: [CommonModule, IonIcon, IonInput, FormsModule]
 })
 export class AppInputComponent {
   @Input() label: string = '';

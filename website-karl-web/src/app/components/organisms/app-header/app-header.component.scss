@@ -208,3 +208,62 @@
     }
   }
 }
+
+/* =========================================
+   🚨 NEW LOGOUT STYLES
+   ========================================= */
+
+/* Desktop Profile Wrapper */
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: 0.2s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Desktop Logout Button */
+.desktop-logout-btn {
+  background: rgba(239, 68, 68, 0.1); /* Faded red */
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444; /* Bright red */
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  &:hover {
+    background: #ef4444;
+    color: white;
+    transform: scale(1.05);
+  }
+}
+
+/* Mobile Logout Button */
+.logout-mobile {
+  color: #ef4444 !important;
+  margin-top: 0.5rem;
+  transition: 0.2s ease;
+
+  ion-icon {
+    color: #ef4444 !important;
+  }
+  
+  &:active {
+    background: rgba(239, 68, 68, 0.1);
+  }
+}

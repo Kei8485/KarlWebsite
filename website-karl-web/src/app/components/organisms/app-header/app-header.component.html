@@ -11,16 +11,13 @@
           <span class="brand-subtitle">APEX ENGINEERING</span>
         </div>
       </div>
-
-      <!-- 🚨 HAMBURGER BUTTON (Mobile Only) -->
+      <!-- HAMBURGER BUTTON (Mobile Only) -->
       <button class="mobile-menu-btn" (click)="toggleMenu()">
-        <!-- Switches to an 'X' when open! -->
         <ion-icon
           [name]="isMobileMenuOpen ? 'close-outline' : 'menu-outline'"
         ></ion-icon>
       </button>
-
-      <!-- 2. Desktop Links (🚨 Added 'desktop-only') -->
+      <!-- 2. Desktop Links -->
       <div class="nav-links desktop-only">
         <app-button
           label="Subjects"
@@ -30,7 +27,6 @@
           [disabled]="currentUrl.includes('/subjects')"
           routerLink="/subjects"
         ></app-button>
-
         <app-button
           label="Planner"
           [variant]="
@@ -40,9 +36,8 @@
           routerLink="/planner"
         ></app-button>
       </div>
-
-      <!-- 3. Desktop User Profile (🚨 Added 'desktop-only') -->
-      <div class="user-profile desktop-only" routerLink="/profile">
+      <!-- 3. Desktop User Profile & Logout -->
+      <div class="user-profile desktop-only">
         <app-button
           *ngIf="currentUserRole === 'admin'"
           label="ADMIN: Manage Users"
@@ -52,16 +47,23 @@
           [disabled]="currentUrl.includes('/manage-users')"
           routerLink="/manage-users"
         ></app-button>
-        <ion-icon
-          name="person-circle-outline"
-          class="user-profile-icon"
-        ></ion-icon>
-        <span class="user-profile-name"> {{ currentUserName }}</span>
+
+        <!-- Profile Name -->
+        <div class="profile-info" routerLink="/profile">
+          <ion-icon
+            name="person-circle-outline"
+            class="user-profile-icon"
+          ></ion-icon>
+          <span class="user-profile-name"> {{ currentUserName }}</span>
+        </div>
+        <!-- 🚨 DESKTOP LOGOUT BUTTON -->
+        <button class="desktop-logout-btn" (click)="logout()">
+          <ion-icon name="log-out-outline"></ion-icon>
+        </button>
       </div>
     </div>
   </ion-toolbar>
-
-  <!-- 🚨 MOBILE DROPDOWN MENU -->
+  <!-- MOBILE DROPDOWN MENU -->
   <div class="mobile-menu" [class.is-open]="isMobileMenuOpen">
     <div class="mobile-nav-links">
       <app-button
@@ -74,8 +76,6 @@
         [variant]="currentUrl.includes('/planner') ? 'primary' : 'transparent'"
         routerLink="/planner"
       ></app-button>
-
-      <!-- Only Admins see this button in the mobile dropdown! -->
       <app-button
         *ngIf="currentUserRole === 'admin'"
         label="Manage Users"
@@ -83,10 +83,15 @@
         routerLink="/manage-users"
       ></app-button>
     </div>
-
+    <!-- Mobile Profile Info -->
     <div class="mobile-user-profile" routerLink="/profile">
       <ion-icon name="person-circle-outline"></ion-icon>
       <span>{{ currentUserName }}</span>
+    </div>
+    <!-- 🚨 MOBILE LOGOUT BUTTON -->
+    <div class="mobile-user-profile logout-mobile" (click)="logout()">
+      <ion-icon name="log-out-outline"></ion-icon>
+      <span>Log Out</span>
     </div>
   </div>
 </ion-header>

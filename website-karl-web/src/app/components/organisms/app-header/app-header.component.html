@@ -62,7 +62,7 @@
   </ion-toolbar>
 
   <!-- 🚨 MOBILE DROPDOWN MENU -->
-  <div class="mobile-menu" *ngIf="isMobileMenuOpen">
+  <div class="mobile-menu" [class.is-open]="isMobileMenuOpen">
     <div class="mobile-nav-links">
       <app-button
         label="Subjects"

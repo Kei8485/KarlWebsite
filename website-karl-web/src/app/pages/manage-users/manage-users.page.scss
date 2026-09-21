@@ -22,6 +22,7 @@
   @media (max-width: 768px) {
     padding: 1rem !important;
     margin: 0 !important; /* Stops weird centering offset on mobile */
+    margin-bottom: 200px !important;
   }
 }
 .hero-section {
@@ -115,8 +116,8 @@
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    color: white;
-    padding: 0.75rem 1rem;
+    color: var(--level-mid);
+    padding: 0rem 1rem;
     display: flex;
     align-items: center;
 
@@ -157,6 +158,7 @@
   
   @media (max-width: 480px) {
     padding: 1rem;
+    
   }
   
   .user-info {

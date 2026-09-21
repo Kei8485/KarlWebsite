@@ -142,7 +142,7 @@
 
 /* The Dropdown Mobile Menu */
 .mobile-menu {
-  display: none;
+  display: none; /* Completely hidden on desktop */
 
   @media (max-width: 768px) {
     display: flex;
@@ -157,6 +157,23 @@
     z-index: 1000;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.7);
 
+    /* 🚨 SMOOTH ANIMATION STYLES 🚨 */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px); /* Starts slightly moved up */
+    transition: all 0.3s cubic-bezier(0.25, 1.2, 0.5, 1); /* Bouncy smooth timing */
+    pointer-events: none; /* Prevents invisible clicking */
+    
+
+    /* When Angular adds the 'is-open' class, trigger the animation! */
+    &.is-open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0); /* Slides down into place */
+      pointer-events: auto;
+    }
+
+    /* Inner links */
     .mobile-nav-links {
       display: flex;
       flex-direction: column;
@@ -169,6 +186,7 @@
       }
     }
 
+    /* Inner profile */
     .mobile-user-profile {
       display: flex;
       align-items: center;

@@ -77,7 +77,20 @@ steps
         (Development of Topic Tree page)
         -when a subj is click it takes it to the corresponding subject using the routes (maraming gagawin dito na logic)
         -Created a topic card component
-        -connects the front and backend logic of the topics()
+        -connects the front and backend logic of the topics
+        -uses GET HTTP method to get the datas
+        -replaces the current temporary datas inside the ts and html
+
+        (development of the admin page)
+        -creates new pages standalone component
+        -creates the design of the admin page
+        -main logic: Add users and delete users here
+        -only admins can access this: also created this logic
+        -creates a new method inside the Model of the datas: replaces the funcion of acc creation in super admin
+        -putted it in the user method for the auto gmail
+        -in the design, created a filer
+        -(Putting a search function???)
+        -all function has a validation modal
 
 front end lesson na natutunan:
 
@@ -136,3 +149,24 @@ ionic start my-app-name blank --type=angular-standalone
 Fast Page: ionic g p pages/topic-detail --standalone
 Fast Component: ionic g c components/atoms/my-button --standalone
 Fast Service: ionic g s services/auth
+
+pang create ng modal
+pero need muna mag create ng component para magamit to
+const modal = await this.modalCtrl.create({
+component: ConfirmModalComponent,
+cssClass: 'transparent-modal',
+componentProps: {
+title: 'Delete Account?',
+message: `Are you sure you want to permanently delete <strong>${nameToDisplay}</strong>? This cannot be undone.`,
+confirmText: 'Delete',
+isDanger: false // Turns the modal danger colors on!
+}
+});
+
+    logic of the modal creation in ts
+    modalCtrl is a ionic function
+    when creating it it needs the   async like | async addUser()  |
+    async is needed to tell the browser that a pause will happen because of a modal
+    await is the one going to cause the pause
+    then the present() is for the animation
+    then another await gets executed to get the data of the user

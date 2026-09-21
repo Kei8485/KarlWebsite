@@ -2,7 +2,8 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonInput, IonIcon } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';  
-
+import { addIcons } from 'ionicons';
+import { eyeOutline, eyeOffOutline } from 'ionicons/icons'; 
 
 @Component({
   selector: 'app-input',
@@ -37,5 +38,9 @@ export class AppInputComponent {
       return this.showPassword ? 'text' : 'password';
     }
     return this.type;
+  }
+
+   constructor() {
+    addIcons({ eyeOutline, eyeOffOutline });
   }
 }

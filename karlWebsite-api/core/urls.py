@@ -7,4 +7,7 @@ urlpatterns = [
     path('topics/<int:topic_id>/', views.get_topic),
     path('login/', views.login),
     path('forgot-code/', views.forgot_code),
+    path('users/', views.get_all_users),
+    path('users/create/', views.create_user),
+    path('users/delete/<int:pk>/', views.delete_user),
 ]

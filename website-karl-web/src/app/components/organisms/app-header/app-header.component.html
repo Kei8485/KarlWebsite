@@ -34,6 +34,16 @@
 
       <!-- 3. User Profile (far right) -->
       <div class="user-profile" routerLink="/profile">
+        <app-button
+          *ngIf="currentUserRole === 'admin'"
+          label="ADMIN: Manage Users"
+          [variant]="
+            currentUrl.includes('/manage-users') ? 'primary' : 'outline'
+          "
+          [disabled]="currentUrl.includes('/manage-users')"
+          routerLink="/manage-users"
+        >
+        </app-button>
         <ion-icon
           name="person-circle-outline"
           class="user-profile-icon"

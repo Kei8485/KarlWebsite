@@ -1,7 +1,10 @@
-ion-content {
-  max-width: 90%;
-  justify-self: center;
-  align-self: center;
+:host {
+  display: block;
+  height: 100%;
+}
+
+.page-container {
+  padding: 50px 100px;
 }
 
 .topics-grid {

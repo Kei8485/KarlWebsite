@@ -58,6 +58,7 @@ export class LoginPage {
       next: (response: any) => {
         this.isLoading = false;
         localStorage.setItem('userName', response.userName);
+        localStorage.setItem('userRole', response.role);
         this.router.navigate(['/subjects']);
       },
       error: (err: any) => {

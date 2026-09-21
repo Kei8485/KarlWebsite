@@ -21,27 +21,39 @@ import { constructOutline, personCircleOutline } from 'ionicons/icons';
 })
 export class AppHeaderComponent implements OnInit {
   currentUserName: string = 'Username';
-  currentUrl: string = ''; // 1. We will track the URL here
+  currentUrl: string = '';  
+  currentUserRole: string = '';
 
-  constructor(public router: Router, private cdr: ChangeDetectorRef) {
+    constructor(public router: Router, private cdr: ChangeDetectorRef) {
     addIcons({ constructOutline, personCircleOutline });
-    
-    // Grab the URL immediately on load
     this.currentUrl = window.location.pathname;
 
-    // 2. Listen for page changes and FORCE the buttons to redraw!
+    // Listen for page changes
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentUrl = event.urlAfterRedirects;
-        this.cdr.detectChanges(); 
+        
+        this.currentUserName = localStorage.getItem('userName') || 'Username';
+        this.currentUserRole = localStorage.getItem('userRole') || '';
+
+        console.log("DEBUG: The Username is ->", this.currentUserName);
+        console.log("DEBUG: The Role is ->", this.currentUserRole);
+        
+        this.cdr.detectChanges();
       }
     });
   }
 
   ngOnInit() {
     const savedName = localStorage.getItem('userName');
+    const savedRole = localStorage.getItem('userRole');
     if (savedName) {
       this.currentUserName = savedName;
     }
+    if (savedRole) {
+      this.currentUserRole = savedRole; 
+    }
   }
+
+  
 }

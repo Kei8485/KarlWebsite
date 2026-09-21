@@ -8,7 +8,8 @@ from rest_framework import status
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from .models import Subject, Topic, User
-from .serializers import SubjectSerializer, TopicSerializer
+from .serializers import SubjectSerializer, TopicSerializer, UserSerializer
+
 
 @api_view(['GET'])
 def get_subjects(request):
@@ -106,3 +107,34 @@ def forgot_code(request):
         return Response({'success': True})
     except User.DoesNotExist:
         return Response({'error': 'Email not found'}, status=status.HTTP_404_NOT_FOUND)
+      
+
+
+
+# USER ADMIN HTTP REQUEST
+@api_view(['GET'])
+def get_all_users(request):
+    users = User.objects.all().order_by('-created_at')
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def create_user(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        new_user = serializer.save()
+        
+        # 🚨 Call the function from your models.py to generate the code!
+        new_user.generate_code()
+        
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(['DELETE'])
+def delete_user(request, pk):
+    try:
+        user = User.objects.get(id=pk)
+        user.delete()
+        return Response({'message': 'User deleted successfully'})
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=404)

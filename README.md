@@ -131,3 +131,8 @@ Natutunan ko sa pag lilink
 -so pag may gusto ka idagdag na logic sa ts ka gagawa
 
 ORM stands for Object-Relational Mapping
+
+ionic start my-app-name blank --type=angular-standalone
+Fast Page: ionic g p pages/topic-detail --standalone
+Fast Component: ionic g c components/atoms/my-button --standalone
+Fast Service: ionic g s services/auth

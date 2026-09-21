@@ -1,34 +1,112 @@
 .app-btn {
-  --border-radius: var(--radius); /* Uses your new --radius variable */
+  /* 1. Global Button Styles */
+  --border-radius: var(--radius);
   text-transform: none;
-  /* Apply your newly linked IBM Plex Sans font to the button */
   font-family: var(--font-sans);
   font-weight: 600;
+  letter-spacing: 0.3px; /* Slightly modern letter spacing */
 
+  /* Force Ionic to drop its ugly click flashes globally */
+  --background-activated-opacity: 0 !important;
+  --background-hover-opacity: 0 !important;
+  --ripple-color: transparent !important;
+
+  /* Smooth animations for all buttons */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ------------------------------------
+     PRIMARY BUTTON (Solid Blue + Glow)
+     ------------------------------------ */
   &--primary {
     --background: var(--primary);
     --color: var(--primary-foreground);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+
+    &:hover {
+      --background: #3b82f6; /* Slightly brighter blue */
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+    }
+
+    &:active {
+      transform: scale(0.96) translateY(0);
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+    }
   }
 
-  &--outline {
-    --border-color: var(--border);
-    --border-width: 1px;
-    --color: var(--foreground);
-    --background: transparent;
+  /* ------------------------------------
+     OUTLINE BUTTON (Glassmorphism)
+     ------------------------------------ */
+    &--outline {
+    background: rgba(255, 255, 255, 0.02);
+    --color: #8B96AB; /* Muted text color */
+    
+    /* 🚨 The exact border style from your picture! 🚨 */
+    border: 1px solid rgba(255, 255, 255, 0.05); /* Faint border everywhere */
+    border-left: 3px solid #3b82f6; /* Thick blue border on the left */
+    
+    border-radius: var(--radius);
+    backdrop-filter: blur(8px);
+    transition: all 0.25s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05); 
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-left: 3px solid #4facfe; /* Blue gets slightly brighter on hover */
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+    }
+
+    &:active {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-left: 3px solid #3b82f6;
+      transform: scale(0.96) translateY(0);
+      box-shadow: none;
+    }
+  }
+  /* ------------------------------------
+     TRANSPARENT BUTTON (Header Links)
+     ------------------------------------ */
+  &--transparent {
+    background: transparent;
+    color: var(--muted-foreground);
+    border: 1px solid transparent; /* Keeps it the same height as outline */
+    border-radius: var(--radius);
+
+    &:hover {
+      color: var(--foreground);
+      background: rgba(255, 255, 255, 0.05); /* Soft highlight */
+    }
+
+    &:active {
+      transform: scale(0.96);
+      background: rgba(255, 255, 255, 0.08);
+    }
   }
 
-  &--transparent{
-    --border-color: transparent;
-    --color: var(--muted-foreground);
-    --background-hover: var(--muted);
-  }
-
-  &--muted{
+  /* ------------------------------------
+     MUTED BUTTON (Secondary Actions)
+     ------------------------------------ */
+  &--muted {
     --background: #1C2740;
     --color: #8B96AB;
-    --background-hover: white;
+
+    &:hover {
+      --background: #253354; /* Beautiful lighter navy (not solid white!) */
+      --color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: scale(0.96);
+      --background: #151d30; /* Slightly darker on press */
+    }
   }
 
+  /* ------------------------------------
+     SIZING (Leave these as Ionic variables)
+     ------------------------------------ */
   &--small {
     --padding-top: 6px;
     --padding-bottom: 6px;

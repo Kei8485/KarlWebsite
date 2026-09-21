@@ -1,0 +1,119 @@
+<ion-content [fullscreen]="true">
+  <div class="page-container">
+    <div class="hero-section">
+      <h1 class="gradient-text">Manage Users</h1>
+      <p class="subtitle">
+        Add, remove, or modify client access to the platform.
+      </p>
+    </div>
+
+    <div class="admin-grid">
+      <!-- 1. ADD USER FORM (LEFT SIDE) -->
+      <div class="glass-card add-user-card">
+        <h2>Add New User</h2>
+
+        <form #userForm="ngForm">
+          <div class="form-group">
+            <label>Username</label>
+            <input
+              type="text"
+              name="userName"
+              [(ngModel)]="newUser.userName"
+              placeholder="Enter username"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              [(ngModel)]="newUser.email"
+              placeholder="client@email.com"
+              required
+              email
+              [ngClass]="{'input-error': errorMessage}"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Role</label>
+            <ion-select
+              name="role"
+              [(ngModel)]="newUser.role"
+              interface="popover"
+              class="custom-select"
+            >
+              <ion-select-option value="student">Student</ion-select-option>
+              <ion-select-option value="admin">Admin</ion-select-option>
+            </ion-select>
+          </div>
+
+          <!-- Feedback Messages -->
+          <p class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</p>
+          <p class="success-msg" *ngIf="successMessage">{{ successMessage }}</p>
+
+          <app-button
+            variant="primary"
+            label="Create User"
+            icon="person-add-outline"
+            [disabled]="userForm.invalid || false"
+            (clicked)="addUser()"
+          ></app-button>
+        </form>
+      </div>
+
+      <!-- 2. CURRENT USERS LIST (RIGHT SIDE) -->
+      <div class="glass-card users-list-card">
+        <!-- Header with Filter Tabs -->
+        <div class="header-with-filters">
+          <h2>Current Users: {{ filteredUsers.length }}</h2>
+          <div class="filter-tabs">
+            <button
+              [class.active]="currentFilter === 'all'"
+              (click)="applyFilter('all')"
+            >
+              All
+            </button>
+            <button
+              [class.active]="currentFilter === 'admin'"
+              (click)="applyFilter('admin')"
+            >
+              Admins
+            </button>
+            <button
+              [class.active]="currentFilter === 'student'"
+              (click)="applyFilter('student')"
+            >
+              Students
+            </button>
+          </div>
+        </div>
+
+        <!-- The List of Users -->
+        <div class="user-list">
+          <div class="user-row" *ngFor="let user of filteredUsers">
+            <div class="user-info">
+              <div class="user-name">{{ user.userName }}</div>
+              <div class="user-email">
+                {{ user.email }} &bull; Joined {{ user.created_at |
+                date:'mediumDate' }}
+              </div>
+            </div>
+
+            <div class="user-role" [ngClass]="user.role">
+              {{ user.role | titlecase }}
+            </div>
+
+            <ion-icon
+              name="trash-outline"
+              class="delete-icon"
+              (click)="deleteUser(user.id)"
+            ></ion-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

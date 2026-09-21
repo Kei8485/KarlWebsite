@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-
+import { adminGuard } from './guards/admin-guard';
 const routes: Routes = [ 
   // pag gagawa ng bagong page gagawing loadComponent tas gagawing Page ung dulo
  {
@@ -24,6 +24,11 @@ const routes: Routes = [
     path: 'topic-tree/:id',
     loadComponent: () => import('./pages/topic-tree/topic-tree.page').then( m => m.TopicTreePage)
   },
+  {
+    path: 'manage-users',
+    loadComponent: () => import('./pages/manage-users/manage-users.page').then( m => m.ManageUsersPage),
+    canActivate: [adminGuard] 
+  }
 ];
 
 @NgModule({

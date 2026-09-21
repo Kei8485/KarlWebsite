@@ -1,10 +1,15 @@
-import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { IonContent, IonIcon, IonSelect, IonSelectOption } from '@ionic/angular';import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
+import { IonContent, IonIcon, IonSelect, IonSelectOption, ModalController } from '@ionic/angular'; // 🚨 Swapped to ModalController
+import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
 import { addIcons } from 'ionicons';
 import { trashOutline, personAddOutline } from 'ionicons/icons';
+
+// 🚨 Import your new custom modal! (Adjust path if needed based on your folder structure)
+import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-manage-users',
@@ -15,8 +20,9 @@ import { trashOutline, personAddOutline } from 'ionicons/icons';
 })
 export class ManageUsersPage implements OnInit, OnDestroy  {
   private http = inject(HttpClient);
-  private apiUrl = 'http://127.0.0.1:8000/api/users'; // Adjust to your Django URL
+  private apiUrl = 'http://127.0.0.1:8000/api/users'; 
   private cdr = inject(ChangeDetectorRef); 
+  private modalCtrl = inject(ModalController); // 🚨 Injected ModalController
 
   users: any[] = [];
   filteredUsers: any[] = [];
@@ -38,71 +44,81 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
 
   ngOnInit() {
     this.loadUsers();
-    
-    // 🚨 Check the database every 5 seconds in the background!
     this.refreshTimer = setInterval(() => {
       this.loadUsers();
     }, 5000);
   }
-  // 🚨 We MUST destroy the timer when we leave the page so it doesn't run forever!
+
   ngOnDestroy() {
     if (this.refreshTimer) {
       clearInterval(this.refreshTimer);
     }
   }
-
   
-  // 1. Fetch from Django
   loadUsers() {
     this.http.get<any[]>(`${this.apiUrl}/`).subscribe({
       next: (data) => {
         this.users = data;
-        this.applyFilter(this.currentFilter); // Filters and sorts
-        
-        this.cdr.detectChanges(); // 🚨 Forces the screen to show them instantly on page load!
+        this.applyFilter(this.currentFilter); 
+        this.cdr.detectChanges(); 
       },
       error: (err) => console.error('Error loading users:', err)
     });
   }
 
-  // 2. Filter & Sort (Admins on Top!)
   applyFilter(filterType: string) {
     this.currentFilter = filterType;
     let temp = [...this.users];
 
-    // Filter by role if needed
     if (filterType !== 'all') {
       temp = temp.filter(u => u.role === filterType);
     }
 
-    // Sort: Admins always first, then by date created
     this.filteredUsers = temp.sort((a, b) => {
       if (a.role === 'admin' && b.role !== 'admin') return -1;
       if (a.role !== 'admin' && b.role === 'admin') return 1;
-      
-      // If they are the same role, sort by newest first
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
   }
 
-  // 3. Send to Django
-    addUser() {
+  // 🚨 Open Blue Custom Modal for Creating
+  async addUser() {
     this.errorMessage = ''; 
     this.successMessage = ''; 
 
     if (!this.newUser.userName || !this.newUser.email) return;
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal', // Uses the CSS class we put in global.scss!
+      componentProps: {
+        title: 'Confirm Creation',
+        message: `Are you sure you want to create an account for <strong>${this.newUser.userName}</strong>?`,
+        confirmText: 'Create User',
+        isDanger: false // Keeps it blue
+      }
+    });
     
+    await modal.present();
+
+    // Wait for the modal to close and check what the user clicked
+    const { data } = await modal.onWillDismiss();
+    if (data === true) {
+      this.executeAddUser();
+    }
+  }
+
+  private executeAddUser() {
     this.http.post(`${this.apiUrl}/create/`, this.newUser).subscribe({
       next: () => {
         this.loadUsers(); 
         this.newUser = { userName: '', email: '', role: 'student' }; 
-        
         this.successMessage = "User successfully created!";
-        this.cdr.detectChanges(); // 🚨 Forces instant screen refresh!
+        this.cdr.detectChanges(); 
         
         setTimeout(() => { 
           this.successMessage = ''; 
-          this.cdr.detectChanges(); // Forces refresh when message disappears
+          this.cdr.detectChanges(); 
         }, 3000);
       },
       error: (err) => {
@@ -111,18 +127,40 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
         } else {
           this.errorMessage = "Failed to create user. Please try again.";
         }
-        
-        this.cdr.detectChanges(); // 🚨 Forces instant screen refresh so the box turns red instantly!
+        this.cdr.detectChanges(); 
       }
     });
   }
 
-  // 4. Delete in Django
-  deleteUser(id: number) {
+  // 🚨 Open Red Custom Modal for Deleting
+  async deleteUser(id: number) {
+    const targetUser = this.users.find(u => u.id === id);
+    const nameToDisplay = targetUser ? targetUser.userName : 'this user';
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Delete Account?',
+        message: `Are you sure you want to permanently delete <strong>${nameToDisplay}</strong>? This cannot be undone.`,
+        confirmText: 'Delete',
+        isDanger: true // Turns the modal danger colors on!
+      }
+    });
+    
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data === true) {
+      this.executeDeleteUser(id);
+    }
+  }
+
+  private executeDeleteUser(id: number) {
     this.http.delete(`${this.apiUrl}/delete/${id}/`).subscribe({
       next: () => {
         this.loadUsers();
-        this.cdr.detectChanges(); // 🚨 Forces the screen to update instantly
+        this.cdr.detectChanges(); 
       },
       error: (err) => console.error('Error deleting user:', err)
     });

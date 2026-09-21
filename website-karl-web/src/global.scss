@@ -127,3 +127,8 @@ ion-content {
   letter-spacing: 0.05em;
   color: var(--muted-foreground);
 }
+
+ion-modal.transparent-modal {
+  --background: rgba(0, 0, 0, 0.055);
+  --backdrop-opacity: 0.7;
+}

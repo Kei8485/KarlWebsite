@@ -1,21 +1,33 @@
+/* 🚨 1. THE SLEDGEHAMMER: Nothing can be wider than its parent */
+* {
+  box-sizing: border-box !important;
+  max-width: 100%; 
+}
 :host {
   display: block;
   background: var(--background, #091222); 
   min-height: 100vh;
   color: white;
+  width: 100vw;
+  overflow-x: hidden; /* Kills the scrollbar */
 }
-
+/* 🚨 2. Lock the Page Container to the screen limits */
 .page-container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
   margin-bottom: 100px;
-
+  
+  @media (max-width: 768px) {
+    padding: 1rem !important;
+    margin: 0 !important; /* Stops weird centering offset on mobile */
+  }
 }
-
 .hero-section {
   text-align: center;
   margin-bottom: 3rem;
+  width: 100%;
   
   .gradient-text {
     font-size: 2.5rem;
@@ -24,30 +36,42 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 0.5rem;
+    @media (max-width: 768px) { font-size: 1.8rem; }
   }
   
   .subtitle {
     color: #8B96AB;
     font-size: 1.1rem;
+    @media (max-width: 768px) { font-size: 0.95rem; }
   }
 }
-
+/* 🚨 3. Switch to strict Flexbox on Mobile */
 .admin-grid {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+  /* Desktop stays as a Grid */
+  @media (min-width: 769px) {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
   }
 }
-
+/* 🚨 4. Lock the cards so they cannot stretch */
 .glass-card {
+  width: 100%;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 2rem;
   backdrop-filter: blur(10px);
+  overflow: hidden; /* Clips anything trying to escape */
+  
+  @media (max-width: 768px) {
+    padding: 1.25rem !important;
+  }
   
   h2 {
     margin-top: 0;
@@ -86,17 +110,13 @@
     }
   }
 
-    .custom-select {
+  .custom-select {
     width: 100%;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     color: white;
-    
-    /* Use standard padding instead of Ionic variables to force it to match your inputs */
     padding: 0.75rem 1rem;
-    
-    /* Forces the text to align properly in the center */
     display: flex;
     align-items: center;
 
@@ -129,33 +149,52 @@
   padding: 1rem 1.5rem;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.1);
+  
+  /* 🚨 FORCES THE ROW TO STAY INSIDE THE CARD */
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
   }
   
   .user-info {
-    flex: 1;
+    flex: 1 1 0%; /* 🚨 Bulletproof flexbox trick to stop text expanding */
+    min-width: 0;
+    overflow: hidden; /* 🚨 Stops the email from escaping the container */
+    
     .user-name {
       font-weight: bold;
       font-size: 1.1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .user-email {
       color: #8B96AB;
       font-size: 0.9rem;
       margin-top: 0.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
   
+  /* Keep your role and delete icon exactly the same */
   .user-role {
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: bold;
     text-transform: uppercase;
+    margin-left: 0.5rem;
     
+    @media (max-width: 480px) {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+    }
+
     &.admin {
       background: rgba(79, 172, 254, 0.1);
       color: #4facfe;
@@ -165,10 +204,11 @@
       color: #8B96AB;
     }
   }
+  
   .delete-icon {
     color: #ef4444;
     font-size: 1.5rem;
-    margin-left: 1.5rem;
+    margin-left: 1rem;
     cursor: pointer;
     transition: 0.2s ease;
     
@@ -179,7 +219,6 @@
   }
 }
 
-
 .header-with-filters {
   display: flex;
   justify-content: space-between;
@@ -187,13 +226,27 @@
   margin-bottom: 1.5rem;
   
   h2 { margin-bottom: 0; }
+
+  /* 🚨 MOBILE: Stack the header and the filter buttons so they don't squish */
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 }
+
 .filter-tabs {
   display: flex;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   padding: 4px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  
+  @media (max-width: 480px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   button {
     background: transparent;
     border: none;
@@ -204,6 +257,11 @@
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s ease;
+    
+    @media (max-width: 480px) {
+      padding: 6px 10px;
+    }
+
     &.active {
       background: rgba(79, 172, 254, 0.15);
       color: #4facfe;
@@ -214,7 +272,6 @@
   }
 }
 
-
 /* Turns the input box red! */
 input.input-error {
   border: 1px solid #ef4444 !important;
@@ -222,7 +279,7 @@ input.input-error {
 }
 
 .error-msg {
-  color: #ef4444; /* Bright Red */
+  color: #ef4444; 
   font-size: 0.9rem;
   font-weight: 600;
   text-align: center;
@@ -230,7 +287,7 @@ input.input-error {
 }
 
 .success-msg {
-  color: #10b981; /* Emerald Green */
+  color: #10b981; 
   font-size: 0.9rem;
   font-weight: 600;
   text-align: center;

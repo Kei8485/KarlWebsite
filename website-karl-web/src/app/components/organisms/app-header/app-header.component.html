@@ -12,7 +12,16 @@
         </div>
       </div>
 
-      <div class="nav-links">
+      <!-- 🚨 HAMBURGER BUTTON (Mobile Only) -->
+      <button class="mobile-menu-btn" (click)="toggleMenu()">
+        <!-- Switches to an 'X' when open! -->
+        <ion-icon
+          [name]="isMobileMenuOpen ? 'close-outline' : 'menu-outline'"
+        ></ion-icon>
+      </button>
+
+      <!-- 2. Desktop Links (🚨 Added 'desktop-only') -->
+      <div class="nav-links desktop-only">
         <app-button
           label="Subjects"
           [variant]="
@@ -32,8 +41,8 @@
         ></app-button>
       </div>
 
-      <!-- 3. User Profile (far right) -->
-      <div class="user-profile" routerLink="/profile">
+      <!-- 3. Desktop User Profile (🚨 Added 'desktop-only') -->
+      <div class="user-profile desktop-only" routerLink="/profile">
         <app-button
           *ngIf="currentUserRole === 'admin'"
           label="ADMIN: Manage Users"
@@ -42,8 +51,7 @@
           "
           [disabled]="currentUrl.includes('/manage-users')"
           routerLink="/manage-users"
-        >
-        </app-button>
+        ></app-button>
         <ion-icon
           name="person-circle-outline"
           class="user-profile-icon"
@@ -52,4 +60,33 @@
       </div>
     </div>
   </ion-toolbar>
+
+  <!-- 🚨 MOBILE DROPDOWN MENU -->
+  <div class="mobile-menu" *ngIf="isMobileMenuOpen">
+    <div class="mobile-nav-links">
+      <app-button
+        label="Subjects"
+        [variant]="currentUrl.includes('/subjects') ? 'primary' : 'transparent'"
+        routerLink="/subjects"
+      ></app-button>
+      <app-button
+        label="Planner"
+        [variant]="currentUrl.includes('/planner') ? 'primary' : 'transparent'"
+        routerLink="/planner"
+      ></app-button>
+
+      <!-- Only Admins see this button in the mobile dropdown! -->
+      <app-button
+        *ngIf="currentUserRole === 'admin'"
+        label="Manage Users"
+        [variant]="currentUrl.includes('/manage-users') ? 'primary' : 'outline'"
+        routerLink="/manage-users"
+      ></app-button>
+    </div>
+
+    <div class="mobile-user-profile" routerLink="/profile">
+      <ion-icon name="person-circle-outline"></ion-icon>
+      <span>{{ currentUserName }}</span>
+    </div>
+  </div>
 </ion-header>

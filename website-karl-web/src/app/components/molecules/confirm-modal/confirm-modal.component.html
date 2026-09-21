@@ -1,0 +1,27 @@
+<div class="glass-modal">
+  <!-- Glowing Icon Header -->
+  <div
+    class="modal-icon"
+    [ngClass]="{ 'danger-icon': isDanger, 'primary-icon': !isDanger }"
+  >
+    <ion-icon
+      [name]="isDanger ? 'warning-outline' : 'checkmark-circle-outline'"
+    ></ion-icon>
+  </div>
+
+  <h2 class="modal-title">{{ title }}</h2>
+  <!-- We use innerHTML so you can pass bold <strong> tags in your messages -->
+  <p class="modal-message" [innerHTML]="message"></p>
+
+  <!-- Buttons -->
+  <div class="modal-actions">
+    <button class="btn-cancel" (click)="cancel()">{{ cancelText }}</button>
+    <button
+      class="btn-confirm"
+      [ngClass]="{ 'btn-danger': isDanger }"
+      (click)="confirm()"
+    >
+      {{ confirmText }}
+    </button>
+  </div>
+</div>

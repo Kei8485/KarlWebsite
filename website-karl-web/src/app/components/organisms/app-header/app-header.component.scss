@@ -1,21 +1,27 @@
-/* Custom Toolbar Styling */
+/* =========================================
+   1. ORIGINAL DESKTOP NAVBAR STYLES
+   ========================================= */
+
 .header-toolbar {
-  --background: #091222; /* Deep dark blue for the navbar */
+  --background: #091222; 
   --min-height: 70px;
   padding: 0px 40px;
   margin: 0;
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px, rgba(0, 0, 0, 0.05) 0px 5px 10px;
+
+  /* Shrink header padding slightly on mobile */
+  @media (max-width: 768px) {
+    padding: 0px 20px;
+  }
 }
 
-/* The main flex container for the navbar */
 .nav-container {
   display: flex;
   align-items: center;
-  gap: 60px; /* Space between logo and links */
+  gap: 60px; 
   height: 100%;
 }
 
-/* 1. Brand Logo Box */
 .nav-brand {
   display: flex;
   align-items: center;
@@ -60,25 +66,19 @@
   }
 }
 
-/* 2. Navigation Link Styles */
 .nav-links {
   display: flex;
   align-items: center;
   gap: 8px;
   
   app-button {
-    /* Muted text for inactive buttons by default */
     --color: #9fb3d1; 
     transition: all 0.2s ease;
 
-    /* THE ACTIVE STATE - Angular applies this automatically! */
-  /* THE ACTIVE STATE */
     &.active-link {
-      /* We use !important to overpower the 'transparent' variant */
       --background: #253351 !important; 
       --color: white !important;
       
-      /* Force it deep into the internal ion-button */
       ::ng-deep ion-button {
         --background: #253351 !important;
         --color: white !important;
@@ -91,7 +91,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-left: auto;  /* pushes this element to the far right */
+  margin-left: auto;  
   cursor: pointer;
   color: var(--foreground);
 
@@ -103,6 +103,90 @@
     font-size: var(--text-size-body);
     font-weight: 600;
     font-family: var(--font-display);
+  }
+}
 
+
+/* =========================================
+   2. MOBILE HAMBURGER MENU STYLES
+   ========================================= */
+
+/* Hide desktop elements on small screens */
+.desktop-only {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+/* The Hamburger Button */
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 2.2rem;
+  margin-left: auto; /* Pushes it to the far right */
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+/* The Dropdown Mobile Menu */
+.mobile-menu {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    background: #091222; 
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    position: absolute;
+    top: 70px; 
+    left: 0;
+    width: 100vw;
+    z-index: 1000;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.7);
+
+    .mobile-nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      
+      ::ng-deep ion-button {
+        width: 100% !important;
+        margin: 0 !important;
+      }
+    }
+
+    .mobile-user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+
+      ion-icon {
+        font-size: 36px;
+        color: #4facfe;
+      }
+
+      span {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+    }
   }
 }

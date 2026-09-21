@@ -1,0 +1,98 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background: transparent;
+}
+
+.glass-modal {
+  background: rgba(15, 23, 42, 0.85); /* Deep dark blue */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  backdrop-filter: blur(25px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+}
+
+.modal-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem auto;
+  
+  ion-icon {
+    font-size: 32px;
+  }
+}
+
+/* Red glow for deleting */
+.danger-icon {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+/* Blue glow for creating */
+.primary-icon {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+.modal-title {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.modal-message {
+  color: #94a3b8;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 2rem 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+
+  button {
+    flex: 1;
+    padding: 0.9rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+
+    &:hover { background: rgba(255, 255, 255, 0.1); }
+  }
+
+  .btn-confirm {
+    background: #3b82f6;
+    border: none;
+    color: white;
+
+    &:hover { background: #2563eb; }
+  }
+
+  .btn-danger {
+    background: #ef4444;
+
+    &:hover { background: #dc2626; }
+  }
+}

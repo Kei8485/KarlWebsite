@@ -1,0 +1,61 @@
+<ion-content [fullscreen]="true">
+  <div class="page-container">
+    <!-- Hero Title -->
+    <div class="topic-header">
+      <div class="breadcrumb">
+        <span>TOPIC {{ topicId || '1' }}</span>
+      </div>
+      <h1 class="page-title">{{ topic.title }}</h1>
+      <p class="subtitle">{{ topic.description }}</p>
+    </div>
+
+    <!-- Theater Layout -->
+    <div class="theater-grid">
+      <!-- Left Column: Video Player -->
+      <div class="video-section">
+        <div class="glass-card video-card">
+          <div class="video-wrapper">
+            <!-- 🚨 Add *ngIf right here on the iframe! -->
+            <iframe
+              *ngIf="safeVideoUrl"
+              [src]="safeVideoUrl"
+              frameborder="0"
+              allow="
+                accelerometer;
+                autoplay;
+                clipboard-write;
+                encrypted-media;
+                gyroscope;
+                picture-in-picture;
+              "
+              allowfullscreen
+            >
+            </iframe>
+
+            <!-- (Optional) Fallback text if the topic doesn't have a video -->
+            <div
+              *ngIf="!safeVideoUrl && !isLoading"
+              style="color: #8b96ab; text-align: center; padding-top: 20%"
+            >
+              No video available for this topic.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Notes & Resources -->
+      <div class="notes-section">
+        <div class="glass-card notes-card">
+          <div class="card-header">
+            <ion-icon name="document-text-outline"></ion-icon>
+            <h2>Lesson Notes</h2>
+          </div>
+
+          <div class="notes-content" [innerHTML]="topic.notes">
+            <!-- Renders the HTML notes safely -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

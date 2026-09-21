@@ -13,6 +13,7 @@ class SubjectSerializer(serializers.ModelSerializer): # happends first
 
     class Meta:
         model = Subject
+        fields = '__all__'
         fields = ['id', 'title', 'description', 'topics']
         
         

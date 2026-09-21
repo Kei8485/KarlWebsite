@@ -21,10 +21,30 @@ def get_subjects(request):
 def get_subject_topics(request, subject_id):
     try:
         subject = Subject.objects.get(id=subject_id)
+        topics = Topic.objects.filter(subject=subject).order_by('order')
+        
+        return Response({
+          'id': subject.id,
+          'title': subject.title,
+          'description': subject.description,
+          'topics': TopicSerializer(topics, many=True).data
+      })
+    except Subject.DoesNotExist:
+        return Response({'error': 'Subject not found'}, status=404)
     except Subject.DoesNotExist:
         return Response({'error': 'Subject not found'}, status=status.HTTP_404_NOT_FOUND)
     serializer = SubjectSerializer(subject)
     return Response(serializer.data) # Since API na ung ginagawa ko dapat Response() gagamitin para ireturn
+
+@api_view(['GET'])
+def get_topic_detail(request, pk):
+    try:
+        topic = Topic.objects.get(id=pk)
+        serializer = TopicSerializer(topic)
+        return Response(serializer.data)
+    except Topic.DoesNotExist:
+        return Response({'error': 'Topic not found'}, status=404)
+
 
 @api_view(['GET'])
 def get_topic(request, topic_id):

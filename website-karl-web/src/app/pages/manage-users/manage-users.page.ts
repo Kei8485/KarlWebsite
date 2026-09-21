@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { IonContent, IonIcon, IonSelect, IonSelectOption } from '@ionic/angular';import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
@@ -13,7 +13,7 @@ import { trashOutline, personAddOutline } from 'ionicons/icons';
   standalone: true,
   imports: [IonContent, IonIcon, IonSelect, IonSelectOption, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent]
 })
-export class ManageUsersPage implements OnInit {
+export class ManageUsersPage implements OnInit, OnDestroy  {
   private http = inject(HttpClient);
   private apiUrl = 'http://127.0.0.1:8000/api/users'; // Adjust to your Django URL
   private cdr = inject(ChangeDetectorRef); 
@@ -23,6 +23,8 @@ export class ManageUsersPage implements OnInit {
   currentFilter: string = 'all';
   errorMessage: string = '';
   successMessage: string = '';
+
+  refreshTimer: any;
 
   newUser = {
     userName: '',
@@ -36,8 +38,20 @@ export class ManageUsersPage implements OnInit {
 
   ngOnInit() {
     this.loadUsers();
+    
+    // 🚨 Check the database every 5 seconds in the background!
+    this.refreshTimer = setInterval(() => {
+      this.loadUsers();
+    }, 5000);
+  }
+  // 🚨 We MUST destroy the timer when we leave the page so it doesn't run forever!
+  ngOnDestroy() {
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer);
+    }
   }
 
+  
   // 1. Fetch from Django
   loadUsers() {
     this.http.get<any[]>(`${this.apiUrl}/`).subscribe({

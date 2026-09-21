@@ -28,6 +28,10 @@ const routes: Routes = [
     path: 'manage-users',
     loadComponent: () => import('./pages/manage-users/manage-users.page').then( m => m.ManageUsersPage),
     canActivate: [adminGuard] 
+  },
+  {
+    path: 'topic-detail/:id',
+    loadComponent: () => import('./pages/topic-detail/topic-detail.page').then( m => m.TopicDetailPage)
   }
 ];
 

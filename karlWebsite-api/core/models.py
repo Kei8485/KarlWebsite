@@ -141,3 +141,23 @@ class Topic(models.Model):
     def __str__(self):
         return f"{self.subject.title} — {self.title}"
     
+
+class PlannerTask(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
+    title = models.CharField(max_length=255)
+    subject = models.CharField(max_length=100, blank=True, null=True)
+    due_date = models.DateTimeField()
+    is_completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        
+        return f"{self.title} - {self.user.email}"
+    
+    
+class StudySession(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='study_sessions')
+    duration_minutes = models.IntegerField() 
+    created_at = models.DateTimeField(auto_now_add=True) 
+    def __str__(self):
+        # 🚨 Changed username to email here too!
+        return f"{self.user.email} studied for {self.duration_minutes} mins"

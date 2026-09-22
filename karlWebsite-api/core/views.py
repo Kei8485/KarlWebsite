@@ -1,14 +1,18 @@
 from django.shortcuts import render
 
 # Create your views here.
+from django.utils import timezone
+from datetime import timedelta
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.core.mail import EmailMultiAlternatives
-from django.conf import settings
-from .models import Subject, Topic, User
-from .serializers import SubjectSerializer, TopicSerializer, UserSerializer
+
+from .models import Subject, Topic, User, PlannerTask, StudySession
+
+from .serializers import SubjectSerializer, TopicSerializer, UserSerializer, PlannerTaskSerializer, StudySessionSerializer
 
 
 @api_view(['GET'])
@@ -158,3 +162,70 @@ def delete_user(request, pk):
         return Response({'message': 'User deleted successfully'})
     except User.DoesNotExist:
         return Response({'error': 'User not found'}, status=404)
+      
+      
+# 1. Manage Tasks (Get all tasks, or Create a new one)
+@api_view(['GET', 'POST'])
+def planner_tasks(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=404)
+    if request.method == 'GET':
+        tasks = PlannerTask.objects.filter(user=user).order_by('due_date')
+        serializer = PlannerTaskSerializer(tasks, many=True)
+        return Response(serializer.data)
+        
+    elif request.method == 'POST':
+        # When Angular creates a new task
+        data = request.data.copy()
+        data['user'] = user.id
+        serializer = PlannerTaskSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+      
+# 2. Update or Delete a specific Task
+
+
+@api_view(['PATCH', 'DELETE'])
+def task_detail(request, task_id):
+    try:
+        task = PlannerTask.objects.get(id=task_id)
+    except PlannerTask.DoesNotExist:
+        return Response({'error': 'Task not found'}, status=404)
+    if request.method == 'PATCH':
+        # Flips it from False to True (Completed!)
+        task.is_completed = not task.is_completed
+        task.save()
+        return Response({'message': 'Task updated', 'is_completed': task.is_completed})
+    elif request.method == 'DELETE':
+        task.delete()
+        return Response({'message': 'Task deleted'})
+      
+# 3. Save Timer & Get Weekly Stats!
+@api_view(['GET', 'POST'])
+def study_sessions(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=404)
+    if request.method == 'POST':
+        # When the 30min timer finishes, Angular sends it here to save!
+        duration = request.data.get('duration_minutes', 0)
+        StudySession.objects.create(user=user, duration_minutes=duration)
+        return Response({'message': 'Study session saved!'})
+    elif request.method == 'GET':
+        # AUTOMATICALLY CALCULATES WEEKLY STATS!
+        one_week_ago = timezone.now() - timedelta(days=7)
+        recent_sessions = StudySession.objects.filter(user=user, created_at__gte=one_week_ago)
+        
+        total_minutes = sum([session.duration_minutes for session in recent_sessions])
+        hours = total_minutes // 60
+        minutes = total_minutes % 60
+        
+        return Response({
+            'total_minutes': total_minutes,
+            'formatted_time': f"{hours}h {minutes}m"
+        })

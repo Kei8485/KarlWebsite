@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from .models import Subject, Topic
-from rest_framework import serializers
-from .models import User
+from .models import Subject, Topic,User,PlannerTask, StudySession
 
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,11 +13,17 @@ class SubjectSerializer(serializers.ModelSerializer): # happends first
         model = Subject
         fields = '__all__'
         fields = ['id', 'title', 'description', 'topics']
-        
-        
-
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'userName', 'role', 'created_at']
+        
+class PlannerTaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlannerTask
+        fields = '__all__'
+class StudySessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudySession
+        fields = '__all__'

@@ -220,3 +220,5 @@ isDanger: false // Turns the modal danger colors on!
         - if its correct it will say next and then store the data of the database to the localStorage file
         (it needs to set it so that the website can know that the user is still login and using that account)
         -and in error it will throw in your error logic
+
+study the urls and how the serializer and views work

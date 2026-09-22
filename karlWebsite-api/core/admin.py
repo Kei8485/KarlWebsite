@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Subject, Topic
+from .models import User, Subject, Topic, PlannerTask, StudySession
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -20,3 +20,7 @@ class SubjectAdmin(admin.ModelAdmin):
 class TopicAdmin(admin.ModelAdmin):
     list_display = ['id','title', 'subject', 'order']
     list_filter = ['subject']
+    
+    
+admin.site.register(PlannerTask)
+admin.site.register(StudySession)

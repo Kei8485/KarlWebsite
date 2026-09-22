@@ -1,0 +1,348 @@
+/* 1. Global Page Styles */
+:host {
+  display: block;
+  background: var(--background, #091222); 
+  min-height: 100vh;
+  color: white;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.page-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  margin-bottom: 100px;
+  
+  @media (max-width: 768px) {
+    padding: 1rem !important;
+    margin-bottom: 150px !important;
+  }
+}
+
+.hero-section {
+  text-align: center;
+  margin-bottom: 3rem;
+  
+  .gradient-text {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+  }
+  .subtitle { color: #8B96AB; font-size: 1.1rem; }
+}
+
+/* 2. Grid Layout */
+.planner-grid {
+  display: flex;
+  flex-direction: column-reverse; /* Puts Stats & Timer at top on mobile */
+  gap: 1.5rem;
+
+  @media (min-width: 900px) {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+  }
+}
+
+/* Base Glass Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  
+  @media (max-width: 768px) { padding: 1.25rem; }
+  
+  h2 {
+    margin-top: 0; margin-bottom: 1.5rem;
+    font-size: 1.5rem; font-weight: bold; color: white;
+  }
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* =========================================
+   3. TASK STYLES (NEW HEADER & FORM)
+   ========================================= */
+.tasks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  
+  h2 { margin: 0; }
+  .header-actions { display: flex; gap: 0.5rem; align-items: center; }
+}
+
+.add-task-form {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  animation: slideDown 0.3s ease;
+
+  input {
+    padding: 0.8rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-family: inherit;
+    font-size: 1rem;
+    &:focus { outline: none; border-color: #4facfe; }
+  }
+}
+
+.form-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.calendar-icon {
+  font-size: 1.5rem;
+  color: #4facfe;
+  margin-right: 0.5rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.task-row {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1rem;
+  border-radius: 12px;
+  
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #4facfe; 
+  
+  /* 🚨 Tweaked to 0.3s for a smoother hover float */
+  transition: all 0.3s ease; 
+
+  /* 🚨 NEW: Float Animation on Hover */
+  &:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  &.completed {
+    opacity: 0.4;
+    border-left: 4px solid rgba(255, 255, 255, 0.2); 
+    .task-title { text-decoration: line-through; }
+    
+    /* Disables the float if the task is already done */
+    &:hover {
+      transform: none;
+      box-shadow: none;
+      background: rgba(255, 255, 255, 0.03);
+    }
+  }
+
+  .check-icon {
+    font-size: 2rem;
+    color: #4facfe;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: 0.2s ease;
+    
+    &:active { transform: scale(0.8); }
+  }
+
+   .task-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem; /* Adds a clean gap between title and bottom row */
+    
+    .task-title { 
+      font-weight: bold; 
+      font-size: 1.1rem; 
+      color: white; 
+    }
+    
+    .task-meta { 
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #8B96AB; 
+      font-size: 0.85rem; 
+    }
+    /* 🚨 Sleek Glowing Badge for the Subject */
+    .subject-badge {
+      background: rgba(79, 172, 254, 0.15);
+      color: #4facfe;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .task-date {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      ion-icon { font-size: 1rem; color: #8B96AB; }
+    }
+  }
+
+  .delete-icon {
+    color: #ef4444; font-size: 1.5rem; cursor: pointer; margin-left: 1rem;
+    &:hover { color: #f87171; }
+  }
+}
+
+.empty-state { text-align: center; color: #8B96AB; padding: 2rem; font-style: italic; }
+
+
+/* =========================================
+   4. STATS & TIMER STYLES
+   ========================================= */
+.stats-card {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(0, 242, 254, 0.05));
+  
+  h3 { margin: 0; color: #8B96AB; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+  .stat-value { font-size: 3.5rem; font-weight: 800; color: #4facfe; margin: 0.5rem 0; }
+  .stat-label { margin: 0; color: white; font-weight: 600; }
+}
+
+.timer-card { text-align: center; }
+
+.timer-display {
+  font-size: 5rem;
+  font-weight: 800;
+  color: white;
+  margin: 2rem 0;
+  transition: 0.3s ease;
+
+  &.running { 
+    color: #00f2fe; 
+    text-shadow: 0 0 30px rgba(0, 242, 254, 0.6); 
+  }
+  
+  @media (max-width: 768px) { font-size: 3.5rem; }
+}
+
+.time-presets {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.timer-controls {
+  display: flex; justify-content: center; gap: 1rem;
+}
+
+.small-presets {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+  
+  button {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #8B96AB;
+    border-radius: 8px;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover { 
+      background: rgba(255, 255, 255, 0.1); 
+      color: white;
+    }
+    
+    &.active {
+      background: rgba(79, 172, 254, 0.15);
+      border-color: #4facfe;
+      color: #4facfe;
+    }
+  }
+}
+
+/* =========================================
+   NEW: Custom Time & Calendar Styles
+   ========================================= */
+.custom-time-input {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0 0.5rem;
+
+  input {
+    background: transparent;
+    border: none;
+    color: #4facfe;
+    font-weight: bold;
+    font-size: 1.1rem;
+    width: 50px;
+    text-align: center;
+    padding: 0.5rem;
+    &:focus { outline: none; }
+  }
+  span { color: #8B96AB; font-weight: 600; padding-right: 0.5rem; }
+}
+
+/* Forces the Ionic Calendar to match the theme */
+ion-datetime {
+  --background: #091222;
+  --title-color: #4facfe;
+  --color: white;
+}
+.date-picker-wrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0 0.5rem;
+}
+
+/* Makes the white Date Picker button match the dark theme */
+ion-datetime-button::part(native) {
+  background: transparent;
+  color: white;
+  font-family: inherit;
+  font-weight: 600;
+}

@@ -32,7 +32,12 @@ const routes: Routes = [
   {
     path: 'topic-detail/:id',
     loadComponent: () => import('./pages/topic-detail/topic-detail.page').then( m => m.TopicDetailPage)
+  },
+  {
+    path: 'planner',
+     loadComponent: () => import('./pages/planner/planner.page').then( m => m.PlannerPage)
   }
+
 ];
 
 @NgModule({

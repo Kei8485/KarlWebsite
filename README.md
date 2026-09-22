@@ -1,5 +1,21 @@
 documentation
 
+when publish (tatry dito kung kaya ihandle pag pinublish)
+Frontend: Hosted on Netlify (e.g., apexeng.netlify.app)
+Backend: Hosted on Render (e.g., apexeng-api.onrender.com)
+
+-estimated users 20-30???
+can the server handle it
+-base sa research(AI hehe) kaya daw upto 500 users
+-try to make it optimized like:
+-using youtube links instead of actual posting it in the website
+-removes the profile pic so the server doesn't have to worry about posting any image
+
+another thing (sabi ng AI)
+🚨 The Only Catch (Important since users are paying!): Because Render is free, it has a "Sleep" feature. If nobody visits the website for 15 minutes, Render puts your backend to sleep to save money. When the next student tries to log in, it will take about 30 to 50 seconds for the server to wake up.
+
+---
+
 karlWebsite_api - holds the project setting
 karlWebsite-api - has the core. (models, api logic, migration)
 manage.py - eto ung pinaka irurun parang sa java main class
@@ -170,3 +186,37 @@ isDanger: false // Turns the modal danger colors on!
     await is the one going to cause the pause
     then the present() is for the animation
     then another await gets executed to get the data of the user
+
+
+    Logic of the auth - the rxjs(rxjs is for observable tools)
+
+    Observable tool is for API because API takes time to load
+
+    observable is just like async but does more
+    observable - handles more data
+    async - handles one value
+
+    diffrerence between observable and async
+
+    observable uses subcribe - runs continuously and to stop we use unsubscribe
+                             - if you use HTTP method there is no unsubscribe even if we use it because its automatic and we will direct it in a new route if in login system
+
+    async uses await - it is for pausing or delaying mostly used for UI like modals
+
+    Observable: Used for continuous, ongoing streams of time or data (like a stopwatch, live clock, or repeating interval).
+
+    Async / Await: Used to pause execution, delay, or wait for a single result (like a 3-second delay timer or an API fetch).
+
+
+        - First the creation of the class - I import the rxjs here
+        - inject it and provide it in the root - so every class can use it
+        - create a constructor for the add the HttpClient - to say that this class will use the api
+        - create a login method for sending the frontend data to the backend to get compared
+
+        -in the ts logic:
+        - you import that auth service class
+        - to use the method inside the rxjs class fill in the parameters of the function
+        - that function will use the | next and error |
+        - if its correct it will say next and then store the data of the database to the localStorage file
+        (it needs to set it so that the website can know that the user is still login and using that account)
+        -and in error it will throw in your error logic

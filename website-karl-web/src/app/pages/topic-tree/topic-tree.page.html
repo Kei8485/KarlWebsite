@@ -6,21 +6,18 @@
         <span>SUBJECT JOURNEY</span>
       </div>
 
-      <!-- Uses your awesome split trick for a 2-tone title! -->
       <h1 class="page-title">
         <span class="accent-code">{{ subjectData.title.split('-')[0] }}</span>
         <span class="divider">/</span>
         {{ subjectData.title.split('-')[1] }}
       </h1>
 
-      <!-- Glassmorphism Description Card -->
       <div class="desc-card">
         <div class="glow-bar"></div>
         <p>{{ subjectData.description }}</p>
       </div>
     </div>
 
-    <!-- Loading Spinner -->
     <div *ngIf="isLoading" class="loading-state">
       <ion-spinner name="crescent"></ion-spinner>
       <p>Loading module data...</p>

@@ -37,8 +37,7 @@ export class LoginPage {
     private router: Router,
     private cdr: ChangeDetectorRef  
   ) {
-    // 2. FIXED: Moved addIcons INSIDE the curly braces!
-    addIcons({ personOutline, keyOutline, mailOutline, lockClosedOutline });
+     addIcons({ personOutline, keyOutline, mailOutline, lockClosedOutline });
   }
 
   onLogin() {
@@ -52,6 +51,7 @@ export class LoginPage {
       }, 500);
       return;
     }
+    
     this.isLoading = true;
     this.loginError = '';
     this.authService.login(this.email, this.accessCode).subscribe({

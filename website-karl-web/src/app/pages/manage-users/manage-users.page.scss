@@ -150,21 +150,26 @@
   padding: 1rem 1.5rem;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  
-  /* 🚨 FORCES THE ROW TO STAY INSIDE THE CARD */
   width: 100%;
   max-width: 100%;
   overflow: hidden;
   
+  /* 🚨 NEW: Allow the row to break into two lines on mobile! */
   @media (max-width: 480px) {
     padding: 1rem;
-    
+    flex-wrap: wrap; 
   }
   
   .user-info {
-    flex: 1 1 0%; /* 🚨 Bulletproof flexbox trick to stop text expanding */
+    flex: 1 1 0%;  
     min-width: 0;
-    overflow: hidden; /* 🚨 Stops the email from escaping the container */
+    overflow: hidden;   
+    
+    /* 🚨 NEW: Force the Name and Email to take 100% of the top line */
+    @media (max-width: 480px) {
+      flex: 0 0 100%;
+      margin-bottom: 0.75rem;
+    }
     
     .user-name {
       font-weight: bold;
@@ -172,7 +177,14 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      
+      @media (max-width: 480px) {
+        white-space: normal;
+        word-break: break-word; 
+      }
     }
+    
+    /* 🚨 Fixed the missing dot here! */
     .user-email {
       color: #8B96AB;
       font-size: 0.9rem;
@@ -180,10 +192,16 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.4; 
+      
+      @media (max-width: 480px) {
+        white-space: normal;
+        /* Changed to break-word so it only cuts the word if absolutely necessary */
+        word-break: break-word; 
+      }
     }
   }
   
-  /* Keep your role and delete icon exactly the same */
   .user-role {
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
@@ -192,9 +210,11 @@
     text-transform: uppercase;
     margin-left: 0.5rem;
     
+    /* 🚨 NEW: Reset the margin for the second row */
     @media (max-width: 480px) {
       font-size: 0.7rem;
-      padding: 0.2rem 0.5rem;
+      padding: 0.3rem 0.6rem;
+      margin-left: 0; 
     }
 
     &.admin {
@@ -213,6 +233,11 @@
     margin-left: 1rem;
     cursor: pointer;
     transition: 0.2s ease;
+    
+    /* 🚨 NEW: Pushes the trash can beautifully to the far right edge of the second row */
+    @media (max-width: 480px) {
+      margin-left: auto; 
+    }
     
     &:hover {
       transform: scale(1.1);

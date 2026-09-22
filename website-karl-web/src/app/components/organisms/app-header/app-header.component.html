@@ -35,6 +35,24 @@
           [disabled]="currentUrl.includes('/planner')"
           routerLink="/planner"
         ></app-button>
+
+        <app-button
+          label="Community"
+          [variant]="
+            currentUrl.includes('/planner') ? 'primary' : 'transparent' // iibahin to
+          "
+          [disabled]="currentUrl.includes('/planner')"
+          routerLink="/planner"
+        ></app-button>
+
+        <app-button
+          label="Ewn pa"
+          [variant]="
+            currentUrl.includes('/planner') ? 'primary' : 'transparent' // iibahin to
+          "
+          [disabled]="currentUrl.includes('/planner')"
+          routerLink="/planner"
+        ></app-button>
       </div>
       <!-- 3. Desktop User Profile & Logout -->
       <div class="user-profile desktop-only">

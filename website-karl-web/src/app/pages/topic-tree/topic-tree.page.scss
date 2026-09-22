@@ -7,6 +7,12 @@
   padding: 50px 100px;
 }
 
+@media (max-width: 768px) {
+  .page-container {
+  padding: 5px;
+  }
+}
+
 .topics-grid {
   display: grid;
   gap: 24px;
@@ -17,6 +23,10 @@
   /* 2. Tablets & Small Laptops: 2 columns per row */
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
+
+    .page-container {
+    padding: 0px;
+    }
   }
 
   /* 3. Large Desktop: Max 3 columns per row */

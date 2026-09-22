@@ -22,5 +22,4 @@ class SubjectSerializer(serializers.ModelSerializer): # happends first
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        # We purposely leave out 'codePass' so hackers can't see passwords in the browser!
         fields = ['id', 'email', 'userName', 'role', 'created_at']

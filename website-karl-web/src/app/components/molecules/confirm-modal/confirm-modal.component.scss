@@ -18,6 +18,9 @@
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
 }
 
+.btn-cancel:empty { display: none; }
+
+
 .modal-icon {
   width: 64px;
   height: 64px;

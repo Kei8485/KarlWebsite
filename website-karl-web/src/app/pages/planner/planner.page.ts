@@ -6,12 +6,10 @@ import { PlannerService } from '../../services/planner';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/confirm-modal.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component'; 
-
-/* 🚨 ADDED YOUR INPUT COMPONENT */
 import { AppInputComponent } from '../../components/atoms/app-input/app-input.component'; 
 
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, squareOutline, refreshOutline, timeOutline, addOutline, calendarOutline, swapVerticalOutline } from 'ionicons/icons';
+import { checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, squareOutline, refreshOutline, timeOutline, addOutline, calendarOutline, swapVerticalOutline, checkmarkOutline } from 'ionicons/icons';
 
 
 @Component({
@@ -19,7 +17,6 @@ import { checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, squa
   templateUrl: './planner.page.html',
   styleUrls: ['./planner.page.scss'],
   standalone: true,
-  /* 🚨 ADDED AppInputComponent to the array */
   imports: [IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, IonPicker, IonPickerColumn, IonPickerColumnOption, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent, AppInputComponent]
 })
 export class PlannerPage implements OnInit, OnDestroy {
@@ -34,16 +31,17 @@ export class PlannerPage implements OnInit, OnDestroy {
   newTaskTitle: string = '';
   newTaskSubject: string = '';
   newTaskDate: string = new Date().toISOString();
-  
   todayDate: string = new Date().toISOString();
 
-  timerMinutes: number = 30; 
-  timeLeft: number = 30 * 60; 
+  // Timer State
+  timerMinutes: number = 0; 
+  timeLeft: number = 0;
+  originalTimeLeft: number = 0;
   timerInterval: any;
   isTimerRunning: boolean = false;
-  displayTime: string = '30:00';
+  displayTime: string = '00:00:00';
   inputHours: number = 0;
-  inputMinutes: number = 30;
+  inputMinutes: number = 0;
   inputSeconds: number = 0;
   hoursList = Array.from({ length: 100 }, (_, i) => i);
   minsList = Array.from({ length: 60 }, (_, i) => i);
@@ -54,7 +52,11 @@ export class PlannerPage implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private modalCtrl: ModalController
   ) {
-    addIcons({ checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, squareOutline, refreshOutline, timeOutline, addOutline, calendarOutline, swapVerticalOutline });
+    addIcons({ 
+      checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, 
+      squareOutline, refreshOutline, timeOutline, addOutline, 
+      calendarOutline, swapVerticalOutline, checkmarkOutline 
+    });
   }
 
   ngOnInit() {
@@ -62,6 +64,7 @@ export class PlannerPage implements OnInit, OnDestroy {
     if (storedId) this.currentUserId = parseInt(storedId, 10);
     this.loadTasks();
     this.loadStats();
+    this.updateDisplayTime();
   }
 
   ngOnDestroy() {
@@ -69,7 +72,27 @@ export class PlannerPage implements OnInit, OnDestroy {
   }
 
   // ==========================================
-  // 1. TASKS LOGIC (WITH NEW SORTING)
+  // REUSABLE NOTIFICATION (replaces ugly alert!)
+  // ==========================================
+
+  async showNotification(title: string, message: string, isDanger: boolean = false) {
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: title,
+        message: message,
+        confirmText: 'OK',
+        cancelText: '',
+        isDanger: isDanger
+      }
+    });
+    await modal.present();
+    await modal.onWillDismiss();
+  }
+
+  // ==========================================
+  // 1. TASKS LOGIC
   // ==========================================
   
   get filteredAndSortedTasks() {
@@ -106,21 +129,18 @@ export class PlannerPage implements OnInit, OnDestroy {
     });
   }
 
-  /* 🚨 UPGRADED: 1-Click Errors, Confirmation Modal, & Success Alerts */
   async addTask() {
-    // 1. One-Click Error Feedback (No more silent fails!)
     if (!this.newTaskTitle || this.newTaskTitle.trim() === '') {
-      alert('Error: Please enter a task name!');
+      await this.showNotification('Missing Field', 'Please enter a task name!', true);
       return;
     }
 
-    // 2. Add Confirmation Modal
     const modal = await this.modalCtrl.create({
       component: ConfirmModalComponent,
       cssClass: 'transparent-modal',
       componentProps: {
         title: 'Add New Task',
-        message: `Are you sure you want to add "${this.newTaskTitle}" to your upcoming tasks?`,
+        message: `Are you sure you want to add "<strong>${this.newTaskTitle}</strong>" to your upcoming tasks?`,
         confirmText: 'Create Task',
         isDanger: false
       }
@@ -129,9 +149,12 @@ export class PlannerPage implements OnInit, OnDestroy {
     await modal.present();
     const { data } = await modal.onWillDismiss();
     
-    // 3. Only proceed if they clicked confirm inside the modal
     if (data === true) {
-      const taskData = { title: this.newTaskTitle, subject: this.newTaskSubject, due_date: this.newTaskDate };
+      const taskData = { 
+        title: this.newTaskTitle, 
+        subject: this.newTaskSubject, 
+        due_date: this.newTaskDate 
+      };
       
       this.plannerService.addTask(this.currentUserId, taskData).subscribe({
         next: () => {
@@ -139,12 +162,10 @@ export class PlannerPage implements OnInit, OnDestroy {
           this.newTaskSubject = '';
           this.isAddingTask = false; 
           this.loadTasks(); 
-          
-          // One-Click Success Feedback!
-          alert('Task successfully added!');
+          this.showNotification('Task Added', 'Your task has been successfully added! ✅');
         },
         error: () => {
-          alert('Error: Failed to save the task. Please try again.');
+          this.showNotification('Error', 'Failed to save the task. Please try again.', true);
         }
       });
     }
@@ -212,9 +233,16 @@ export class PlannerPage implements OnInit, OnDestroy {
     this.updateDisplayTime();
   }
 
-  startTimer() {
+  async startTimer() {
     if (this.isTimerRunning) return;
+    if (this.timeLeft <= 0) {
+      await this.showNotification('No Time Set', 'Please set a time before starting!', true);
+      return;
+    }
+    
+    this.originalTimeLeft = this.timeLeft;
     this.isTimerRunning = true;
+
     this.timerInterval = setInterval(() => {
       this.timeLeft--;
       this.updateDisplayTime();
@@ -232,8 +260,65 @@ export class PlannerPage implements OnInit, OnDestroy {
 
   resetTimer() {
     this.stopTimer();
-    this.timeLeft = this.timerMinutes * 60;
+    this.inputHours = 0;
+    this.inputMinutes = 0;
+    this.inputSeconds = 0;
+    this.timerMinutes = 0;
+    this.timeLeft = 0;
+    this.originalTimeLeft = 0;
     this.updateDisplayTime();
+    this.cdr.detectChanges();
+  }
+
+  async confirmReset() {
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Reset Timer',
+        message: 'Are you sure? Your current session will <strong>NOT</strong> be saved to Weekly Focus.',
+        confirmText: 'Reset',
+        isDanger: true
+      }
+    });
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+
+    if (data === true) {
+      this.resetTimer();
+    }
+  }
+
+  async doneTimer() {
+    const elapsedSeconds = this.originalTimeLeft - this.timeLeft;
+    const elapsedMinutes = Math.max(1, Math.round(elapsedSeconds / 60));
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Finish Session',
+        message: `Save <strong>${elapsedMinutes} minute(s)</strong> to your Weekly Focus?`,
+        confirmText: 'Save Session',
+        isDanger: false
+      }
+    });
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+
+    if (data === true) {
+      this.stopTimer();
+      this.plannerService.saveStudySession(this.currentUserId, elapsedMinutes).subscribe({
+        next: () => {
+          this.loadStats();
+          this.showNotification('Session Saved!', `Great work! ${elapsedMinutes} minute(s) saved to your Weekly Focus! 🎉`);
+          this.resetTimer();
+        },
+        error: () => {
+          this.showNotification('Error', 'Could not save your session. Please try again.', true);
+        }
+      });
+    }
   }
 
   updateDisplayTime() {
@@ -243,15 +328,28 @@ export class PlannerPage implements OnInit, OnDestroy {
     this.displayTime = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   }
 
-  timerFinished() {
+    timerFinished() {
     this.stopTimer();
-    const audio = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg');
+    const audio = new Audio('../../../assets/audio/ssstik.io_1790134444520.mp3');
+    audio.loop = true; // Keeps ringing until you click OK
     audio.play();
     
-    this.plannerService.saveStudySession(this.currentUserId, this.timerMinutes).subscribe(() => {
-      this.loadStats(); 
-      alert("Time's up! Great study session!"); 
-      this.resetTimer();
+    this.plannerService.saveStudySession(this.currentUserId, this.timerMinutes).subscribe({
+      next: () => {
+        this.loadStats(); 
+        // When they click OK, the modal dismisses and THEN we stop the sound
+        this.showNotification("Time's Up! 🎉", 'Amazing work! Your full session has been saved to Weekly Focus!').then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        });
+        this.resetTimer();
+      },
+      error: () => {
+        audio.pause();
+        audio.currentTime = 0;
+        this.showNotification('Error', 'Could not save your session.', true);
+        this.resetTimer();
+      }
     });
   }
 }

@@ -109,12 +109,11 @@
             <!-- 🚨 PRO UI: Removes text labels and uses Badges & Icons instead -->
             <div class="task-info">
               <span class="task-title">{{ task.title }}</span>
-
               <div class="task-meta">
                 <span class="subject-badge">{{ task.subject }}</span>
                 <span class="task-date">
                   <ion-icon name="calendar-outline"></ion-icon>
-                  {{ task.due_date | date:'mediumDate' }}
+                  Due {{ task.due_date | date:'mediumDate' }}
                 </span>
               </div>
             </div>
@@ -205,31 +204,39 @@
 
           <!-- Start / Stop Controls -->
           <div class="timer-controls">
+            <!-- NOT running: Show Start + Reset -->
             <app-button
               *ngIf="!isTimerRunning"
               label="Start Focus"
               icon="play-outline"
               variant="primary"
               (clicked)="startTimer()"
-            >
-            </app-button>
+            ></app-button>
 
             <app-button
-              *ngIf="isTimerRunning"
-              label="Pause"
-              icon="square-outline"
-              variant="outline"
-              (clicked)="stopTimer()"
-            >
-            </app-button>
-
-            <app-button
+              *ngIf="!isTimerRunning"
               label="Reset"
               icon="refresh-outline"
               variant="transparent"
               (clicked)="resetTimer()"
-            >
-            </app-button>
+            ></app-button>
+
+            <!-- RUNNING: Show Done + Reset (with confirmations) -->
+            <app-button
+              *ngIf="isTimerRunning"
+              label="Done"
+              icon="checkmark-outline"
+              variant="primary"
+              (clicked)="doneTimer()"
+            ></app-button>
+
+            <app-button
+              *ngIf="isTimerRunning"
+              label="Reset"
+              icon="refresh-outline"
+              variant="outline"
+              (clicked)="confirmReset()"
+            ></app-button>
           </div>
         </div>
       </div>

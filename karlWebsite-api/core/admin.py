@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Subject, Topic, PlannerTask, StudySession
+from .models import User, Subject, Topic, PlannerTask, StudySession, ScheduledStudy
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -24,3 +24,8 @@ class TopicAdmin(admin.ModelAdmin):
     
 admin.site.register(PlannerTask)
 admin.site.register(StudySession)
+
+@admin.register(ScheduledStudy)
+class ScheduledStudyAdmin(admin.ModelAdmin):
+    list_display = ['title', 'user', 'scheduled_time', 'is_sent']
+    list_filter = ['is_sent', 'scheduled_time']

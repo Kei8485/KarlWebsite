@@ -1,63 +1,124 @@
 <div class="schedule-study-wrapper">
-  <!-- Email Notification Warning -->
-  <div class="email-alert">
-    <ion-icon name="mail-outline"></ion-icon>
-    <p>This will send an email notification for you when the schedule hits the time.</p>
-  </div>
-
-  <div class="form-inputs">
-    <app-input
-      [(value)]="scheduleTitle"
-      placeholder="What do you want to review?"
-    ></app-input>
-
-    <app-input
-      [(value)]="scheduleSubject"
-      placeholder="Category (e.g. Math, Coding)"
-    ></app-input>
-  </div>
-
-  <div class="form-bottom" style="margin-top: 15px;">
-    <!-- DateTime Picker -->
-    <button id="open-schedule-datetime" class="modern-date-picker full-click-btn">
-      <ion-icon name="time-outline"></ion-icon>
-      <span>{{ scheduleDate | date:'medium' }}</span>
+  
+  <!-- Tabs Navigation -->
+  <div class="schedule-tabs">
+    <button [class.active]="activeTab === 'new'" (click)="activeTab = 'new'">New</button>
+    <button [class.active]="activeTab === 'upcoming'" (click)="activeTab = 'upcoming'">
+      Upcoming <span class="badge" *ngIf="upcomingStudies.length > 0">{{ upcomingStudies.length }}</span>
     </button>
+    <button [class.active]="activeTab === 'archived'" (click)="activeTab = 'archived'">Archived</button>
+  </div>
 
-    <ion-modal #scheduleModal trigger="open-schedule-datetime" [keepContentsMounted]="true" class="transparent-modal">
-      <ng-template>
-        <div class="datetime-card-wrapper">
-          <!-- Calendar only -->
-          <ion-datetime
-            #myCalendar
-            presentation="date"
-            [(ngModel)]="scheduleDate"
-            [min]="todayDate"
-            max="2030"
-          ></ion-datetime>
-          
-          <!-- Time picker rendered INLINE (not as a popover!) -->
-          <ion-datetime
-            #myTimePicker
-            presentation="time"
-            [preferWheel]="true"
-            [(ngModel)]="scheduleDate"
-          ></ion-datetime>
-          
-          <div class="calendar-action-bar">
-            <ion-button fill="clear" class="cal-btn-cancel" (click)="myCalendar.cancel(); myTimePicker.cancel(); scheduleModal.dismiss()">Cancel</ion-button>
-            <ion-button fill="clear" class="cal-btn-confirm" (click)="myCalendar.confirm(); myTimePicker.confirm(); scheduleModal.dismiss()">Confirm</ion-button>
+  <!-- 1. NEW SCHEDULE FORM -->
+  <div class="tab-content" *ngIf="activeTab === 'new'">
+    <div class="email-alert">
+      <ion-icon name="mail-outline"></ion-icon>
+      <p>This will send an email notification for you when the schedule hits the time.</p>
+    </div>
+
+    <div class="form-inputs">
+      <app-input
+        [(value)]="scheduleTitle"
+        placeholder="What do you want to review?"
+      ></app-input>
+
+      <app-input
+        [(value)]="scheduleSubject"
+        placeholder="Category (e.g. Math, Coding)"
+      ></app-input>
+    </div>
+
+    <div class="form-bottom" style="margin-top: 15px;">
+      <button id="open-schedule-datetime" class="modern-date-picker full-click-btn">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>{{ scheduleDate | date:'medium' }}</span>
+      </button>
+
+      <ion-modal #scheduleModal trigger="open-schedule-datetime" [keepContentsMounted]="true" class="transparent-modal">
+        <ng-template>
+          <div class="datetime-card-wrapper">
+            <ion-datetime
+              #myCalendar
+              presentation="date"
+              [(ngModel)]="scheduleDate"
+              [min]="todayDate"
+              max="2030"
+            ></ion-datetime>
+            
+            <ion-datetime
+              #myTimePicker
+              presentation="time"
+              [preferWheel]="true"
+              [(ngModel)]="scheduleDate"
+            ></ion-datetime>
+            
+            <div class="calendar-action-bar">
+              <ion-button fill="clear" class="cal-btn-cancel" (click)="myCalendar.cancel(); myTimePicker.cancel(); scheduleModal.dismiss()">Cancel</ion-button>
+              <ion-button fill="clear" class="cal-btn-confirm" (click)="myCalendar.confirm(); myTimePicker.confirm(); scheduleModal.dismiss()">Confirm</ion-button>
+            </div>
           </div>
-        </div>
-      </ng-template>
-    </ion-modal>
+        </ng-template>
+      </ion-modal>
 
-    <div class="form-actions" style="margin-left: auto;">
-      <app-button
-        label="Set Schedule"
-        variant="primary"
-        (clicked)="saveSchedule()"
-      ></app-button>
+      <div class="form-actions" style="margin-left: auto; display: flex; gap: 10px;">
+        <app-button
+          *ngIf="editingStudyId"
+          label="Cancel Edit"
+          variant="outline"
+          (clicked)="cancelEdit()"
+        ></app-button>
+        <app-button
+          [label]="editingStudyId ? 'Update Schedule' : 'Set Schedule'"
+          variant="primary"
+          (clicked)="saveSchedule()"
+        ></app-button>
+      </div>
     </div>
   </div>
+
+  <!-- 2. UPCOMING SESSIONS -->
+  <div class="tab-content list-content" *ngIf="activeTab === 'upcoming'">
+    <div class="empty-state" *ngIf="upcomingStudies.length === 0">
+      <p>No upcoming study sessions.</p>
+    </div>
+    
+    <div class="schedule-item" *ngFor="let study of upcomingStudies">
+      <div class="info">
+        <h4>{{ study.title }}</h4>
+        <p class="time"><ion-icon name="time-outline"></ion-icon> {{ study.scheduled_time | date:'medium' }}</p>
+      </div>
+
+      <div class="subject-badge" *ngIf="study.subject">{{ study.subject }}</div>
+
+      <div class="actions" style="display: flex; align-items: center;">
+        <button class="edit-btn" (click)="editStudy(study)" title="Edit Session" style="background: transparent; border: none; cursor: pointer; color: #4facfe; font-size: 1.3rem;">
+          <ion-icon name="create-outline"></ion-icon>
+        </button>
+        <button class="cancel-btn" (click)="confirmCancelStudy(study.id)" title="Cancel Session">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. ARCHIVED SESSIONS (Already sent) -->
+  <div class="tab-content list-content" *ngIf="activeTab === 'archived'">
+    <div class="empty-state" *ngIf="archivedStudies.length === 0">
+      <p>No archived sessions.</p>
+    </div>
+
+    <div class="schedule-item archived" *ngFor="let study of archivedStudies">
+      <div class="info">
+        <h4>{{ study.title }}</h4>
+        <p class="time">Sent on {{ study.scheduled_time | date:'MMM d, y, h:mm a' }}</p>
+      </div>
+      
+      <div class="subject-badge" *ngIf="study.subject">{{ study.subject }}</div>
+
+      <div class="status-indicator">
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>
+    </div>
+  </div>
+
 </div>

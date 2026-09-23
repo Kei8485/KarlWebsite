@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Subject, Topic,User,PlannerTask, StudySession
+from .models import Subject, Topic, User, PlannerTask, StudySession, ScheduledStudy
 
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,4 +26,9 @@ class PlannerTaskSerializer(serializers.ModelSerializer):
 class StudySessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudySession
+        fields = '__all__'
+
+class ScheduledStudySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ScheduledStudy
         fields = '__all__'

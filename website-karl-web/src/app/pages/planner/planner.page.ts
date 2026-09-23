@@ -32,8 +32,16 @@ export class PlannerPage implements OnInit, OnDestroy {
   sortOrder: 'asc' | 'desc' = 'asc';
   newTaskTitle: string = '';
   newTaskSubject: string = '';
-  newTaskDate: string = new Date().toISOString();
-  todayDate: string = new Date().toISOString();
+  
+  // Helper to get local time for Ionic datetime picker
+  getLocalISOString() {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, -1);
+  }
+
+  newTaskDate: string = this.getLocalISOString();
+  todayDate: string = this.getLocalISOString();
   editingTaskId: number | null = null; // 🚨 Edit State
 
   // Timer State
@@ -176,7 +184,7 @@ export class PlannerPage implements OnInit, OnDestroy {
       const taskData = { 
         title: this.newTaskTitle, 
         subject: this.newTaskSubject, 
-        due_date: this.newTaskDate 
+        due_date: new Date(this.newTaskDate).toISOString() 
       };
 
       if (isEditing) {

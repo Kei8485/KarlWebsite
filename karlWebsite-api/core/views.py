@@ -252,3 +252,48 @@ def study_sessions(request, user_id):
             'total_minutes': total_minutes,
             'formatted_time': f"{hours}h {minutes}m"
         })
+
+@api_view(['GET', 'POST'])
+def schedule_study(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=404)
+        
+    from .models import ScheduledStudy
+    from .serializers import ScheduledStudySerializer
+
+    if request.method == 'GET':
+        # Return all scheduled studies for this user, newest first
+        studies = ScheduledStudy.objects.filter(user=user).order_by('scheduled_time')
+        serializer = ScheduledStudySerializer(studies, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        data = request.data.copy()
+        data['user'] = user.id
+        serializer = ScheduledStudySerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+@api_view(['DELETE', 'PUT'])
+def manage_scheduled_study(request, study_id):
+    from .models import ScheduledStudy
+    from .serializers import ScheduledStudySerializer
+    try:
+        study = ScheduledStudy.objects.get(id=study_id)
+    except ScheduledStudy.DoesNotExist:
+        return Response({'error': 'Study not found'}, status=404)
+        
+    if request.method == 'DELETE':
+        study.delete()
+        return Response({'message': 'Study schedule deleted successfully.'})
+        
+    elif request.method == 'PUT':
+        serializer = ScheduledStudySerializer(study, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)

@@ -18,4 +18,6 @@ urlpatterns = [
     path('users/<int:user_id>/tasks/', views.planner_tasks, name='planner-tasks'),
     path('tasks/<int:task_id>/', views.task_detail, name='task-detail'),
     path('users/<int:user_id>/study-sessions/', views.study_sessions, name='study-sessions'),
+    path('users/<int:user_id>/schedule-study/', views.schedule_study, name='schedule-study'),
+    path('scheduled-studies/<int:study_id>/', views.manage_scheduled_study, name='manage-scheduled-study'),
 ]

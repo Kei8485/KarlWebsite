@@ -161,3 +161,15 @@ class StudySession(models.Model):
     def __str__(self):
         # 🚨 Changed username to email here too!
         return f"{self.user.email} studied for {self.duration_minutes} mins"
+
+
+class ScheduledStudy(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='scheduled_studies')
+    title = models.CharField(max_length=255)
+    subject = models.CharField(max_length=100, blank=True, null=True)
+    scheduled_time = models.DateTimeField()
+    is_sent = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.title} - {self.user.email} at {self.scheduled_time}"

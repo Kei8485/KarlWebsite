@@ -48,4 +48,24 @@ export class PlannerService {
   getWeeklyStats(userId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/users/${userId}/study-sessions/`);
   }
+
+  // ==========================================
+  // 3. SCHEDULE STUDY
+  // ==========================================
+  
+  getScheduledStudies(userId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/${userId}/schedule-study/`);
+  }
+
+  scheduleStudy(userId: number, scheduleData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users/${userId}/schedule-study/`, scheduleData);
+  }
+  
+  deleteScheduledStudy(studyId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/scheduled-studies/${studyId}/`);
+  }
+
+  updateScheduledStudy(studyId: number, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/scheduled-studies/${studyId}/`, data);
+  }
 }

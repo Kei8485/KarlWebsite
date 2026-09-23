@@ -28,7 +28,6 @@
   .gradient-text {
     font-size: 2.5rem;
     font-weight: 800;
-    /* Kept gradient for the hero text, but you can change to var(--primary) if preferred */
     background: linear-gradient(90deg, #4facfe, #00f2fe);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -75,12 +74,35 @@
 
 .tasks-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* Centered by default on mobile */
   align-items: center;
-  margin-bottom: 1.5rem;
+  flex-direction: column; /* Stack them vertically on mobile */
+  margin-bottom: 20px;
+  gap: 15px;
+  @media (min-width: 768px) {
+    flex-direction: row; /* Side-by-side on desktop */
+    justify-content: space-between; /* Push apart on desktop */
+    gap: 10px;
+  }
   
-  h2 { margin: 0; font-weight: 800; }
-  .header-actions { display: flex; gap: 0.5rem; align-items: center; }
+  h2 { 
+    margin: 0; 
+    font-weight: 800; 
+    font-size: 1.5rem; /* Scaled down for mobile */
+    text-align: center;
+    
+    @media (min-width: 768px) {
+      font-size: 2rem; /* Large size for desktop */
+      text-align: left;
+    }
+  }
+  
+  .header-actions { 
+    display: flex; 
+    gap: 0.8rem; 
+    align-items: center; 
+    flex-shrink: 0; 
+  }
 }
 
 .sort-btn { --border-radius: 50%; }
@@ -131,27 +153,7 @@
 }
 
 /* 🚨 Restored the beautiful custom input design! */
-.modern-input {
-  width: 100%;
-  padding: 1rem 1.2rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  color: white;
-  font-family: inherit;
-  font-size: 1rem;
-  transition: all 0.3s ease;
 
-  &::placeholder { color: #5a667d; font-weight: 500; }
-  
-  &:focus { 
-    outline: none; 
-    border-color: var(--primary); 
-    background: rgba(255, 255, 255, 0.08);
-    /* Adds a subtle glowing ring in your primary color */
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1); 
-  }
-}
 
 .form-bottom {
   display: flex;
@@ -181,9 +183,16 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  padding: 0.2rem 0.8rem;
+  padding: 0.5rem 1rem; /* Better padding for a full button */
+  cursor: pointer; /* Makes it act like a button */
+  color: white;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
   transition: all 0.2s ease;
+  
   &:hover { background: rgba(255, 255, 255, 0.1); }
+  &:active { transform: scale(0.97); } /* Cute click effect */
   
   ion-icon { font-size: 1.2rem; color: var(--primary); margin-right: 0.4rem; }
 }
@@ -205,6 +214,27 @@ ion-datetime-button::part(native) {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  
+  /* Limits height and forces scrolling */
+  max-height: 500px; 
+  overflow-y: auto;
+  padding-right: 8px; /* Breathing room for scrollbar */
+}
+
+/* Sleek Custom Scrollbar */
+.task-list::-webkit-scrollbar {
+  width: 6px;
+}
+.task-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+}
+.task-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+.task-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .task-row {
@@ -289,13 +319,29 @@ ion-datetime-button::part(native) {
     }
   } /* ← .task-info closes HERE */
 
-  /* 🚨 .delete-icon is OUTSIDE .task-info, at the same level */
-  .delete-icon {
-    color: #ef4444;
-    font-size: 1.5rem; 
-    cursor: pointer; 
-    margin-left: 1rem;
-    &:hover { color: #f87171; }
+  /* Edit & Delete Icons Wrapper */
+  .action-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-left: auto; /* Push to the right */
+
+    .edit-icon {
+      color: white; 
+      font-size: 1.4rem; 
+      cursor: pointer;
+      transition: 0.2s ease;
+      &:hover { opacity: 0.7; }
+      padding-bottom: 1.5px;
+    }
+    
+    .delete-icon {
+      color: #ef4444; 
+      font-size: 1.4rem; 
+      cursor: pointer; 
+      transition: 0.2s ease;
+      &:hover { color: #f87171; }
+    }
   }
 
 } /* ← .task-row closes HERE */
@@ -410,9 +456,38 @@ ion-datetime-button::part(native) {
 }
 
 ion-datetime {
-  --background: #091222;
-  --title-color: var(--primary);
-  --color: white;
+  /* Seamless dark background */
+  --background: var(--navy, #091222); 
+  
+  /* Makes the month/year header readable and white */
+  --title-color: var(--navy-foreground, #ffffff);
+  
+  /* Base text color for dates */
+  --color: var(--navy-foreground, #ffffff);
+
+  /* 🚨 CRITICAL: Fixes the ugly white gradients on the month/year picker wheel */
+  --wheel-fade-background-rgb: 9, 18, 34; 
+  
+  /* Styling the wheel picker selected and unselected states */
+  --wheel-highlight-background: rgba(255, 255, 255, 0.05);
+  --wheel-item-color: var(--muted-foreground, #8B96AB);
+  
+  /* Matches your exact primary blue for the selected date circle */
+  --ion-color-base: var(--primary);
+  
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  
+  /* Target the exact shadow parts to enforce your fonts and colors */
+  &::part(month-year-button) {
+    color: var(--foreground);
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  &::part(calendar-day) {
+    font-family: var(--font-sans);
+  }
 }
 
 .date-picker-wrapper {
@@ -424,3 +499,74 @@ ion-datetime {
   padding: 0 0.5rem;
 }
 
+/* 🚨 1. Add this somewhere inside your .tasks-card block */
+.add-task-form {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.task-row {
+
+  &.is-being-edited {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(207, 254, 79, 0.4);
+  }
+}
+
+
+  /* Clean, professional text indicator */
+  .editing-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--chart-3);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.8rem;
+    margin-left: 0.2rem;
+
+    ion-icon {
+      font-size: 1.1rem;
+      padding-bottom: 1.8px;
+    }
+  }
+
+
+
+  /* 🚨 Calendar Custom Footer Buttons */
+.calendar-action-bar {
+  display: flex; 
+  justify-content: flex-end; 
+  padding: 8px 16px; 
+  border-top: 1px solid rgba(255,255,255,0.05);
+  background: var(--navy);
+}
+
+.cal-btn-cancel, .cal-btn-confirm {
+  text-transform: capitalize;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  --border-radius: 8px; /* Rounds the hover effect */
+}
+
+/* Specific Cancel Button Styles */
+.cal-btn-cancel {
+  color: var(--muted-foreground);
+  font-weight: 600;
+  /* Controls the background color when you click/hover */
+  --background-hover: rgba(255, 255, 255, 0.363); 
+}
+
+/* Specific Confirm Button Styles */
+.cal-btn-confirm {
+  color: var(--primary);
+  font-weight: 700;
+  /* Gives a nice faint blue background on hover */
+  --background-hover: rgba(255, 255, 255, 0.363); 
+}

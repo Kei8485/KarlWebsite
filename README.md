@@ -108,6 +108,11 @@ steps
         -(Putting a search function???)
         -all function has a validation modal
 
+
+        -Planner add edit
+        -Planner add schedule for study time
+        -
+
 front end lesson na natutunan:
 
 how to properly build components

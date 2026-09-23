@@ -189,8 +189,31 @@ def planner_tasks(request, user_id):
 # 2. Update or Delete a specific Task
 
 
-@api_view(['PATCH', 'DELETE'])
+# 2. Update or Delete a specific Task
+@api_view(['PATCH', 'DELETE', 'PUT']) # 🚨 Added 'PUT' to allowed methods
 def task_detail(request, task_id):
+    try:
+        task = PlannerTask.objects.get(id=task_id)
+    except PlannerTask.DoesNotExist:
+        return Response({'error': 'Task not found'}, status=404)
+        
+    if request.method == 'PATCH':
+        # Flips it from False to True (Completed!)
+        task.is_completed = not task.is_completed
+        task.save()
+        return Response({'message': 'Task updated', 'is_completed': task.is_completed})
+        
+    elif request.method == 'PUT':
+        # 🚨 New block to handle saving edits from the frontend
+        serializer = PlannerTaskSerializer(task, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+        
+    elif request.method == 'DELETE':
+        task.delete()
+        return Response({'message': 'Task deleted'})
     try:
         task = PlannerTask.objects.get(id=task_id)
     except PlannerTask.DoesNotExist:

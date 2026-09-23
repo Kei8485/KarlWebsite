@@ -38,7 +38,16 @@
         </div>
 
         <!-- 🚨 PREMIUM: Hidden Add Task Form -->
-        <div class="add-task-form" *ngIf="isAddingTask">
+        <div
+          class="add-task-form"
+          *ngIf="isAddingTask"
+          [class.editing-mode]="editingTaskId !== null"
+        >
+          <div class="editing-label" *ngIf="editingTaskId !== null">
+            <ion-icon name="create-outline"></ion-icon>
+            Editing Task
+          </div>
+
           <div class="form-inputs">
             <!-- 🚨 REPLACED with your custom app-input component! -->
             <app-input
@@ -54,21 +63,75 @@
           </div>
 
           <div class="form-bottom">
-            <!-- Sleek Pill Date Picker -->
-            <div class="modern-date-picker">
+            <!-- Sleek Pill Date Picker - Now a FULL clickable button! -->
+            <button
+              id="open-calendar-modal"
+              class="modern-date-picker full-click-btn"
+            >
               <ion-icon name="calendar-outline"></ion-icon>
-              <ion-datetime-button datetime="datetime"></ion-datetime-button>
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
+              <span>{{ newTaskDate | date:'mediumDate' }}</span>
+            </button>
+
+            <ion-modal
+              #calendarModal
+              trigger="open-calendar-modal"
+              [keepContentsMounted]="true"
+              class="transparent-modal"
+            >
+              <ng-template>
+                <!-- 🚨 Wrapper Card -->
+                <div
+                  style="
+                    width: 350px;
+                    margin: auto;
+                    background: var(--navy);
+                    border-radius: 16px;
+                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+                  "
+                >
                   <ion-datetime
+                    #myDatetime
                     id="datetime"
                     presentation="date"
                     [(ngModel)]="newTaskDate"
                     [min]="todayDate"
-                  ></ion-datetime>
-                </ng-template>
-              </ion-modal>
-            </div>
+                    max="2030"
+                    style="box-shadow: none; border-radius: 16px 16px 0 0"
+                  >
+                    <!-- We removed the slot="buttons" from inside here! -->
+                  </ion-datetime>
+
+                  <!-- 🚨 Buttons moved OUTSIDE the calendar so they are always visible! -->
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: flex-end;
+                      padding: 8px 16px;
+                      border-top: 1px solid rgba(255, 255, 255, 0.05);
+                    "
+                  >
+                    <!-- Action Bar -->
+                    <div class="calendar-action-bar">
+                      <ion-button
+                        fill="clear"
+                        class="cal-btn-cancel"
+                        (click)="myDatetime.cancel(); calendarModal.dismiss()"
+                      >
+                        Cancel
+                      </ion-button>
+
+                      <ion-button
+                        fill="clear"
+                        class="cal-btn-confirm"
+                        (click)="myDatetime.confirm(); calendarModal.dismiss()"
+                      >
+                        Confirm
+                      </ion-button>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </ion-modal>
 
             <div class="form-actions">
               <!-- 🚨 Uses YOUR custom component -->
@@ -79,7 +142,7 @@
               ></app-button>
 
               <app-button
-                label="Confirm"
+                [label]="editingTaskId ? 'Update' : 'Confirm'"
                 variant="primary"
                 (clicked)="addTask()"
               ></app-button>
@@ -97,6 +160,7 @@
             class="task-row"
             *ngFor="let task of filteredAndSortedTasks"
             [class.completed]="task.is_completed"
+            [class.is-being-edited]="task.id === editingTaskId"
           >
             <!-- Custom Checkbox Icon -->
             <ion-icon
@@ -119,11 +183,20 @@
             </div>
 
             <!-- Trash Can -->
-            <ion-icon
-              name="trash-outline"
-              class="delete-icon"
-              (click)="confirmDelete(task.id)"
-            ></ion-icon>
+            <!-- Edit & Delete Icons -->
+            <div class="action-icons">
+              <ion-icon
+                name="create-outline"
+                class="edit-icon"
+                (click)="editTask(task)"
+              ></ion-icon>
+
+              <ion-icon
+                name="trash-outline"
+                class="delete-icon"
+                (click)="confirmDelete(task.id)"
+              ></ion-icon>
+            </div>
           </div>
         </div>
       </div>

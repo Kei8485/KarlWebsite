@@ -9,15 +9,15 @@ import { AppButtonComponent } from '../../components/atoms/app-button/app-button
 import { AppInputComponent } from '../../components/atoms/app-input/app-input.component'; 
 
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, squareOutline, refreshOutline, timeOutline, addOutline, calendarOutline, swapVerticalOutline, checkmarkOutline } from 'ionicons/icons';
-
+import { checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, squareOutline, refreshOutline, timeOutline, addOutline, calendarOutline, swapVerticalOutline, checkmarkOutline, createOutline } from 'ionicons/icons';
+import { IonButtons } from "@ionic/angular";
 
 @Component({
   selector: 'app-planner',
   templateUrl: './planner.page.html',
   styleUrls: ['./planner.page.scss'],
   standalone: true,
-  imports: [IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, IonPicker, IonPickerColumn, IonPickerColumnOption, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent, AppInputComponent]
+  imports: [IonButtons, IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, IonPicker, IonPickerColumn, IonPickerColumnOption, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent, AppInputComponent]
 })
 export class PlannerPage implements OnInit, OnDestroy {
   
@@ -32,6 +32,7 @@ export class PlannerPage implements OnInit, OnDestroy {
   newTaskSubject: string = '';
   newTaskDate: string = new Date().toISOString();
   todayDate: string = new Date().toISOString();
+  editingTaskId: number | null = null; // 🚨 Edit State
 
   // Timer State
   timerMinutes: number = 0; 
@@ -55,7 +56,7 @@ export class PlannerPage implements OnInit, OnDestroy {
     addIcons({ 
       checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, 
       squareOutline, refreshOutline, timeOutline, addOutline, 
-      calendarOutline, swapVerticalOutline, checkmarkOutline 
+      calendarOutline, swapVerticalOutline, checkmarkOutline, createOutline 
     });
   }
 
@@ -72,7 +73,7 @@ export class PlannerPage implements OnInit, OnDestroy {
   }
 
   // ==========================================
-  // REUSABLE NOTIFICATION (replaces ugly alert!)
+  // REUSABLE NOTIFICATION
   // ==========================================
 
   async showNotification(title: string, message: string, isDanger: boolean = false) {
@@ -113,6 +114,15 @@ export class PlannerPage implements OnInit, OnDestroy {
     this.isAddingTask = false;
     this.newTaskTitle = '';
     this.newTaskSubject = '';
+    this.editingTaskId = null;  
+  }
+
+  editTask(task: any) {
+    this.isAddingTask = true;
+    this.editingTaskId = task.id;
+    this.newTaskTitle = task.title;
+    this.newTaskSubject = task.subject;
+    this.newTaskDate = task.due_date;
   }
 
   loadTasks() {
@@ -135,13 +145,17 @@ export class PlannerPage implements OnInit, OnDestroy {
       return;
     }
 
+    const isEditing = this.editingTaskId !== null;
+
     const modal = await this.modalCtrl.create({
       component: ConfirmModalComponent,
       cssClass: 'transparent-modal',
       componentProps: {
-        title: 'Add New Task',
-        message: `Are you sure you want to add "<strong>${this.newTaskTitle}</strong>" to your upcoming tasks?`,
-        confirmText: 'Create Task',
+        title: isEditing ? 'Update Task' : 'Add New Task',
+        message: isEditing 
+          ? `Save changes to "<strong>${this.newTaskTitle}</strong>"?` 
+          : `Are you sure you want to add "<strong>${this.newTaskTitle}</strong>" to your upcoming tasks?`,
+        confirmText: isEditing ? 'Update Task' : 'Create Task',
         isDanger: false
       }
     });
@@ -149,25 +163,33 @@ export class PlannerPage implements OnInit, OnDestroy {
     await modal.present();
     const { data } = await modal.onWillDismiss();
     
+    // 🚨 FIXED: Now it only saves if they clicked Confirm, and taskData is defined!
     if (data === true) {
       const taskData = { 
         title: this.newTaskTitle, 
         subject: this.newTaskSubject, 
         due_date: this.newTaskDate 
       };
-      
-      this.plannerService.addTask(this.currentUserId, taskData).subscribe({
-        next: () => {
-          this.newTaskTitle = '';
-          this.newTaskSubject = '';
-          this.isAddingTask = false; 
-          this.loadTasks(); 
-          this.showNotification('Task Added', 'Your task has been successfully added! ✅');
-        },
-        error: () => {
-          this.showNotification('Error', 'Failed to save the task. Please try again.', true);
-        }
-      });
+
+      if (isEditing) {
+        this.plannerService.updateTask(this.editingTaskId!, taskData).subscribe({
+          next: () => {
+            this.cancelAddTask(); 
+            this.loadTasks(); 
+            this.showNotification('Task Updated', 'Your task has been successfully updated! ✅');
+          },
+          error: () => this.showNotification('Error', 'Failed to update the task. Please try again.', true)
+        });
+      } else {
+        this.plannerService.addTask(this.currentUserId, taskData).subscribe({
+          next: () => {
+            this.cancelAddTask(); 
+            this.loadTasks(); 
+            this.showNotification('Task Added', 'Your task has been successfully added! ✅');
+          },
+          error: () => this.showNotification('Error', 'Failed to save the task. Please try again.', true)
+        });
+      }
     }
   }
 
@@ -328,10 +350,10 @@ export class PlannerPage implements OnInit, OnDestroy {
     this.displayTime = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   }
 
-    timerFinished() {
+  timerFinished() {
     this.stopTimer();
     const audio = new Audio('../../../assets/audio/ssstik.io_1790134444520.mp3');
-    audio.loop = true; // Keeps ringing until you click OK
+    audio.loop = true;
     audio.play();
     
     this.plannerService.saveStudySession(this.currentUserId, this.timerMinutes).subscribe({

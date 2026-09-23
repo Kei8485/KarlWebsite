@@ -15,6 +15,10 @@ export class PlannerService {
   // 1. MANAGE TASKS
   // ==========================================
   
+  updateTask(taskId: number, taskData: any) {
+    return this.http.put(`${this.apiUrl}/tasks/${taskId}/`, taskData);
+  }
+
   getTasks(userId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/users/${userId}/tasks/`);
   }

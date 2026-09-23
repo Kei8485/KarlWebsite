@@ -10,46 +10,53 @@
       <!-- LEFT SIDE: AGENDA & TASKS             -->
       <!-- ===================================== -->
       <div class="glass-card tasks-card">
-        <!-- 🚨 NEW: Header with Filter & Add Buttons -->
+        <!-- 🚨 PREMIUM: Header with New Button -->
         <div class="tasks-header">
           <h2>Upcoming Tasks</h2>
           <div class="header-actions">
-            <ion-button fill="clear" color="medium" (click)="toggleSort()">
+            <ion-button
+              fill="clear"
+              color="medium"
+              (click)="toggleSort()"
+              class="sort-btn"
+            >
               <ion-icon
                 slot="icon-only"
                 name="swap-vertical-outline"
               ></ion-icon>
             </ion-button>
-            <ion-button
-              color="primary"
-              (click)="isAddingTask = true"
+
+            <!-- 🚨 Uses YOUR custom component -->
+            <app-button
               *ngIf="!isAddingTask"
-            >
-              <ion-icon slot="start" name="add-outline"></ion-icon> Add Task
-            </ion-button>
+              label="Add Task"
+              icon="add-outline"
+              variant="primary"
+              (clicked)="isAddingTask = true"
+            ></app-button>
           </div>
         </div>
 
-        <!-- 🚨 NEW: Hidden Add Task Form -->
+        <!-- 🚨 PREMIUM: Hidden Add Task Form -->
         <div class="add-task-form" *ngIf="isAddingTask">
-          <input
-            type="text"
-            [(ngModel)]="newTaskTitle"
-            placeholder="Task name (e.g. Math Quiz)"
-          />
-          <input
-            type="text"
-            [(ngModel)]="newTaskSubject"
-            placeholder="Subject"
-          />
+          <div class="form-inputs">
+            <!-- 🚨 REPLACED with your custom app-input component! -->
+            <app-input
+              [(value)]="newTaskTitle"
+              placeholder="What are you working on?"
+            ></app-input>
+
+            <!-- 🚨 REPLACED with your custom app-input component! -->
+            <app-input
+              [(value)]="newTaskSubject"
+              placeholder="Category (e.g. Math, Coding)"
+            ></app-input>
+          </div>
 
           <div class="form-bottom">
-            <!-- Calendar Icon + Picker -->
-            <div class="date-picker-wrapper">
-              <ion-icon
-                name="calendar-outline"
-                class="calendar-icon"
-              ></ion-icon>
+            <!-- Sleek Pill Date Picker -->
+            <div class="modern-date-picker">
+              <ion-icon name="calendar-outline"></ion-icon>
               <ion-datetime-button datetime="datetime"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -57,23 +64,30 @@
                     id="datetime"
                     presentation="date"
                     [(ngModel)]="newTaskDate"
+                    [min]="todayDate"
                   ></ion-datetime>
                 </ng-template>
               </ion-modal>
             </div>
 
             <div class="form-actions">
-              <ion-button fill="clear" color="medium" (click)="cancelAddTask()"
-                >Cancel</ion-button
-              >
-              <ion-button color="primary" (click)="addTask()"
-                >Confirm</ion-button
-              >
+              <!-- 🚨 Uses YOUR custom component -->
+              <app-button
+                label="Cancel"
+                variant="transparent"
+                (clicked)="cancelAddTask()"
+              ></app-button>
+
+              <app-button
+                label="Confirm"
+                variant="primary"
+                (clicked)="addTask()"
+              ></app-button>
             </div>
           </div>
         </div>
 
-        <!-- 🚨 UPDATED: Task List now uses filteredAndSortedTasks! -->
+        <!-- 🚨 UPDATED: Task List -->
         <div class="task-list">
           <div class="empty-state" *ngIf="filteredAndSortedTasks.length === 0">
             No upcoming tasks! You are all caught up.

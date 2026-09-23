@@ -222,3 +222,5 @@ isDanger: false // Turns the modal danger colors on!
         -and in error it will throw in your error logic
 
 study the urls and how the serializer and views work
+
+gagawin bukas ayusin design ng plan

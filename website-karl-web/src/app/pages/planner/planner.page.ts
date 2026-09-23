@@ -5,9 +5,12 @@ import { IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModa
 import { PlannerService } from '../../services/planner'; 
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/confirm-modal.component';
-import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component'; // 🚨 Left this exactly as you had it!
+import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component'; 
+
+/* 🚨 ADDED YOUR INPUT COMPONENT */
+import { AppInputComponent } from '../../components/atoms/app-input/app-input.component'; 
+
 import { addIcons } from 'ionicons';
-// 🚨 MOVED THE 2 NEW ICONS HERE:
 import { checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, squareOutline, refreshOutline, timeOutline, addOutline, calendarOutline, swapVerticalOutline } from 'ionicons/icons';
 
 
@@ -16,8 +19,8 @@ import { checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, squa
   templateUrl: './planner.page.html',
   styleUrls: ['./planner.page.scss'],
   standalone: true,
-  // 🚨 REMOVED the icons from this array (only components go here!)
-  imports: [IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, IonPicker, IonPickerColumn, IonPickerColumnOption, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent]
+  /* 🚨 ADDED AppInputComponent to the array */
+  imports: [IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, IonPicker, IonPickerColumn, IonPickerColumnOption, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent, AppInputComponent]
 })
 export class PlannerPage implements OnInit, OnDestroy {
   
@@ -25,13 +28,15 @@ export class PlannerPage implements OnInit, OnDestroy {
   totalStudyTime: string = '0h 0m';
   tasks: any[] = [];
   
-  // 🚨 NEW: Task Form & Sorting State
+  // Task Form & Sorting State
   isAddingTask: boolean = false;
   sortOrder: 'asc' | 'desc' = 'asc';
   newTaskTitle: string = '';
   newTaskSubject: string = '';
   newTaskDate: string = new Date().toISOString();
   
+  todayDate: string = new Date().toISOString();
+
   timerMinutes: number = 30; 
   timeLeft: number = 30 * 60; 
   timerInterval: any;
@@ -43,6 +48,7 @@ export class PlannerPage implements OnInit, OnDestroy {
   hoursList = Array.from({ length: 100 }, (_, i) => i);
   minsList = Array.from({ length: 60 }, (_, i) => i);
   secsList = Array.from({ length: 60 }, (_, i) => i);
+
   constructor(
     private plannerService: PlannerService,
     private cdr: ChangeDetectorRef,
@@ -50,20 +56,22 @@ export class PlannerPage implements OnInit, OnDestroy {
   ) {
     addIcons({ checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, squareOutline, refreshOutline, timeOutline, addOutline, calendarOutline, swapVerticalOutline });
   }
+
   ngOnInit() {
     const storedId = localStorage.getItem('userId');
     if (storedId) this.currentUserId = parseInt(storedId, 10);
     this.loadTasks();
     this.loadStats();
   }
+
   ngOnDestroy() {
     this.stopTimer(); 
   }
+
   // ==========================================
   // 1. TASKS LOGIC (WITH NEW SORTING)
   // ==========================================
   
-  // 🚨 NEW: Dynamically sorts tasks by date
   get filteredAndSortedTasks() {
     let result = [...this.tasks];
     result.sort((a, b) => {
@@ -73,41 +81,81 @@ export class PlannerPage implements OnInit, OnDestroy {
     });
     return result;
   }
+
   toggleSort() {
     this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
   }
+
   cancelAddTask() {
     this.isAddingTask = false;
     this.newTaskTitle = '';
     this.newTaskSubject = '';
   }
+
   loadTasks() {
     this.plannerService.getTasks(this.currentUserId).subscribe(res => {
       this.tasks = res;
       this.cdr.detectChanges(); 
     });
   }
+
   loadStats() {
     this.plannerService.getWeeklyStats(this.currentUserId).subscribe(res => {
       this.totalStudyTime = res.formatted_time;
       this.cdr.detectChanges(); 
     });
   }
-  addTask() {
-    if (!this.newTaskTitle) return;
-    const taskData = { title: this.newTaskTitle, subject: this.newTaskSubject, due_date: this.newTaskDate };
-    this.plannerService.addTask(this.currentUserId, taskData).subscribe(() => {
-      this.newTaskTitle = '';
-      this.newTaskSubject = '';
-      this.isAddingTask = false; // 🚨 Closes form automatically
-      this.loadTasks(); 
+
+  /* 🚨 UPGRADED: 1-Click Errors, Confirmation Modal, & Success Alerts */
+  async addTask() {
+    // 1. One-Click Error Feedback (No more silent fails!)
+    if (!this.newTaskTitle || this.newTaskTitle.trim() === '') {
+      alert('Error: Please enter a task name!');
+      return;
+    }
+
+    // 2. Add Confirmation Modal
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Add New Task',
+        message: `Are you sure you want to add "${this.newTaskTitle}" to your upcoming tasks?`,
+        confirmText: 'Create Task',
+        isDanger: false
+      }
     });
+    
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    
+    // 3. Only proceed if they clicked confirm inside the modal
+    if (data === true) {
+      const taskData = { title: this.newTaskTitle, subject: this.newTaskSubject, due_date: this.newTaskDate };
+      
+      this.plannerService.addTask(this.currentUserId, taskData).subscribe({
+        next: () => {
+          this.newTaskTitle = '';
+          this.newTaskSubject = '';
+          this.isAddingTask = false; 
+          this.loadTasks(); 
+          
+          // One-Click Success Feedback!
+          alert('Task successfully added!');
+        },
+        error: () => {
+          alert('Error: Failed to save the task. Please try again.');
+        }
+      });
+    }
   }
+
   toggleTask(taskId: number) {
     this.plannerService.toggleTaskComplete(taskId).subscribe(() => {
       this.loadTasks();
     });
   }
+
   async confirmDelete(taskId: number) {
     const modal = await this.modalCtrl.create({
       component: ConfirmModalComponent,
@@ -128,9 +176,11 @@ export class PlannerPage implements OnInit, OnDestroy {
       });
     }
   }
+
   // ==========================================
   // 2. STUDY TIMER LOGIC
   // ==========================================
+  
   onPickerChange(type: string, event: any) {
     const val = event.detail.value;
     if (type === 'hours') this.inputHours = val;
@@ -138,6 +188,7 @@ export class PlannerPage implements OnInit, OnDestroy {
     if (type === 'seconds') this.inputSeconds = val;
     this.onCustomTimeChange();
   }
+
   setCustomTime(mins: number) {
     this.stopTimer();
     this.inputHours = Math.floor(mins / 60);
@@ -147,6 +198,7 @@ export class PlannerPage implements OnInit, OnDestroy {
     this.timeLeft = mins * 60;
     this.updateDisplayTime();
   }
+
   onCustomTimeChange() {
     this.stopTimer();
     if (this.inputHours == null) this.inputHours = 0;
@@ -159,6 +211,7 @@ export class PlannerPage implements OnInit, OnDestroy {
     this.timerMinutes = Math.round(this.timeLeft / 60);
     this.updateDisplayTime();
   }
+
   startTimer() {
     if (this.isTimerRunning) return;
     this.isTimerRunning = true;
@@ -171,21 +224,25 @@ export class PlannerPage implements OnInit, OnDestroy {
       }
     }, 1000);
   }
+
   stopTimer() {
     this.isTimerRunning = false;
     clearInterval(this.timerInterval);
   }
+
   resetTimer() {
     this.stopTimer();
     this.timeLeft = this.timerMinutes * 60;
     this.updateDisplayTime();
   }
+
   updateDisplayTime() {
     const h = Math.floor(this.timeLeft / 3600);
     const m = Math.floor((this.timeLeft % 3600) / 60);
     const s = this.timeLeft % 60;
     this.displayTime = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   }
+
   timerFinished() {
     this.stopTimer();
     const audio = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg');

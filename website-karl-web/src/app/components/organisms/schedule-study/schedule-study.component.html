@@ -1,0 +1,63 @@
+<div class="schedule-study-wrapper">
+  <!-- Email Notification Warning -->
+  <div class="email-alert">
+    <ion-icon name="mail-outline"></ion-icon>
+    <p>This will send an email notification for you when the schedule hits the time.</p>
+  </div>
+
+  <div class="form-inputs">
+    <app-input
+      [(value)]="scheduleTitle"
+      placeholder="What do you want to review?"
+    ></app-input>
+
+    <app-input
+      [(value)]="scheduleSubject"
+      placeholder="Category (e.g. Math, Coding)"
+    ></app-input>
+  </div>
+
+  <div class="form-bottom" style="margin-top: 15px;">
+    <!-- DateTime Picker -->
+    <button id="open-schedule-datetime" class="modern-date-picker full-click-btn">
+      <ion-icon name="time-outline"></ion-icon>
+      <span>{{ scheduleDate | date:'medium' }}</span>
+    </button>
+
+    <ion-modal #scheduleModal trigger="open-schedule-datetime" [keepContentsMounted]="true" class="transparent-modal">
+      <ng-template>
+        <div class="datetime-card-wrapper">
+          <!-- Calendar only -->
+          <ion-datetime
+            #myCalendar
+            presentation="date"
+            [(ngModel)]="scheduleDate"
+            [min]="todayDate"
+            max="2030"
+          ></ion-datetime>
+          
+          <!-- Time picker rendered INLINE (not as a popover!) -->
+          <ion-datetime
+            #myTimePicker
+            presentation="time"
+            [preferWheel]="true"
+            [(ngModel)]="scheduleDate"
+          ></ion-datetime>
+          
+          <div class="calendar-action-bar">
+            <ion-button fill="clear" class="cal-btn-cancel" (click)="myCalendar.cancel(); myTimePicker.cancel(); scheduleModal.dismiss()">Cancel</ion-button>
+            <ion-button fill="clear" class="cal-btn-confirm" (click)="myCalendar.confirm(); myTimePicker.confirm(); scheduleModal.dismiss()">Confirm</ion-button>
+          </div>
+        </div>
+      </ng-template>
+    </ion-modal>
+
+    <div class="form-actions" style="margin-left: auto;">
+      <app-button
+        label="Set Schedule"
+        variant="primary"
+        (clicked)="saveSchedule()"
+      ></app-button>
+    </div>
+  </div>
+</div>

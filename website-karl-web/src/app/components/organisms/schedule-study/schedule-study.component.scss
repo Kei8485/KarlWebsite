@@ -1,0 +1,168 @@
+.schedule-study-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1rem 0;
+}
+
+.email-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(79, 172, 254, 0.1);
+  border: 1px solid rgba(79, 172, 254, 0.3);
+  padding: 1rem;
+  border-radius: 12px;
+  
+  ion-icon {
+    font-size: 1.5rem;
+    color: var(--primary);
+  }
+  
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: white;
+    font-weight: 500;
+  }
+}
+
+.form-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  ::ng-deep app-input {
+    outline: none !important; 
+    
+    .app-input-wrapper {
+      margin-bottom: 0 !important; 
+    }
+    
+    .app-input {
+      --background: rgba(255, 255, 255, 0.04) !important;
+      --color: white !important;
+      --placeholder-color: #8B96AB !important;
+      --border-radius: 12px !important;
+      --border-width: 0 !important; 
+      
+      border-radius: 12px !important;
+      outline: none !important;
+      box-shadow: none !important;
+      
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      
+      transition: border-color 0.3s ease, background 0.3s ease !important;
+      
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.25) !important;
+        background: rgba(255, 255, 255, 0.07) !important;
+      }
+      
+      &.has-focus, &.ion-focused {
+        border-color: rgb(89, 131, 187) !important;
+        background: rgba(101, 131, 216, 0.08) !important;
+        box-shadow: none !important; 
+      }
+    }
+  }
+}
+
+.form-bottom {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Reusing the beautiful button styles from the planner page */
+.modern-date-picker {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 0.5rem 1rem; 
+  cursor: pointer; 
+  color: white;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  
+  &:hover { background: rgba(255, 255, 255, 0.1); }
+  &:active { transform: scale(0.97); } 
+  
+  ion-icon { font-size: 1.2rem; color: var(--primary); margin-right: 0.4rem; }
+}
+
+/* Modal styling matching the planner */
+.datetime-card-wrapper {
+  width: 350px; 
+  margin: auto; 
+  background: var(--navy); 
+  border-radius: 16px; 
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+ion-datetime {
+  width: 100%;
+  box-shadow: none;
+  --background: var(--navy, #091222); 
+  --title-color: var(--navy-foreground, #ffffff);
+  --color: var(--navy-foreground, #ffffff);
+  --wheel-fade-background-rgb: 9, 18, 34; 
+  --wheel-highlight-background: rgba(255, 255, 255, 0.05);
+  --wheel-item-color: var(--muted-foreground, #8B96AB);
+  --ion-color-base: var(--primary);
+  
+  &::part(month-year-button) {
+    color: var(--foreground);
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+  &::part(calendar-day) {
+    font-family: var(--font-sans);
+  }
+}
+
+/* The calendar on top gets rounded top corners */
+ion-datetime[presentation="date"] {
+  border-radius: 16px 16px 0 0;
+}
+
+/* The time wheel below gets no rounding and a subtle top border */
+ion-datetime[presentation="time"] {
+  border-radius: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 0;
+}
+
+.calendar-action-bar {
+  display: flex; 
+  justify-content: flex-end; 
+  padding: 8px 16px; 
+  border-top: 1px solid rgba(255,255,255,0.05);
+  background: var(--navy);
+  border-radius: 0 0 16px 16px;
+}
+
+.cal-btn-cancel, .cal-btn-confirm {
+  text-transform: capitalize;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  --border-radius: 8px;
+  margin-left: 8px;
+}
+.cal-btn-cancel {
+  color: var(--muted-foreground);
+  font-weight: 600;
+  --background-hover: rgba(255, 255, 255, 0.05); 
+}
+.cal-btn-confirm {
+  color: var(--primary);
+  font-weight: 700;
+  --background-hover: rgba(79, 172, 254, 0.1); 
+}

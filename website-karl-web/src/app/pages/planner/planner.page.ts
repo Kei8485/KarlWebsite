@@ -7,9 +7,10 @@ import { AppHeaderComponent } from '../../components/organisms/app-header/app-he
 import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/confirm-modal.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component'; 
 import { AppInputComponent } from '../../components/atoms/app-input/app-input.component'; 
+import { ScheduleStudyComponent } from '../../components/organisms/schedule-study/schedule-study.component';
 
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, squareOutline, refreshOutline, timeOutline, addOutline, calendarOutline, swapVerticalOutline, checkmarkOutline, createOutline } from 'ionicons/icons';
+import { checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, squareOutline, refreshOutline, timeOutline, addOutline, calendarOutline, swapVerticalOutline, checkmarkOutline, createOutline, arrowBackOutline } from 'ionicons/icons';
 import { IonButtons } from "@ionic/angular";
 
 @Component({
@@ -17,10 +18,11 @@ import { IonButtons } from "@ionic/angular";
   templateUrl: './planner.page.html',
   styleUrls: ['./planner.page.scss'],
   standalone: true,
-  imports: [IonButtons, IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, IonPicker, IonPickerColumn, IonPickerColumnOption, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent, AppInputComponent]
+  imports: [IonButtons, IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, IonPicker, IonPickerColumn, IonPickerColumnOption, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent, AppInputComponent, ScheduleStudyComponent]
 })
 export class PlannerPage implements OnInit, OnDestroy {
   
+  showSchedule: boolean = false; // Toggle state for flip card
   currentUserId: number = 1; 
   totalStudyTime: string = '0h 0m';
   tasks: any[] = [];
@@ -48,6 +50,7 @@ export class PlannerPage implements OnInit, OnDestroy {
   minsList = Array.from({ length: 60 }, (_, i) => i);
   secsList = Array.from({ length: 60 }, (_, i) => i);
 
+
   constructor(
     private plannerService: PlannerService,
     private cdr: ChangeDetectorRef,
@@ -56,8 +59,13 @@ export class PlannerPage implements OnInit, OnDestroy {
     addIcons({ 
       checkmarkCircleOutline, ellipseOutline, trashOutline, playOutline, 
       squareOutline, refreshOutline, timeOutline, addOutline, 
-      calendarOutline, swapVerticalOutline, checkmarkOutline, createOutline 
+      calendarOutline, swapVerticalOutline, checkmarkOutline, createOutline,
+      arrowBackOutline
     });
+  }
+
+  toggleView() {
+    this.showSchedule = !this.showSchedule;
   }
 
   ngOnInit() {

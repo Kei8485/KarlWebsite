@@ -9,11 +9,19 @@
       <!-- ===================================== -->
       <!-- LEFT SIDE: AGENDA & TASKS             -->
       <!-- ===================================== -->
-      <div class="glass-card tasks-card">
-        <!-- 🚨 PREMIUM: Header with New Button -->
-        <div class="tasks-header">
-          <h2>Upcoming Tasks</h2>
-          <div class="header-actions">
+      <div class="flip-container" [class.is-flipped]="showSchedule">
+        <div class="flipper">
+          
+          <!-- FRONT SIDE: TASKS -->
+          <div class="glass-card tasks-card front">
+            <!-- 🚨 PREMIUM: Header with New Button -->
+            <div class="tasks-header">
+              <h2>Upcoming Tasks</h2>
+              <div class="header-actions">
+                <!-- Toggle Button to switch to Schedule Study -->
+                <ion-button fill="clear" color="medium" (click)="toggleView()" class="sort-btn">
+                  <ion-icon slot="icon-only" name="time-outline"></ion-icon>
+                </ion-button>
             <ion-button
               fill="clear"
               color="medium"
@@ -200,6 +208,25 @@
           </div>
         </div>
       </div>
+          
+      <!-- BACK SIDE: SCHEDULE STUDY -->
+      <div class="glass-card tasks-card back">
+        <div class="tasks-header">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <ion-button fill="clear" color="medium" (click)="toggleView()" class="sort-btn" style="margin: 0; --padding-start: 0; --padding-end: 8px;">
+              <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+            </ion-button>
+            <h2 style="margin: 0;">Schedule Study</h2>
+          </div>
+          <div class="header-actions">
+          </div>
+        </div>
+        
+        <app-schedule-study></app-schedule-study>
+      </div>
+
+    </div> <!-- Close .flipper -->
+  </div> <!-- Close .flip-container -->
 
       <!-- ===================================== -->
       <!-- RIGHT SIDE: STATS & FOCUS TIMER       -->

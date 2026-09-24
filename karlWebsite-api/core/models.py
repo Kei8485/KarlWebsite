@@ -173,3 +173,22 @@ class ScheduledStudy(models.Model):
     
     def __str__(self):
         return f"{self.title} - {self.user.email} at {self.scheduled_time}"
+
+class QuizQuestion(models.Model):
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='questions')
+    question_text = models.TextField()
+    option_a = models.CharField(max_length=255)
+    option_b = models.CharField(max_length=255)
+    option_c = models.CharField(max_length=255)
+    option_d = models.CharField(max_length=255)
+    
+    CORRECT_CHOICES = [
+        ('A', 'Option A'),
+        ('B', 'Option B'),
+        ('C', 'Option C'),
+        ('D', 'Option D'),
+    ]
+    correct_option = models.CharField(max_length=1, choices=CORRECT_CHOICES)
+
+    def __str__(self):
+        return f"Question: {self.question_text[:50]}..."

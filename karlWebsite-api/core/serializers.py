@@ -1,10 +1,17 @@
 from rest_framework import serializers
-from .models import Subject, Topic, User, PlannerTask, StudySession, ScheduledStudy
+from .models import Subject, Topic, User, PlannerTask, StudySession, ScheduledStudy, QuizQuestion
+
+class QuizQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuizQuestion
+        fields = ['id', 'question_text', 'option_a', 'option_b', 'option_c', 'option_d', 'correct_option']
 
 class TopicSerializer(serializers.ModelSerializer):
+    questions = QuizQuestionSerializer(many=True, read_only=True)
+    
     class Meta:
         model = Topic #model is suspected by the ModelSerializer
-        fields = ['id', 'title', 'notes', 'youtube_url', 'order']
+        fields = ['id', 'title', 'notes', 'youtube_url', 'order', 'questions']
 
 class SubjectSerializer(serializers.ModelSerializer): # happends first
     topics = TopicSerializer(many=True, read_only=True)

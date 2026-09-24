@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { addIcons } from 'ionicons';
-import { playCircleOutline, documentTextOutline, bookmarkOutline } from 'ionicons/icons';
+import { playCircleOutline, documentTextOutline, bookmarkOutline, helpCircleOutline, checkmarkCircleOutline, closeCircleOutline, refreshOutline } from 'ionicons/icons';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 
@@ -27,13 +27,37 @@ export class TopicDetailPage implements OnInit {
   safeVideoUrl!: SafeResourceUrl;
   isLoading = true;
 
+  // Quiz State
+  selectedAnswers: { [questionId: number]: string } = {};
+  submittedAnswers: { [questionId: number]: boolean } = {};
+
   constructor() {
-    addIcons({ playCircleOutline, documentTextOutline, bookmarkOutline });
+    addIcons({ playCircleOutline, documentTextOutline, bookmarkOutline, helpCircleOutline, checkmarkCircleOutline, closeCircleOutline, refreshOutline });
   }
 
   ngOnInit() {
     this.topicId = this.route.snapshot.paramMap.get('id');
     this.fetchTopicDetail(); // Call the database!
+  }
+
+  selectOption(questionId: number, option: string) {
+    if (this.submittedAnswers[questionId]) return; // Prevent changing after submit
+    this.selectedAnswers[questionId] = option;
+  }
+
+  restartQuiz(questionId: number) {
+    this.submittedAnswers[questionId] = false;
+    delete this.selectedAnswers[questionId];
+  }
+
+  submitAnswer(questionId: number) {
+    if (this.selectedAnswers[questionId]) {
+      this.submittedAnswers[questionId] = true;
+    }
+  }
+
+  isAnswerCorrect(question: any): boolean {
+    return this.selectedAnswers[question.id] === question.correct_option;
   }
 
     fetchTopicDetail() {

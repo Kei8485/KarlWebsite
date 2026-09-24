@@ -15,7 +15,7 @@
       <div class="video-section">
         <div class="glass-card video-card">
           <div class="video-wrapper">
-            <!-- 🚨 Add *ngIf right here on the iframe! -->
+            <!-- dYs" Add *ngIf right here on the iframe! -->
             <iframe
               *ngIf="safeVideoUrl"
               [src]="safeVideoUrl"
@@ -38,6 +38,74 @@
               style="color: #8b96ab; text-align: center; padding-top: 20%"
             >
               No video available for this topic.
+            </div>
+          </div>
+        </div>
+
+        <!-- QUIZ SECTION -->
+        <div class="glass-card quiz-card" *ngIf="topic.questions && topic.questions.length > 0" style="margin-top: 1.5rem;">
+          <div class="quiz-header-row">
+            <span class="quiz-category">{{ topic.subject?.title || 'TOPIC QUIZ' | uppercase }}</span>
+            <span class="quiz-progress">MULTIPLE CHOICE</span>
+          </div>
+
+          <div class="quiz-container" *ngFor="let question of topic.questions; let i = index">
+            <h3 class="question-text">
+              {{ question.question_text }}
+            </h3>
+            
+            <div class="options-grid" [ngClass]="{'is-submitted': submittedAnswers[question.id]}">
+              <button class="option-btn" 
+                [class.selected]="selectedAnswers[question.id] === 'A'"
+                [class.correct]="submittedAnswers[question.id] && question.correct_option === 'A'"
+                [class.wrong]="submittedAnswers[question.id] && selectedAnswers[question.id] === 'A' && question.correct_option !== 'A'"
+                (click)="selectOption(question.id, 'A')">
+                <span class="opt-letter">A</span> {{ question.option_a }}
+              </button>
+              
+              <button class="option-btn" 
+                [class.selected]="selectedAnswers[question.id] === 'B'"
+                [class.correct]="submittedAnswers[question.id] && question.correct_option === 'B'"
+                [class.wrong]="submittedAnswers[question.id] && selectedAnswers[question.id] === 'B' && question.correct_option !== 'B'"
+                (click)="selectOption(question.id, 'B')">
+                <span class="opt-letter">B</span> {{ question.option_b }}
+              </button>
+              
+              <button class="option-btn" 
+                [class.selected]="selectedAnswers[question.id] === 'C'"
+                [class.correct]="submittedAnswers[question.id] && question.correct_option === 'C'"
+                [class.wrong]="submittedAnswers[question.id] && selectedAnswers[question.id] === 'C' && question.correct_option !== 'C'"
+                (click)="selectOption(question.id, 'C')">
+                <span class="opt-letter">C</span> {{ question.option_c }}
+              </button>
+              
+              <button class="option-btn" 
+                [class.selected]="selectedAnswers[question.id] === 'D'"
+                [class.correct]="submittedAnswers[question.id] && question.correct_option === 'D'"
+                [class.wrong]="submittedAnswers[question.id] && selectedAnswers[question.id] === 'D' && question.correct_option !== 'D'"
+                (click)="selectOption(question.id, 'D')">
+                <span class="opt-letter">D</span> {{ question.option_d }}
+              </button>
+            </div>
+            
+            <!-- Submit Button & Feedback -->
+            <div class="quiz-actions-row single-btn">
+              <button *ngIf="!submittedAnswers[question.id]" class="check-btn" [disabled]="!selectedAnswers[question.id]" (click)="submitAnswer(question.id)">
+                Check answer
+              </button>
+              
+              <button *ngIf="submittedAnswers[question.id]" class="restart-btn" (click)="restartQuiz(question.id)">
+                <ion-icon name="refresh-outline" style="font-size: 1.2rem;"></ion-icon> Restart
+              </button>
+            </div>
+            
+            <div class="quiz-feedback" *ngIf="submittedAnswers[question.id]">
+              <div class="feedback-badge correct-badge" *ngIf="isAnswerCorrect(question)">
+                <ion-icon name="checkmark-circle-outline"></ion-icon> Correct!
+              </div>
+              <div class="feedback-badge wrong-badge" *ngIf="!isAnswerCorrect(question)">
+                <ion-icon name="close-circle-outline"></ion-icon> Incorrect. The right answer was {{ question.correct_option }}.
+              </div>
             </div>
           </div>
         </div>

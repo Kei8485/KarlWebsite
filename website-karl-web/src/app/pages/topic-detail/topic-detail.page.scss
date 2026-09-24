@@ -131,3 +131,197 @@
     }
   }
 }
+
+/* Quiz Section */
+.quiz-card {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 0;
+  margin-top: 1.5rem;
+  overflow: hidden;
+  font-family: monospace; /* As per the screenshot style */
+
+  .quiz-header-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+
+    .quiz-category {
+      color: #3fb950;
+      font-weight: 600;
+    }
+
+    .quiz-progress {
+      color: #8b949e;
+    }
+  }
+
+  .quiz-container {
+    padding: 0 2rem 2rem;
+
+    .question-text {
+      color: #e6edf3;
+      font-size: 1.15rem;
+      font-weight: 500;
+      line-height: 1.6;
+      margin-top: 0;
+      margin-bottom: 2rem;
+      font-family: monospace;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      &.is-submitted .option-btn {
+        pointer-events: none;
+      }
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      background: transparent;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      color: #e6edf3;
+      font-family: inherit;
+      font-size: 1rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      .opt-letter {
+        color: #8b949e;
+        width: 32px;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      &:hover {
+        border-color: #8b949e;
+      }
+
+      &.selected {
+        border-color: #f59e0b;
+        color: #f59e0b;
+        background: rgba(245, 158, 11, 0.05);
+
+        .opt-letter {
+          color: #f59e0b;
+        }
+      }
+
+      &.correct {
+        border-color: #3fb950;
+        color: #3fb950;
+        background: rgba(63, 185, 80, 0.05);
+
+        .opt-letter {
+          color: #3fb950;
+        }
+      }
+
+      &.wrong {
+        border-color: #f85149;
+        color: #f85149;
+        background: rgba(248, 81, 73, 0.05);
+
+        .opt-letter {
+          color: #f85149;
+        }
+      }
+    }
+
+    .quiz-actions-row {
+      display: grid;
+      grid-template-columns: 1fr; /* Make it take full width */
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #21262d;
+
+      button {
+        padding: 1.25rem;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        width: 100%;
+      }
+
+      .check-btn {
+        background: transparent;
+        color: #f59e0b;
+        border: 1px solid #f59e0b;
+        font-weight: 500;
+
+        &:disabled {
+          border-color: #30363d;
+          color: #8b949e;
+          cursor: not-allowed;
+          background: transparent;
+        }
+
+        &:not(:disabled):hover {
+          background: rgba(245, 158, 11, 0.15);
+          box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+        }
+      }
+
+      .restart-btn {
+        background: transparent;
+        color: #3fb950;
+        border: 1px solid #3fb950;
+        font-weight: 500;
+
+        &:hover {
+          background: rgba(63, 185, 80, 0.15);
+          box-shadow: 0 4px 12px rgba(63, 185, 80, 0.2);
+          transform: translateY(-2px);
+        }
+      }
+    }
+
+    .quiz-feedback {
+      margin-top: 1.5rem;
+      
+      .feedback-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-family: sans-serif;
+        
+        ion-icon {
+          font-size: 1.5rem;
+        }
+        
+        &.correct-badge {
+          background: rgba(63, 185, 80, 0.15);
+          color: #3fb950;
+          border: 1px solid rgba(63, 185, 80, 0.3);
+        }
+        
+        &.wrong-badge {
+          background: rgba(248, 81, 73, 0.15);
+          color: #f85149;
+          border: 1px solid rgba(248, 81, 73, 0.3);
+        }
+      }
+    }
+  }
+}
+

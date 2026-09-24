@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 1. Adde
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { IonContent, IonSpinner, IonGrid } from '@ionic/angular';
+import { IonContent, IonSpinner } from '@ionic/angular';
 import { TopicCardComponent } from '../../components/molecules/topic-card/topic-card.component';
 
 @Component({
@@ -10,7 +10,7 @@ import { TopicCardComponent } from '../../components/molecules/topic-card/topic-
   templateUrl: './topic-tree.page.html',
   styleUrls: ['./topic-tree.page.scss'],
   standalone: true,
-  imports: [IonGrid, CommonModule, IonContent, IonSpinner, TopicCardComponent] 
+  imports: [CommonModule, IonContent, IonSpinner, TopicCardComponent] 
 })
 export class TopicTreePage implements OnInit {
   subjectId: string | null = null;

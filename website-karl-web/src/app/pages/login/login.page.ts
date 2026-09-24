@@ -21,7 +21,6 @@ import { AuthService } from '../../services/auth';
     IonCol, 
     AppButtonComponent, 
     AppInputComponent,
-    IonIcon
   ]
 })
 export class LoginPage {

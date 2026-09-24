@@ -2,7 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
-import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
+// import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { addIcons } from 'ionicons';
 import { playCircleOutline, documentTextOutline, bookmarkOutline, helpCircleOutline, checkmarkCircleOutline, closeCircleOutline, refreshOutline } from 'ionicons/icons';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -13,7 +13,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './topic-detail.page.html',
   styleUrls: ['./topic-detail.page.scss'],
   standalone: true,
-  imports: [IonContent, IonIcon, CommonModule, AppHeaderComponent]
+  imports: [IonContent, IonIcon, CommonModule]
 })
 export class TopicDetailPage implements OnInit {
   

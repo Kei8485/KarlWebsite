@@ -19,7 +19,7 @@ import { constructOutline, personCircleOutline, menuOutline, closeOutline, logOu
   imports: [
     CommonModule, 
     RouterModule, 
-    IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, 
+    IonHeader, IonToolbar, IonIcon, 
     AppButtonComponent,
   ]
 })

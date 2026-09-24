@@ -14,7 +14,7 @@ import { PlannerService } from '../../../services/planner';
   templateUrl: './schedule-study.component.html',
   styleUrls: ['./schedule-study.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonIcon, IonDatetime, IonModal, IonButton, IonButtons, AppButtonComponent, AppInputComponent]
+  imports: [CommonModule, FormsModule, IonIcon, IonDatetime, IonModal, IonButton, AppButtonComponent, AppInputComponent]
 })
 export class ScheduleStudyComponent implements OnInit {
   scheduleTitle: string = '';

@@ -20,19 +20,12 @@ import { RouterModule } from '@angular/router';
     RouterModule,
     CommonModule, 
     HttpClientModule, // The quick hack to allow HTTP requests here
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
     IonContent,
-    IonButtons,
-    IonButton,
-    IonIcon,
     IonRow,
     IonCol,
     IonGrid,
     AppButtonComponent,
     AppCardComponent,
-    AppHeaderComponent
   ] 
 })
 export class SubjectsPage implements OnInit {

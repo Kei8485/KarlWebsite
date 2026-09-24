@@ -18,7 +18,7 @@ import { IonButtons } from "@ionic/angular";
   templateUrl: './planner.page.html',
   styleUrls: ['./planner.page.scss'],
   standalone: true,
-  imports: [IonButtons, IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, IonPicker, IonPickerColumn, IonPickerColumnOption, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent, AppInputComponent, ScheduleStudyComponent]
+  imports: [IonContent, IonButton, IonIcon, IonDatetime, IonModal, CommonModule, FormsModule, AppButtonComponent, AppInputComponent, ScheduleStudyComponent]
 })
 export class PlannerPage implements OnInit, OnDestroy {
   

@@ -16,7 +16,7 @@ import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/
   templateUrl: './manage-users.page.html',
   styleUrls: ['./manage-users.page.scss'],
   standalone: true,
-  imports: [IonContent, IonIcon, IonSelect, IonSelectOption, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent]
+  imports: [IonContent, IonIcon, IonSelect, IonSelectOption, CommonModule, FormsModule, AppButtonComponent]
 })
 export class ManageUsersPage implements OnInit, OnDestroy  {
   private http = inject(HttpClient);

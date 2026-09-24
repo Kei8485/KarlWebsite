@@ -27,6 +27,10 @@
     font-weight: 300;
     margin: 0;
   }
+
+    @media (max-width: 576px) {
+      padding: 0px;
+    }
 }
 
 /* -----------------------------
@@ -57,7 +61,7 @@
   margin: 0 0 16px 0;
 
   .code-accent {
-    color: #4a90e2;
+    color: var(--blueprint);
   }
 
   .code-divider {

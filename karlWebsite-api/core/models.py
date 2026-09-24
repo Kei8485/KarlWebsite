@@ -123,6 +123,8 @@ class User(models.Model):
 class Subject(models.Model): 
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    category = models.CharField(max_length=100, blank=True, null=True, default="MATHEMATICS")
+    course_code = models.CharField(max_length=20, blank=True, null=True)
     
     def __str__(self):
         return self.title

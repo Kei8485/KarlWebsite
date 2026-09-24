@@ -11,13 +11,15 @@
         <ion-col size="12" size-md="6" *ngFor="let subject of databaseSubjects">
           <app-card class="modern-card">
             <!-- Sleek Category Tag -->
-            <span class="subject-tag">Mathematics</span>
+            <span class="subject-tag">{{ (subject.category | uppercase) || 'MATHEMATICS' }}</span>
 
-            <!-- Split Title -->
+            <!-- Title Layout -->
             <h2 class="subject-title">
-              <span class="code-accent">{{ subject.title.split('-')[0] }}</span>
-              <span class="code-divider">/</span>
-              {{ subject.title.split('-')[1] }}
+              <ng-container *ngIf="subject.course_code">
+                <span class="code-accent">{{ subject.course_code }}</span>
+                <span class="code-divider">/</span>
+              </ng-container>
+              {{ subject.title }}
             </h2>
 
             <!-- Description -->

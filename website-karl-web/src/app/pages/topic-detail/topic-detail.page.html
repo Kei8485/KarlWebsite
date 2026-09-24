@@ -40,7 +40,23 @@
               No video available for this topic.
             </div>
           </div>
+        </div></div>
+
+      <!-- Right Column: Notes & Resources -->
+      <div class="notes-section">
+        <div class="glass-card notes-card">
+          <div class="card-header">
+            <ion-icon name="document-text-outline"></ion-icon>
+            <h2>Lesson Notes</h2>
+          </div>
+
+          <div class="notes-content" [innerHTML]="topic.notes">
+            <!-- Renders the HTML notes safely -->
+          </div>
         </div>
+      </div>
+    </div>
+
 
         <!-- QUIZ SECTION -->
         <div class="glass-card quiz-card" *ngIf="topic.questions && topic.questions.length > 0" style="margin-top: 1.5rem;">
@@ -109,21 +125,6 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Right Column: Notes & Resources -->
-      <div class="notes-section">
-        <div class="glass-card notes-card">
-          <div class="card-header">
-            <ion-icon name="document-text-outline"></ion-icon>
-            <h2>Lesson Notes</h2>
-          </div>
-
-          <div class="notes-content" [innerHTML]="topic.notes">
-            <!-- Renders the HTML notes safely -->
-          </div>
-        </div>
-      </div>
-    </div>
+      
   </div>
 </ion-content>

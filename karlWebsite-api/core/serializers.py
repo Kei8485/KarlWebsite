@@ -18,8 +18,7 @@ class SubjectSerializer(serializers.ModelSerializer): # happends first
 
     class Meta:
         model = Subject
-        fields = '__all__'
-        fields = ['id', 'title', 'description', 'topics']
+        fields = ['id', 'title', 'description', 'category', 'course_code', 'topics']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

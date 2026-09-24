@@ -1,11 +1,24 @@
 <ion-content [fullscreen]="true">
   <div class="page-container">
-    <div class="hero-section">
-      <h1 class="gradient-text">Manage Users</h1>
-      <p class="subtitle">
-        Add, remove, or modify client access to the platform.
-      </p>
+    
+    <!-- SLEEK TOGGLE -->
+    <div class="admin-toggle-wrapper">
+      <div class="pill-toggle">
+        <div class="active-indicator" [ngClass]="viewMode"></div>
+        <button [class.active]="viewMode === 'users'" (click)="setViewMode('users')">Manage Users</button>
+        <button [class.active]="viewMode === 'system'" (click)="setViewMode('system')">Manage System</button>
+      </div>
     </div>
+
+    <div class="views-container">
+      <!-- USERS VIEW -->
+      <div class="view-panel" [class.active]="viewMode === 'users'">
+        <div class="hero-section">
+          <h1 class="gradient-text">Manage Users</h1>
+          <p class="subtitle">
+            Add, remove, or modify client access to the platform.
+          </p>
+        </div>
 
     <div class="admin-grid">
       <!-- 1. ADD USER FORM (LEFT SIDE) -->
@@ -115,5 +128,62 @@
         </div>
       </div>
     </div>
+  </div> <!-- End Users View -->
+
+      <!-- SYSTEM VIEW (CMS Scaffold) -->
+      <div class="view-panel" [class.active]="viewMode === 'system'">
+        <div class="hero-section">
+          <h1 class="gradient-text system-gradient">Manage System</h1>
+          <p class="subtitle">
+            Edit Subjects, Topics, and Quizzes directly from the dashboard.
+          </p>
+        </div>
+
+        <div class="admin-grid system-grid">
+          <!-- CMS Left Column: List -->
+          <div class="glass-card list-card">
+            <h2>Content Library</h2>
+            <div class="placeholder-list">
+              <div class="list-item active">Mathematics</div>
+              <div class="list-item">Operating Systems</div>
+              <div class="list-item add-new">+ Add New Subject</div>
+            </div>
+          </div>
+          
+          <!-- CMS Right Column: Editor -->
+          <div class="glass-card editor-card">
+            <h2>Edit Subject</h2>
+            <p style="color: #8B96AB; font-size: 0.9rem; margin-bottom: 2rem;">Select an item from the library to edit its properties.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label>Course Code</label>
+                <input type="text" placeholder="e.g. 114" class="dummy-input" />
+              </div>
+              <div class="form-group">
+                <label>Category</label>
+                <input type="text" placeholder="e.g. MATHEMATICS" class="dummy-input" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Subject Title</label>
+              <input type="text" placeholder="e.g. Differential Calculus" class="dummy-input" />
+            </div>
+
+            <div class="form-group">
+              <label>Description</label>
+              <textarea placeholder="Enter subject description..." class="dummy-input" rows="4" style="resize: vertical;"></textarea>
+            </div>
+            
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+              <app-button variant="primary" label="Save Changes" icon="save-outline"></app-button>
+              <app-button variant="outline" label="Delete" icon="trash-outline" style="--color: #f87171; border-color: rgba(248, 113, 113, 0.3); border-left-color: #ef4444;"></app-button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End System View -->
+
+    </div> <!-- End views-container -->
   </div>
 </ion-content>

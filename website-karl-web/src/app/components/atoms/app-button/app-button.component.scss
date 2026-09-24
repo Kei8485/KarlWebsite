@@ -114,8 +114,10 @@
   }
 
   &--medium {
-    --padding-top: 12px;
-    --padding-bottom: 12px;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    --padding-start: 28px;
+    --padding-end: 28px;
     font-size: var(--text-size-body);
     font-weight: 900;
   }

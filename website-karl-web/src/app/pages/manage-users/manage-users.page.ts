@@ -27,6 +27,12 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
   users: any[] = [];
   filteredUsers: any[] = [];
   currentFilter: string = 'all';
+  viewMode: 'users' | 'system' = 'users';
+
+  setViewMode(mode: 'users' | 'system') {
+    this.viewMode = mode;
+  }
+  
   errorMessage: string = '';
   successMessage: string = '';
 

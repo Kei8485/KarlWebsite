@@ -20,4 +20,13 @@ urlpatterns = [
     path('users/<int:user_id>/study-sessions/', views.study_sessions, name='study-sessions'),
     path('users/<int:user_id>/schedule-study/', views.schedule_study, name='schedule-study'),
     path('scheduled-studies/<int:study_id>/', views.manage_scheduled_study, name='manage-scheduled-study'),
+
+    # CMS Endpoints
+    path('subjects/create/', views.create_subject, name='create_subject'),
+    path('subjects/manage/<int:subject_id>/', views.manage_subject, name='manage_subject'),
+    path('topics/create/', views.create_topic, name='create_topic'),
+    path('topics/manage/<int:topic_id>/', views.manage_topic, name='manage_topic'),
+    path('quizzes/create/', views.create_quiz, name='create_quiz'),
+    path('quizzes/manage/<int:quiz_id>/', views.manage_quiz, name='manage_quiz'),
+
 ]

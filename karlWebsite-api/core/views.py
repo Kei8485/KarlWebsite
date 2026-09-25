@@ -297,3 +297,88 @@ def manage_scheduled_study(request, study_id):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+# ==========================================
+# CMS ENDPOINTS (Subjects, Topics, Quizzes)
+# ==========================================
+from .models import QuizQuestion
+
+@api_view(['POST'])
+def create_subject(request):
+    serializer = SubjectSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT', 'DELETE'])
+def manage_subject(request, subject_id):
+    try:
+        subject = Subject.objects.get(id=subject_id)
+    except Subject.DoesNotExist:
+        return Response({'error': 'Subject not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    if request.method == 'PUT':
+        serializer = SubjectSerializer(subject, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    elif request.method == 'DELETE':
+        subject.delete()
+        return Response({'message': 'Subject deleted successfully.'})
+
+
+@api_view(['POST'])
+def create_topic(request):
+    serializer = TopicSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT', 'DELETE'])
+def manage_topic(request, topic_id):
+    try:
+        topic = Topic.objects.get(id=topic_id)
+    except Topic.DoesNotExist:
+        return Response({'error': 'Topic not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    if request.method == 'PUT':
+        serializer = TopicSerializer(topic, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    elif request.method == 'DELETE':
+        topic.delete()
+        return Response({'message': 'Topic deleted successfully.'})
+
+
+@api_view(['POST'])
+def create_quiz(request):
+    serializer = QuizQuestionSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT', 'DELETE'])
+def manage_quiz(request, quiz_id):
+    try:
+        quiz = QuizQuestion.objects.get(id=quiz_id)
+    except QuizQuestion.DoesNotExist:
+        return Response({'error': 'Quiz not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    if request.method == 'PUT':
+        serializer = QuizQuestionSerializer(quiz, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    elif request.method == 'DELETE':
+        quiz.delete()
+        return Response({'message': 'Quiz deleted successfully.'})
+

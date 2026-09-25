@@ -152,34 +152,116 @@
           
           <!-- CMS Right Column: Editor -->
           <div class="glass-card editor-card">
-            <h2>Edit Subject</h2>
-            <p style="color: #8B96AB; font-size: 0.9rem; margin-bottom: 2rem;">Select an item from the library to edit its properties.</p>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-              <div class="form-group">
-                <label>Course Code</label>
-                <input type="text" placeholder="e.g. 114" class="dummy-input" />
+            <div class="editor-header">
+              <h2>Edit Subject</h2>
+              
+              <!-- INNER TABS -->
+              <div class="inner-tabs">
+                <button [class.active]="cmsTab === 'info'" (click)="cmsTab = 'info'">Subject Info</button>
+                <button [class.active]="cmsTab === 'topics'" (click)="cmsTab = 'topics'">Topics & Quizzes</button>
               </div>
+            </div>
+            
+            <!-- TAB 1: SUBJECT INFO -->
+            <div *ngIf="cmsTab === 'info'" class="tab-content">
+              <p style="color: #8B96AB; font-size: 0.9rem; margin-bottom: 2rem;">Select an item from the library to edit its properties.</p>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                  <label>Course Code</label>
+                  <input type="text" placeholder="e.g. 114" class="dummy-input" />
+                </div>
+                <div class="form-group">
+                  <label>Category</label>
+                  <input type="text" placeholder="e.g. MATHEMATICS" class="dummy-input" />
+                </div>
+              </div>
+
               <div class="form-group">
-                <label>Category</label>
-                <input type="text" placeholder="e.g. MATHEMATICS" class="dummy-input" />
+                <label>Subject Title</label>
+                <input type="text" placeholder="e.g. Differential Calculus" class="dummy-input" />
+              </div>
+
+              <div class="form-group">
+                <label>Description</label>
+                <textarea placeholder="Enter subject description..." class="dummy-input" rows="4" style="resize: vertical;"></textarea>
+              </div>
+              
+              <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                <app-button variant="primary" label="Save Changes" icon="save-outline"></app-button>
+                <app-button variant="danger-outline" label="Delete" icon="trash-outline"></app-button>
               </div>
             </div>
 
-            <div class="form-group">
-              <label>Subject Title</label>
-              <input type="text" placeholder="e.g. Differential Calculus" class="dummy-input" />
+            <!-- TAB 2: TOPICS & QUIZZES -->
+            <div *ngIf="cmsTab === 'topics'" class="tab-content">
+              <p style="color: #8B96AB; font-size: 0.9rem; margin-bottom: 1.5rem;">Manage the lessons and quizzes for this subject.</p>
+              
+              <div class="topic-list">
+                <!-- Topic Item Scaffold -->
+                <div class="topic-card glass-panel">
+                  <div class="topic-header">
+                    <h3>1. Introduction to Derivatives</h3>
+                    <div class="topic-actions">
+                      <ion-icon name="pencil-outline"></ion-icon>
+                      <ion-icon name="trash-outline" class="danger-icon"></ion-icon>
+                    </div>
+                  </div>
+                  <div class="topic-details">
+                    <p><span>Video:</span> https://youtube.com/watch?v=123</p>
+                    <p><span>Quizzes:</span> 5 Questions</p>
+                  </div>
+                  <app-button variant="outline" label="Manage Quizzes" size="small" style="margin-top: 10px;" (click)="showQuizEditor = !showQuizEditor"></app-button>
+                  
+                  <!-- INLINE QUIZ EDITOR (Slides down when button is clicked) -->
+                  <div class="quiz-editor-panel" *ngIf="showQuizEditor">
+                    <h4 class="quiz-editor-title">Quizzes for: Introduction to Derivatives</h4>
+                    
+                    <div class="quiz-item">
+                      <div class="form-group" style="margin-bottom: 1rem;">
+                        <label>Question 1</label>
+                        <input type="text" value="What is the derivative of x^2?" class="dummy-input" />
+                      </div>
+                      
+                      <label>Multiple Choices (Select correct answer)</label>
+                      <div class="quiz-choices">
+                        <div class="choice correct-choice">
+                          <input type="radio" checked name="q1" />
+                          <input type="text" value="2x" class="dummy-input" />
+                        </div>
+                        <div class="choice">
+                          <input type="radio" name="q1" />
+                          <input type="text" value="x" class="dummy-input" />
+                        </div>
+                        <div class="choice">
+                          <input type="radio" name="q1" />
+                          <input type="text" value="x^2" class="dummy-input" />
+                        </div>
+                        <div class="choice">
+                          <input type="radio" name="q1" />
+                          <input type="text" value="2" class="dummy-input" />
+                        </div>
+                      </div>
+                      
+                      <div style="text-align: right; margin-top: 1rem;">
+                        <app-button variant="danger-outline" label="Remove Question" size="small" icon="trash-outline"></app-button>
+                      </div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                      <app-button variant="outline" label="+ Add Another Question" size="small"></app-button>
+                      <app-button variant="primary" label="Save Quizzes" size="small" icon="save-outline"></app-button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <div style="margin-top: 1.5rem;">
+                <app-button variant="primary" label="Add New Topic" icon="add-outline"></app-button>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label>Description</label>
-              <textarea placeholder="Enter subject description..." class="dummy-input" rows="4" style="resize: vertical;"></textarea>
-            </div>
-            
-            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
-              <app-button variant="primary" label="Save Changes" icon="save-outline"></app-button>
-              <app-button variant="danger-outline" label="Delete" icon="trash-outline"></app-button>
-            </div>
           </div>
         </div>
       </div> <!-- End System View -->

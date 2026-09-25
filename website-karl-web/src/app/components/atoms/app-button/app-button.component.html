@@ -9,7 +9,7 @@
           : 'clear'
   "
   [disabled]="disabled"
-  (click)="clicked.emit()"
+  (click)="handleClick($event)"
   class="app-btn app-btn--{{ variant }} app-btn--{{ size }}"
 >
   <ion-icon

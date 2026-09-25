@@ -1,4 +1,28 @@
 .app-btn {
+  /* Ionic applies the focus ring to the host as well as its native button. */
+  outline: none !important;
+  box-shadow: none;
+  --highlight-color-focused: transparent;
+
+  &:focus,
+  &:focus-visible,
+  &:focus-within {
+    outline: none !important;
+    box-shadow: none;
+  }
+
+  &::part(native) {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &:focus::part(native),
+  &:focus-visible::part(native),
+  &:focus-within::part(native) {
+    outline: none !important;
+    box-shadow: none;
+  }
+
   /* 1. Global Button Styles */
   --border-radius: var(--radius);
   text-transform: none;

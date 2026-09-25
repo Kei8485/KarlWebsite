@@ -74,6 +74,13 @@
   app-button {
     --color: #9fb3d1; 
     transition: all 0.2s ease;
+    outline: none !important;
+
+    &:focus,
+    &:focus-visible,
+    &:focus-within {
+      outline: none !important;
+    }
 
     &.active-link {
       --background: #253351 !important; 
@@ -267,4 +274,3 @@
     background: rgba(239, 68, 68, 0.1);
   }
 }
-

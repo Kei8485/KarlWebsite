@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonButton, IonIcon } from '@ionic/angular';
 
@@ -17,4 +17,13 @@ export class AppButtonComponent {
   @Input() icon: string = '';           
   @Input() iconPosition: 'start' | 'end' = 'end';
   @Output() clicked = new EventEmitter<void>();
+
+  constructor(private hostElement: ElementRef<HTMLElement>) {}
+
+  handleClick(event: Event): void {
+    (event.currentTarget as HTMLElement | null)?.blur();
+    this.hostElement.nativeElement.blur();
+    setTimeout(() => this.hostElement.nativeElement.blur());
+    this.clicked.emit();
+  }
 }

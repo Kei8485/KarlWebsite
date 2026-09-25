@@ -3,6 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.utils import timezone
 from datetime import timedelta
+from zoneinfo import ZoneInfo
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
@@ -225,9 +226,14 @@ def study_sessions(request, user_id):
         StudySession.objects.create(user=user, duration_minutes=duration)
         return Response({'message': 'Study session saved!'})
     elif request.method == 'GET':
-        # AUTOMATICALLY CALCULATES WEEKLY STATS!
-        one_week_ago = timezone.now() - timedelta(days=7)
-        recent_sessions = StudySession.objects.filter(user=user, created_at__gte=one_week_ago)
+        # Calculate the current calendar week from Monday 00:00 in Philippine time.
+        philippines_now = timezone.now().astimezone(ZoneInfo('Asia/Manila'))
+        monday = philippines_now - timedelta(days=philippines_now.weekday())
+        week_start = monday.replace(hour=0, minute=0, second=0, microsecond=0)
+        recent_sessions = StudySession.objects.filter(
+            user=user,
+            created_at__gte=week_start,
+        )
         
         total_minutes = sum([session.duration_minutes for session in recent_sessions])
         hours = total_minutes // 60

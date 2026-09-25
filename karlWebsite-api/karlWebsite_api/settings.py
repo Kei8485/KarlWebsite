@@ -123,20 +123,16 @@ STATIC_URL = 'static/'
 
 
 # Email configuration is environment-driven; development uses console delivery.
+EMAIL_BACKEND = os.environ.get(
+    'EMAIL_BACKEND',
+    'django.core.mail.backends.console.EmailBackend',
+)
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true').lower() == 'true'
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
-email_backend = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-MAILERS = {
-    'default': {
-        'BACKEND': email_backend,
-        'OPTIONS': {
-            'host': os.environ.get('EMAIL_HOST', ''),
-            'port': int(os.environ.get('EMAIL_PORT', '587')),
-            'username': os.environ.get('EMAIL_HOST_USER', ''),
-            'password': os.environ.get('EMAIL_HOST_PASSWORD', ''),
-            'use_tls': os.environ.get('EMAIL_USE_TLS', 'true').lower() == 'true',
-        } if email_backend.endswith('.smtp.EmailBackend') else {},
-    },
-}
 CORS_ALLOWED_ORIGINS = [
     origin.strip() for origin in os.environ.get(
         'CORS_ALLOWED_ORIGINS', 'http://localhost:4200,http://localhost:8100'

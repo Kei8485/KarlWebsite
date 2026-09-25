@@ -172,12 +172,11 @@ ion-toast.karl-toast::part(icon) {
 }
 
 
-// global styles.scss
-ion-router-outlet > .ion-page,
-ion-router-outlet > * {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  contain: layout size style;
+/* Keep routed pages opaque while Ionic animates the outgoing page away. */
+ion-router-outlet {
+  background: var(--background);
+}
+
+ion-router-outlet > .ion-page {
+  background: var(--background);
 }

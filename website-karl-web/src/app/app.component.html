@@ -3,6 +3,7 @@
 
   <!-- Pushes the page down by 80px ONLY if the header is visible -->
   <ion-router-outlet
+    [animated]="true"
     [style.marginTop]="showHeader ? '70px' : '0px'"
   ></ion-router-outlet>
 </ion-app>

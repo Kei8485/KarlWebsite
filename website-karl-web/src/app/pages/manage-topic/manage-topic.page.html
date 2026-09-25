@@ -1,0 +1,197 @@
+<ion-content class="custom-bg">
+  <div class="views-container">
+    <div
+      class="glass-card editor-card"
+      style="max-width: 900px; margin: 0 auto; margin-top: 2rem"
+    >
+      <div
+        class="editor-header"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 2rem;
+        "
+      >
+        <div style="display: flex; align-items: center; gap: 1rem">
+          <ion-icon
+            name="arrow-back-outline"
+            style="font-size: 1.5rem; color: #4facfe; cursor: pointer"
+            (click)="goBack()"
+          ></ion-icon>
+          <h2 style="margin: 0; color: white">
+            {{ topicId === 'new' ? 'New Topic' : 'Edit Topic' }}
+          </h2>
+        </div>
+        <app-button
+          variant="primary"
+          label="Save All Changes"
+          icon="save-outline"
+          (clicked)="saveTopic()"
+        ></app-button>
+      </div>
+
+      <!-- TOPIC DETAILS -->
+      <h3 style="color: #4facfe; margin-bottom: 1rem">Topic Details</h3>
+      <div class="form-group">
+        <label>Topic Title</label>
+        <input
+          type="text"
+          [(ngModel)]="topic.title"
+          placeholder="e.g. Introduction to Derivatives"
+          class="dummy-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Video URL</label>
+        <input
+          type="text"
+          [(ngModel)]="topic.youtube_url"
+          placeholder="https://youtube.com/..."
+          class="dummy-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Notes / Content</label>
+        <textarea
+          [(ngModel)]="topic.notes"
+          placeholder="Enter topic lesson notes..."
+          class="dummy-input"
+          rows="6"
+          style="resize: vertical"
+        ></textarea>
+      </div>
+
+      <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 2rem 0" />
+
+      <!-- QUIZ DETAILS -->
+      <h3 style="color: #4facfe; margin-bottom: 1rem">
+        Quizzes for: {{ topic.title || 'Untitled Topic' }}
+      </h3>
+
+      <div class="quiz-list">
+        <div class="quiz-item" *ngFor="let q of topic.questions; let i = index">
+          <div class="form-group">
+            <label>Question {{ i + 1 }}</label>
+            <input
+              type="text"
+              [(ngModel)]="q.question_text"
+              class="dummy-input"
+              placeholder="Enter question..."
+            />
+          </div>
+
+          <label
+            style="
+              display: block;
+              margin-bottom: 0.5rem;
+              font-size: 0.85rem;
+              color: #8b96ab;
+            "
+            >Multiple Choices (Select correct answer)</label
+          >
+          <div class="quiz-choices">
+            <!-- A -->
+            <div
+              class="choice"
+              [class.correct-choice]="q.correct_option === 'A'"
+            >
+              <input
+                type="radio"
+                [name]="'q' + i"
+                [checked]="q.correct_option === 'A'"
+                (change)="setCorrectOption(i, 'A')"
+              />
+              <span class="choice-label">A</span>
+              <input type="text" [(ngModel)]="q.option_a" class="dummy-input" />
+            </div>
+            <!-- B -->
+            <div
+              class="choice"
+              [class.correct-choice]="q.correct_option === 'B'"
+            >
+              <input
+                type="radio"
+                [name]="'q' + i"
+                [checked]="q.correct_option === 'B'"
+                (change)="setCorrectOption(i, 'B')"
+              />
+              <span class="choice-label">B</span>
+              <input type="text" [(ngModel)]="q.option_b" class="dummy-input" />
+            </div>
+            <!-- C -->
+            <div
+              class="choice"
+              [class.correct-choice]="q.correct_option === 'C'"
+            >
+              <input
+                type="radio"
+                [name]="'q' + i"
+                [checked]="q.correct_option === 'C'"
+                (change)="setCorrectOption(i, 'C')"
+              />
+              <span class="choice-label">C</span>
+              <input type="text" [(ngModel)]="q.option_c" class="dummy-input" />
+            </div>
+            <!-- D -->
+            <div
+              class="choice"
+              [class.correct-choice]="q.correct_option === 'D'"
+            >
+              <input
+                type="radio"
+                [name]="'q' + i"
+                [checked]="q.correct_option === 'D'"
+                (change)="setCorrectOption(i, 'D')"
+              />
+              <span class="choice-label">D</span>
+              <input type="text" [(ngModel)]="q.option_d" class="dummy-input" />
+            </div>
+          </div>
+
+          <div style="text-align: right; margin-top: 1rem">
+            <app-button
+              variant="danger-outline"
+              label="Remove Question"
+              size="small"
+              icon="trash-outline"
+              (clicked)="removeQuestion(i)"
+            ></app-button>
+          </div>
+        </div>
+
+        <div
+          *ngIf="!topic.questions || topic.questions.length === 0"
+          style="
+            padding: 2rem;
+            text-align: center;
+            color: #8b96ab;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+          "
+        >
+          No quizzes added yet.
+        </div>
+      </div>
+
+      <div
+        style="
+          margin-top: 1.5rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <app-button
+          variant="outline"
+          label="+ Add Another Question"
+          size="small"
+          (clicked)="addQuestion()"
+        ></app-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

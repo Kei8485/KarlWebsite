@@ -12,7 +12,7 @@ from rest_framework import status
 
 from .models import Subject, Topic, User, PlannerTask, StudySession
 
-from .serializers import SubjectSerializer, TopicSerializer, UserSerializer, PlannerTaskSerializer, StudySessionSerializer
+from .serializers import SubjectSerializer, TopicSerializer, QuizQuestionSerializer, UserSerializer, PlannerTaskSerializer, StudySessionSerializer
 
 
 @api_view(['GET'])

@@ -1,0 +1,67 @@
+
+.topic-list-clean {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.topic-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(79, 172, 254, 0.3);
+  }
+
+  .topic-row-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .topic-number {
+      background: rgba(79, 172, 254, 0.1);
+      color: #4facfe;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .topic-title {
+      color: white;
+      font-weight: 500;
+      font-size: 1.05rem;
+    }
+  }
+
+  .topic-row-actions {
+    display: flex;
+    gap: 1rem;
+
+    .action-icon {
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: #8B96AB;
+      transition: color 0.2s ease;
+
+      &.edit:hover {
+        color: #4facfe;
+      }
+      
+      &.delete:hover {
+        color: #ff4d4d;
+      }
+    }
+  }
+}

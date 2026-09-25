@@ -36,7 +36,11 @@ const routes: Routes = [
   {
     path: 'planner',
      loadComponent: () => import('./pages/planner/planner.page').then( m => m.PlannerPage)
+  },  {
+    path: 'manage-topic/:subjectId/:topicId',
+    loadComponent: () => import('./pages/manage-topic/manage-topic.page').then( m => m.ManageTopicPage)
   }
+
 
 ];
 

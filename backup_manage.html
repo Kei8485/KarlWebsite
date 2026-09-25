@@ -1,0 +1,271 @@
+<ion-content [fullscreen]="true">
+  <div class="page-container">
+    
+    <!-- SLEEK TOGGLE -->
+    <div class="admin-toggle-wrapper">
+      <div class="pill-toggle">
+        <div class="active-indicator" [ngClass]="viewMode"></div>
+        <button [class.active]="viewMode === 'users'" (click)="setViewMode('users')">Manage Users</button>
+        <button [class.active]="viewMode === 'system'" (click)="setViewMode('system')">Manage System</button>
+      </div>
+    </div>
+
+    <div class="views-container">
+      <!-- USERS VIEW -->
+      <div class="view-panel" [class.active]="viewMode === 'users'">
+        <div class="hero-section">
+          <h1 class="gradient-text">Manage Users</h1>
+          <p class="subtitle">
+            Add, remove, or modify client access to the platform.
+          </p>
+        </div>
+
+    <div class="admin-grid">
+      <!-- 1. ADD USER FORM (LEFT SIDE) -->
+      <div class="glass-card add-user-card">
+        <h2>Add New User</h2>
+
+        <form #userForm="ngForm">
+          <div class="form-group">
+            <label>Username</label>
+            <input
+              type="text"
+              name="userName"
+              [(ngModel)]="newUser.userName"
+              placeholder="Enter username"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              [(ngModel)]="newUser.email"
+              placeholder="client@email.com"
+              required
+              email
+              [ngClass]="{'input-error': errorMessage}"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Role</label>
+            <ion-select
+              name="role"
+              [(ngModel)]="newUser.role"
+              interface="popover"
+              class="custom-select"
+            >
+              <ion-select-option value="student">Student</ion-select-option>
+              <ion-select-option value="admin">Admin</ion-select-option>
+            </ion-select>
+          </div>
+
+          <!-- Feedback Messages -->
+          <p class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</p>
+          <p class="success-msg" *ngIf="successMessage">{{ successMessage }}</p>
+
+          <app-button
+            variant="primary"
+            label="Create User"
+            icon="person-add-outline"
+            [disabled]="userForm.invalid || false"
+            (clicked)="addUser()"
+          ></app-button>
+        </form>
+      </div>
+
+      <!-- 2. CURRENT USERS LIST (RIGHT SIDE) -->
+      <div class="glass-card users-list-card">
+        <!-- Header with Filter Tabs -->
+        <div class="header-with-filters">
+          <h2>Current Users: {{ filteredUsers.length }}</h2>
+          <div class="filter-tabs">
+            <button
+              [class.active]="currentFilter === 'all'"
+              (click)="applyFilter('all')"
+            >
+              All
+            </button>
+            <button
+              [class.active]="currentFilter === 'admin'"
+              (click)="applyFilter('admin')"
+            >
+              Admins
+            </button>
+            <button
+              [class.active]="currentFilter === 'student'"
+              (click)="applyFilter('student')"
+            >
+              Students
+            </button>
+          </div>
+        </div>
+
+        <!-- The List of Users -->
+        <div class="user-list">
+          <div class="user-row" *ngFor="let user of filteredUsers">
+            <div class="user-info">
+              <div class="user-name">{{ user.userName }}</div>
+              <div class="user-email">
+                {{ user.email }} &bull; Joined {{ user.created_at |
+                date:'mediumDate' }}
+              </div>
+            </div>
+
+            <div class="user-role" [ngClass]="user.role">
+              {{ user.role | titlecase }}
+            </div>
+
+            <ion-icon
+              name="trash-outline"
+              class="delete-icon"
+              (click)="deleteUser(user.id)"
+            ></ion-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- End Users View -->
+
+      <!-- SYSTEM VIEW (CMS Scaffold) -->
+      <div class="view-panel" [class.active]="viewMode === 'system'">
+        <div class="hero-section">
+          <h1 class="gradient-text system-gradient">Manage System</h1>
+          <p class="subtitle">
+            Edit Subjects, Topics, and Quizzes directly from the dashboard.
+          </p>
+        </div>
+
+        <div class="admin-grid system-grid">
+          <!-- CMS Left Column: List -->
+          <div class="glass-card list-card">
+            <h2>Content Library</h2>
+            <div class="placeholder-list">
+              <div class="list-item active">Mathematics</div>
+              <div class="list-item">Operating Systems</div>
+              <div class="list-item add-new">+ Add New Subject</div>
+            </div>
+          </div>
+          
+          <!-- CMS Right Column: Editor -->
+          <div class="glass-card editor-card">
+            <div class="editor-header">
+              <h2>Edit Subject</h2>
+              
+              <!-- INNER TABS -->
+              <div class="inner-tabs">
+                <button [class.active]="cmsTab === 'info'" (click)="cmsTab = 'info'">Subject Info</button>
+                <button [class.active]="cmsTab === 'topics'" (click)="cmsTab = 'topics'">Topics & Quizzes</button>
+              </div>
+            </div>
+            
+            <!-- TAB 1: SUBJECT INFO -->
+            <div *ngIf="cmsTab === 'info'" class="tab-content">
+              <p style="color: #8B96AB; font-size: 0.9rem; margin-bottom: 2rem;">Select an item from the library to edit its properties.</p>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                  <label>Course Code</label>
+                  <input type="text" placeholder="e.g. 114" class="dummy-input" />
+                </div>
+                <div class="form-group">
+                  <label>Category</label>
+                  <input type="text" placeholder="e.g. MATHEMATICS" class="dummy-input" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Subject Title</label>
+                <input type="text" placeholder="e.g. Differential Calculus" class="dummy-input" />
+              </div>
+
+              <div class="form-group">
+                <label>Description</label>
+                <textarea placeholder="Enter subject description..." class="dummy-input" rows="4" style="resize: vertical;"></textarea>
+              </div>
+              
+              <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                <app-button variant="primary" label="Save Changes" icon="save-outline"></app-button>
+                <app-button variant="danger-outline" label="Delete" icon="trash-outline"></app-button>
+              </div>
+            </div>
+
+            <!-- TAB 2: TOPICS & QUIZZES -->
+            <div *ngIf="cmsTab === 'topics'" class="tab-content">
+              <p style="color: #8B96AB; font-size: 0.9rem; margin-bottom: 1.5rem;">Manage the lessons and quizzes for this subject.</p>
+              
+              <div class="topic-list">
+                <!-- Topic Item Scaffold -->
+                <div class="topic-card glass-panel">
+                  <div class="topic-header">
+                    <h3>1. Introduction to Derivatives</h3>
+                    <div class="topic-actions">
+                      <ion-icon name="pencil-outline"></ion-icon>
+                      <ion-icon name="trash-outline" class="danger-icon"></ion-icon>
+                    </div>
+                  </div>
+                  <div class="topic-details">
+                    <p><span>Video:</span> https://youtube.com/watch?v=123</p>
+                    <p><span>Quizzes:</span> 5 Questions</p>
+                  </div>
+                  <app-button variant="outline" label="Manage Quizzes" size="small" style="margin-top: 10px;" (click)="showQuizEditor = !showQuizEditor"></app-button>
+                  
+                  <!-- INLINE QUIZ EDITOR (Slides down when button is clicked) -->
+                  <div class="quiz-editor-panel" *ngIf="showQuizEditor">
+                    <h4 class="quiz-editor-title">Quizzes for: Introduction to Derivatives</h4>
+                    
+                    <div class="quiz-item">
+                      <div class="form-group" style="margin-bottom: 1rem;">
+                        <label>Question 1</label>
+                        <input type="text" value="What is the derivative of x^2?" class="dummy-input" />
+                      </div>
+                      
+                      <label>Multiple Choices (Select correct answer)</label>
+                      <div class="quiz-choices">
+                        <div class="choice correct-choice">
+                          <input type="radio" checked name="q1" />
+                          <input type="text" value="2x" class="dummy-input" />
+                        </div>
+                        <div class="choice">
+                          <input type="radio" name="q1" />
+                          <input type="text" value="x" class="dummy-input" />
+                        </div>
+                        <div class="choice">
+                          <input type="radio" name="q1" />
+                          <input type="text" value="x^2" class="dummy-input" />
+                        </div>
+                        <div class="choice">
+                          <input type="radio" name="q1" />
+                          <input type="text" value="2" class="dummy-input" />
+                        </div>
+                      </div>
+                      
+                      <div style="text-align: right; margin-top: 1rem;">
+                        <app-button variant="danger-outline" label="Remove Question" size="small" icon="trash-outline"></app-button>
+                      </div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                      <app-button variant="outline" label="+ Add Another Question" size="small"></app-button>
+                      <app-button variant="primary" label="Save Quizzes" size="small" icon="save-outline"></app-button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <div style="margin-top: 1.5rem;">
+                <app-button variant="primary" label="Add New Topic" icon="add-outline"></app-button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div> <!-- End System View -->
+
+    </div> <!-- End views-container -->
+  </div>
+</ion-content>

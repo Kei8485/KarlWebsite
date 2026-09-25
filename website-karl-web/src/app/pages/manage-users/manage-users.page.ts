@@ -2,13 +2,13 @@ import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy } from '@angula
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { IonContent, IonIcon, IonSelect, IonSelectOption, ModalController } from '@ionic/angular'; // 🚨 Swapped to ModalController
+import { Router } from '@angular/router';
+import { IonContent, IonIcon, IonSelect, IonSelectOption, ModalController } from '@ionic/angular';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
 import { addIcons } from 'ionicons';
-import { trashOutline, personAddOutline, saveOutline, pencilOutline, addOutline } from 'ionicons/icons';
+import { trashOutline, personAddOutline, saveOutline, pencilOutline, addOutline, bookOutline } from 'ionicons/icons';
 
-// 🚨 Import your new custom modal! (Adjust path if needed based on your folder structure)
 import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/confirm-modal.component';
 
 @Component({
@@ -22,14 +22,22 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
   private http = inject(HttpClient);
   private apiUrl = 'http://127.0.0.1:8000/api/users'; 
   private cdr = inject(ChangeDetectorRef); 
-  private modalCtrl = inject(ModalController); // 🚨 Injected ModalController
+  private modalCtrl = inject(ModalController);
+  private router = inject(Router); 
 
   users: any[] = [];
   filteredUsers: any[] = [];
   currentFilter: string = 'all';
+  searchQuery: string = '';
   viewMode: 'users' | 'system' = 'users';
   cmsTab: 'info' | 'topics' = 'info';
   showQuizEditor: boolean = false;
+
+  // CMS State
+  apiSystemUrl = 'http://127.0.0.1:8000/api';
+  subjectsList: any[] = [];
+  activeSubject: any = null;
+  expandedTopicId: number | null = null;
 
   setViewMode(mode: 'users' | 'system') {
     this.viewMode = mode;
@@ -47,11 +55,12 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
   };
 
   constructor() {
-    addIcons({ trashOutline, personAddOutline, saveOutline, pencilOutline, addOutline });
+    addIcons({ trashOutline, personAddOutline, saveOutline, pencilOutline, addOutline, bookOutline });
   }
 
   ngOnInit() {
     this.loadUsers();
+    this.loadSubjects();
     this.refreshTimer = setInterval(() => {
       this.loadUsers();
     }, 5000);
@@ -62,7 +71,12 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
       clearInterval(this.refreshTimer);
     }
   }
-  
+
+  onSearchChange(event: any) {
+    // Simple placeholder to prevent compile errors
+    // You can implement actual search filtering here later
+  }
+
   loadUsers() {
     this.http.get<any[]>(`${this.apiUrl}/`).subscribe({
       next: (data) => {
@@ -89,7 +103,6 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     });
   }
 
-  // 🚨 Open Blue Custom Modal for Creating
   async addUser() {
     this.errorMessage = ''; 
     this.successMessage = ''; 
@@ -98,18 +111,17 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
 
     const modal = await this.modalCtrl.create({
       component: ConfirmModalComponent,
-      cssClass: 'transparent-modal', // Uses the CSS class we put in global.scss!
+      cssClass: 'transparent-modal',
       componentProps: {
         title: 'Confirm Creation',
         message: `Are you sure you want to create an account for <strong>${this.newUser.userName}</strong>?`,
         confirmText: 'Create User',
-        isDanger: false // Keeps it blue
+        isDanger: false
       }
     });
     
     await modal.present();
 
-    // Wait for the modal to close and check what the user clicked
     const { data } = await modal.onWillDismiss();
     if (data === true) {
       this.executeAddUser();
@@ -140,7 +152,6 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     });
   }
 
-  // 🚨 Open Red Custom Modal for Deleting
   async deleteUser(id: number) {
     const targetUser = this.users.find(u => u.id === id);
     const nameToDisplay = targetUser ? targetUser.userName : 'this user';
@@ -152,7 +163,7 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
         title: 'Delete Account?',
         message: `Are you sure you want to permanently delete <strong>${nameToDisplay}</strong>? This cannot be undone.`,
         confirmText: 'Delete',
-        isDanger: true // Turns the modal danger colors on!
+        isDanger: true 
       }
     });
     
@@ -172,5 +183,146 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
       },
       error: (err) => console.error('Error deleting user:', err)
     });
+  }
+
+  // ==========================================
+  // CMS: SUBJECT MANAGEMENT
+  // ==========================================
+  loadSubjects() {
+    this.http.get<any[]>(`${this.apiSystemUrl}/subjects/`).subscribe({
+      next: (data) => {
+        this.subjectsList = data;
+        if (this.activeSubject) {
+           // Refresh active subject data
+           this.activeSubject = this.subjectsList.find(s => s.id === this.activeSubject.id) || null;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error loading subjects:', err)
+    });
+  }
+
+  selectSubject(subject: any) {
+    // Deep clone to avoid mutating the list until saved
+    this.activeSubject = JSON.parse(JSON.stringify(subject));
+    this.cmsTab = 'info';
+  }
+
+  addNewSubject() {
+    this.activeSubject = {
+      title: '',
+      description: '',
+      category: '',
+      course_code: '',
+      topics: []
+    };
+    this.cmsTab = 'info';
+  }
+
+  async saveSubject() {
+    if (!this.activeSubject) return;
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Save Subject',
+        message: `Are you sure you want to save changes to <strong>${this.activeSubject.title || 'this subject'}</strong>?`,
+        confirmText: 'Save',
+        isDanger: false
+      }
+    });
+    
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    
+    if (data === true) {
+      if (this.activeSubject.id) {
+        // Update existing
+        this.http.put(`${this.apiSystemUrl}/subjects/manage/${this.activeSubject.id}/`, this.activeSubject).subscribe({
+          next: () => this.loadSubjects(),
+          error: (err) => console.error(err)
+        });
+      } else {
+        // Create new
+        this.http.post(`${this.apiSystemUrl}/subjects/create/`, this.activeSubject).subscribe({
+          next: (newSub: any) => {
+            this.activeSubject = newSub;
+            this.loadSubjects();
+          },
+          error: (err) => console.error(err)
+        });
+      }
+    }
+  }
+
+  async deleteSubject() {
+    if (!this.activeSubject || !this.activeSubject.id) return;
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Delete Subject',
+        message: `Are you sure you want to permanently delete <strong>${this.activeSubject.title}</strong>? All topics and quizzes inside it will be lost.`,
+        confirmText: 'Delete',
+        isDanger: true
+      }
+    });
+    
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    
+    if (data === true) {
+      this.http.delete(`${this.apiSystemUrl}/subjects/manage/${this.activeSubject.id}/`).subscribe({
+        next: () => {
+          this.activeSubject = null;
+          this.loadSubjects();
+        },
+        error: (err) => console.error(err)
+      });
+    }
+  }
+
+  
+  goToAddTopic() {
+    if (!this.activeSubject || !this.activeSubject.id) return;
+    this.router.navigate(['/manage-topic', this.activeSubject.id, 'new']);
+  }
+
+  goToEditTopic(topicId: number) {
+    if (!this.activeSubject || !this.activeSubject.id) return;
+    this.router.navigate(['/manage-topic', this.activeSubject.id, topicId]);
+  }
+  
+  async deleteTopic(topic: any) {
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Delete Topic',
+        message: `Are you sure you want to permanently delete <strong>${topic.title}</strong>? All quizzes inside it will be lost.`,
+        confirmText: 'Delete',
+        isDanger: true
+      }
+    });
+    
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    
+    if (data === true) {
+      this.http.delete(`${this.apiSystemUrl}/topics/manage/${topic.id}/`).subscribe({
+        next: () => this.loadSubjects(),
+        error: (err) => console.error(err)
+      });
+    }
+  }
+
+  toggleQuizEditor(topicId: number) {
+    if (this.expandedTopicId === topicId) {
+      this.expandedTopicId = null;
+    } else {
+      this.expandedTopicId = topicId;
+    }
   }
 }

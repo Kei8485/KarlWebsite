@@ -67,7 +67,7 @@
 
           <div class="quiz-container" *ngFor="let question of topic.questions; let i = index">
             <h3 class="question-text">
-              {{ question.question_text }}
+              {{ i + 1 }}. {{ question.question_text }}
             </h3>
             
             <div class="options-grid" [ngClass]="{'is-submitted': submittedAnswers[question.id]}">

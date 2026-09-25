@@ -4,7 +4,7 @@ from .models import Subject, Topic, User, PlannerTask, StudySession, ScheduledSt
 class QuizQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuizQuestion
-        fields = ['id', 'question_text', 'option_a', 'option_b', 'option_c', 'option_d', 'correct_option']
+        fields = ['id', 'topic', 'question_text', 'option_a', 'option_b', 'option_c', 'option_d', 'correct_option']
 
 class TopicSerializer(serializers.ModelSerializer):
     questions = QuizQuestionSerializer(many=True, read_only=True)

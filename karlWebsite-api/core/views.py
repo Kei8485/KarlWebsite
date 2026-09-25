@@ -65,7 +65,7 @@ def login(request):
     code = request.data.get('code')
     try:
         user = User.objects.get(email=email, codePass=code)
-        return Response({'success': True, 'role': user.role, 'userName': user.userName})
+        return Response({'success': True, 'id': user.id, 'email': user.email, 'role': user.role, 'userName': user.userName})
     except User.DoesNotExist:
         return Response({'error': 'Invalid email or code'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -382,3 +382,21 @@ def manage_quiz(request, quiz_id):
         quiz.delete()
         return Response({'message': 'Quiz deleted successfully.'})
 
+
+
+@api_view(['PUT'])
+def update_user_profile(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    user.userName = request.data.get('userName', user.userName)
+    
+    codePass = request.data.get('codePass')
+    if codePass:
+        user.codePass = codePass
+        
+    user.save()
+    serializer = UserSerializer(user)
+    return Response(serializer.data)

@@ -1,0 +1,80 @@
+<ion-content class="karl-bg">
+  <div class="page-container">
+    <div class="header-section">
+      <h1 class="page-title">Edit Profile</h1>
+      <p class="page-subtitle">
+        Update your personal information and password.
+      </p>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-avatar">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input
+          type="email"
+          [ngModel]="userEmail" name="email"
+          disabled
+          class="dummy-input disabled"
+        />
+        <span class="help-text"
+          >Email address cannot be changed for security reasons.</span
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Display Name</label>
+        <input
+          type="text"
+          [(ngModel)]="userName"
+          placeholder="Enter your name"
+          class="dummy-input"
+        />
+      </div>
+
+      <hr class="divider" />
+
+      <h3 class="section-title">Change Password</h3>
+
+      <div class="form-group">
+        <label>New Password (Access Code)</label>
+        <input
+          type="password"
+          [(ngModel)]="codePass"
+          placeholder="Leave blank to keep current password"
+          class="dummy-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Confirm New Password</label>
+        <input
+          type="password"
+          [(ngModel)]="confirmCodePass"
+          placeholder="Confirm new password"
+          class="dummy-input"
+        />
+      </div>
+
+      <div class="message error-msg" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+      <div class="message success-msg" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <div class="actions">
+        <app-button
+          label="Save Changes"
+          variant="primary"
+          icon="save-outline"
+          [disabled]="isLoading"
+          (clicked)="saveProfile()"
+        ></app-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

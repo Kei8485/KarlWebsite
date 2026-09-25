@@ -13,7 +13,7 @@ const routes: Routes = [
   //   loadComponent: () => import('./pages/dev-preview/dev-preview.page').then( m => m.DevPreviewPage)
   // },
   {
-    path: 'login',
+    path: 'profile', loadComponent: () => import('./pages/profile/profile.page').then(m => m.ProfilePage) }, { path: 'login',
     loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
   },
   {
@@ -36,7 +36,8 @@ const routes: Routes = [
   {
     path: 'planner',
      loadComponent: () => import('./pages/planner/planner.page').then( m => m.PlannerPage)
-  },  {
+  },
+  {
     path: 'manage-topic/:subjectId/:topicId',
     loadComponent: () => import('./pages/manage-topic/manage-topic.page').then( m => m.ManageTopicPage)
   }

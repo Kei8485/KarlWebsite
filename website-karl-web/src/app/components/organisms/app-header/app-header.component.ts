@@ -48,6 +48,11 @@ export class AppHeaderComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+
+    window.addEventListener('profile-updated', () => {
+      this.currentUserName = localStorage.getItem('userName') || 'Username';
+      this.cdr.detectChanges();
+    });
   }
 
   ngOnInit() {

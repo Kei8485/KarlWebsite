@@ -56,6 +56,8 @@ export class LoginPage {
     this.authService.login(this.email, this.accessCode).subscribe({
       next: (response: any) => {
         this.isLoading = false;
+        localStorage.setItem('userId', response.id);
+        localStorage.setItem('email', response.email);
         localStorage.setItem('userName', response.userName);
         localStorage.setItem('userRole', response.role);
         this.router.navigate(['/subjects']);

@@ -1,0 +1,8 @@
+ion-router-outlet {
+  margin-top: 0;
+  transition: margin-top 0.2s ease;
+
+  &.with-header {
+    margin-top: 70px;
+  }
+}

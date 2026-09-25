@@ -1,363 +1,367 @@
-<ion-content [fullscreen]="true">
-  <div class="page-container">
-    <div class="hero-section">
-      <h1 class="gradient-text">Study Planner</h1>
-      <p class="subtitle">Organize your tasks and track your focus sessions.</p>
-    </div>
+<div>
+  <ion-content [fullscreen]="true">
+    <div class="page-container">
+      <div class="hero-section">
+        <h1 class="gradient-text">Study Planner</h1>
+        <p class="subtitle">
+          Organize your tasks and track your focus sessions.
+        </p>
+      </div>
 
-    <div class="planner-grid">
-      <!-- ===================================== -->
-      <!-- LEFT SIDE: AGENDA & TASKS             -->
-      <!-- ===================================== -->
-      <div class="flip-container" [class.is-flipped]="showSchedule">
-        <div class="flipper">
-          <!-- FRONT SIDE: TASKS -->
-          <div class="glass-card tasks-card front">
-            <!-- 🚨 PREMIUM: Header with New Button -->
-            <div class="tasks-header">
-              <h2>Upcoming Tasks</h2>
-              <div class="header-actions">
-                <!-- Toggle Button to switch to Schedule Study -->
-                <ion-button
-                  fill="clear"
-                  color="medium"
-                  (click)="toggleView()"
-                  class="sort-btn"
-                >
-                  <ion-icon slot="icon-only" name="time-outline"></ion-icon>
-                </ion-button>
-                <ion-button
-                  fill="clear"
-                  color="medium"
-                  (click)="toggleSort()"
-                  class="sort-btn"
-                >
-                  <ion-icon
-                    slot="icon-only"
-                    name="swap-vertical-outline"
-                  ></ion-icon>
-                </ion-button>
+      <div class="planner-grid">
+        <!-- ===================================== -->
+        <!-- LEFT SIDE: AGENDA & TASKS             -->
+        <!-- ===================================== -->
+        <div class="flip-container" [class.is-flipped]="showSchedule">
+          <div class="flipper">
+            <!-- FRONT SIDE: TASKS -->
+            <div class="glass-card tasks-card front">
+              <!-- 🚨 PREMIUM: Header with New Button -->
+              <div class="tasks-header">
+                <h2>Upcoming Tasks</h2>
+                <div class="header-actions">
+                  <!-- Toggle Button to switch to Schedule Study -->
+                  <ion-button
+                    fill="clear"
+                    color="medium"
+                    (click)="toggleView()"
+                    class="sort-btn"
+                  >
+                    <ion-icon slot="icon-only" name="time-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button
+                    fill="clear"
+                    color="medium"
+                    (click)="toggleSort()"
+                    class="sort-btn"
+                  >
+                    <ion-icon
+                      slot="icon-only"
+                      name="swap-vertical-outline"
+                    ></ion-icon>
+                  </ion-button>
 
-                <!-- 🚨 Uses YOUR custom component -->
-                <app-button
-                  *ngIf="!isAddingTask"
-                  label="Add Task"
-                  icon="add-outline"
-                  variant="primary"
-                  (clicked)="isAddingTask = true"
-                ></app-button>
-              </div>
-            </div>
-
-            <!-- 🚨 PREMIUM: Hidden Add Task Form -->
-            <div
-              class="add-task-form"
-              *ngIf="isAddingTask"
-              [class.editing-mode]="editingTaskId !== null"
-            >
-              <div class="editing-label" *ngIf="editingTaskId !== null">
-                <ion-icon name="create-outline"></ion-icon>
-                Editing Task
-              </div>
-
-              <div class="form-inputs">
-                <!-- 🚨 REPLACED with your custom app-input component! -->
-                <app-input
-                  [(value)]="newTaskTitle"
-                  placeholder="What are you working on?"
-                ></app-input>
-
-                <!-- 🚨 REPLACED with your custom app-input component! -->
-                <app-input
-                  [(value)]="newTaskSubject"
-                  placeholder="Category (e.g. Math, Coding)"
-                ></app-input>
-              </div>
-
-              <div class="form-bottom">
-                <!-- Sleek Pill Date Picker - Now a FULL clickable button! -->
-                <button
-                  id="open-calendar-modal"
-                  class="modern-date-picker full-click-btn"
-                >
-                  <ion-icon name="calendar-outline"></ion-icon>
-                  <span>{{ newTaskDate | date:'mediumDate' }}</span>
-                </button>
-
-                <ion-modal
-                  #calendarModal
-                  trigger="open-calendar-modal"
-                  [keepContentsMounted]="true"
-                  class="transparent-modal"
-                >
-                  <ng-template>
-                    <!-- 🚨 Wrapper Card -->
-                    <div
-                      style="
-                        width: 350px;
-                        margin: auto;
-                        background: var(--navy);
-                        border-radius: 16px;
-                        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-                      "
-                    >
-                      <ion-datetime
-                        #myDatetime
-                        id="datetime"
-                        presentation="date"
-                        [(ngModel)]="newTaskDate"
-                        [min]="todayDate"
-                        max="2030"
-                        style="box-shadow: none; border-radius: 16px 16px 0 0"
-                      >
-                        <!-- We removed the slot="buttons" from inside here! -->
-                      </ion-datetime>
-
-                      <!-- 🚨 Buttons moved OUTSIDE the calendar so they are always visible! -->
-                      <div
-                        style="
-                          display: flex;
-                          justify-content: flex-end;
-                          padding: 8px 16px;
-                          border-top: 1px solid rgba(255, 255, 255, 0.05);
-                        "
-                      >
-                        <!-- Action Bar -->
-                        <div class="calendar-action-bar">
-                          <ion-button
-                            fill="clear"
-                            class="cal-btn-cancel"
-                            (click)="myDatetime.cancel(); calendarModal.dismiss()"
-                          >
-                            Cancel
-                          </ion-button>
-
-                          <ion-button
-                            fill="clear"
-                            class="cal-btn-confirm"
-                            (click)="myDatetime.confirm(); calendarModal.dismiss()"
-                          >
-                            Confirm
-                          </ion-button>
-                        </div>
-                      </div>
-                    </div>
-                  </ng-template>
-                </ion-modal>
-
-                <div class="form-actions">
                   <!-- 🚨 Uses YOUR custom component -->
                   <app-button
-                    label="Cancel"
-                    variant="transparent"
-                    (clicked)="cancelAddTask()"
-                  ></app-button>
-
-                  <app-button
-                    [label]="editingTaskId ? 'Update' : 'Confirm'"
+                    *ngIf="!isAddingTask"
+                    label="Add Task"
+                    icon="add-outline"
                     variant="primary"
-                    (clicked)="addTask()"
+                    (clicked)="isAddingTask = true"
                   ></app-button>
                 </div>
               </div>
-            </div>
 
-            <!-- 🚨 UPDATED: Task List -->
-            <div class="task-list">
+              <!-- 🚨 PREMIUM: Hidden Add Task Form -->
               <div
-                class="empty-state"
-                *ngIf="filteredAndSortedTasks.length === 0"
+                class="add-task-form"
+                *ngIf="isAddingTask"
+                [class.editing-mode]="editingTaskId !== null"
               >
-                No upcoming tasks! You are all caught up.
-              </div>
+                <div class="editing-label" *ngIf="editingTaskId !== null">
+                  <ion-icon name="create-outline"></ion-icon>
+                  Editing Task
+                </div>
 
-              <div
-                class="task-row"
-                *ngFor="let task of filteredAndSortedTasks"
-                [class.completed]="task.is_completed"
-                [class.is-being-edited]="task.id === editingTaskId"
-              >
-                <!-- Custom Checkbox Icon -->
-                <ion-icon
-                  [name]="task.is_completed ? 'checkmark-circle-outline' : 'ellipse-outline'"
-                  class="check-icon"
-                  (click)="toggleTask(task.id)"
-                >
-                </ion-icon>
+                <div class="form-inputs">
+                  <!-- 🚨 REPLACED with your custom app-input component! -->
+                  <app-input
+                    [(value)]="newTaskTitle"
+                    placeholder="What are you working on?"
+                  ></app-input>
 
-                <!-- 🚨 PRO UI: Removes text labels and uses Badges & Icons instead -->
-                <div class="task-info">
-                  <span class="task-title">{{ task.title }}</span>
-                  <div class="task-meta">
-                    <span class="subject-badge">{{ task.subject }}</span>
-                    <span class="task-date">
-                      <ion-icon name="calendar-outline"></ion-icon>
-                      Due {{ task.due_date | date:'mediumDate' }}
-                    </span>
+                  <!-- 🚨 REPLACED with your custom app-input component! -->
+                  <app-input
+                    [(value)]="newTaskSubject"
+                    placeholder="Category (e.g. Math, Coding)"
+                  ></app-input>
+                </div>
+
+                <div class="form-bottom">
+                  <!-- Sleek Pill Date Picker - Now a FULL clickable button! -->
+                  <button
+                    id="open-calendar-modal"
+                    class="modern-date-picker full-click-btn"
+                  >
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    <span>{{ newTaskDate | date:'mediumDate' }}</span>
+                  </button>
+
+                  <ion-modal
+                    #calendarModal
+                    trigger="open-calendar-modal"
+                    [keepContentsMounted]="true"
+                    class="transparent-modal"
+                  >
+                    <ng-template>
+                      <!-- 🚨 Wrapper Card -->
+                      <div
+                        style="
+                          width: 350px;
+                          margin: auto;
+                          background: var(--navy);
+                          border-radius: 16px;
+                          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+                        "
+                      >
+                        <ion-datetime
+                          #myDatetime
+                          id="datetime"
+                          presentation="date"
+                          [(ngModel)]="newTaskDate"
+                          [min]="todayDate"
+                          max="2030"
+                          style="box-shadow: none; border-radius: 16px 16px 0 0"
+                        >
+                          <!-- We removed the slot="buttons" from inside here! -->
+                        </ion-datetime>
+
+                        <!-- 🚨 Buttons moved OUTSIDE the calendar so they are always visible! -->
+                        <div
+                          style="
+                            display: flex;
+                            justify-content: flex-end;
+                            padding: 8px 16px;
+                            border-top: 1px solid rgba(255, 255, 255, 0.05);
+                          "
+                        >
+                          <!-- Action Bar -->
+                          <div class="calendar-action-bar">
+                            <ion-button
+                              fill="clear"
+                              class="cal-btn-cancel"
+                              (click)="myDatetime.cancel(); calendarModal.dismiss()"
+                            >
+                              Cancel
+                            </ion-button>
+
+                            <ion-button
+                              fill="clear"
+                              class="cal-btn-confirm"
+                              (click)="myDatetime.confirm(); calendarModal.dismiss()"
+                            >
+                              Confirm
+                            </ion-button>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </ion-modal>
+
+                  <div class="form-actions">
+                    <!-- 🚨 Uses YOUR custom component -->
+                    <app-button
+                      label="Cancel"
+                      variant="transparent"
+                      (clicked)="cancelAddTask()"
+                    ></app-button>
+
+                    <app-button
+                      [label]="editingTaskId ? 'Update' : 'Confirm'"
+                      variant="primary"
+                      (clicked)="addTask()"
+                    ></app-button>
                   </div>
                 </div>
+              </div>
 
-                <!-- Trash Can -->
-                <!-- Edit & Delete Icons -->
-                <div class="action-icons">
-                  <ion-icon
-                    name="create-outline"
-                    class="edit-icon"
-                    (click)="editTask(task)"
-                  ></ion-icon>
+              <!-- 🚨 UPDATED: Task List -->
+              <div class="task-list">
+                <div
+                  class="empty-state"
+                  *ngIf="filteredAndSortedTasks.length === 0"
+                >
+                  No upcoming tasks! You are all caught up.
+                </div>
 
+                <div
+                  class="task-row"
+                  *ngFor="let task of filteredAndSortedTasks"
+                  [class.completed]="task.is_completed"
+                  [class.is-being-edited]="task.id === editingTaskId"
+                >
+                  <!-- Custom Checkbox Icon -->
                   <ion-icon
-                    name="trash-outline"
-                    class="delete-icon"
-                    (click)="confirmDelete(task.id)"
-                  ></ion-icon>
+                    [name]="task.is_completed ? 'checkmark-circle-outline' : 'ellipse-outline'"
+                    class="check-icon"
+                    (click)="toggleTask(task.id)"
+                  >
+                  </ion-icon>
+
+                  <!-- 🚨 PRO UI: Removes text labels and uses Badges & Icons instead -->
+                  <div class="task-info">
+                    <span class="task-title">{{ task.title }}</span>
+                    <div class="task-meta">
+                      <span class="subject-badge">{{ task.subject }}</span>
+                      <span class="task-date">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                        Due {{ task.due_date | date:'mediumDate' }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Trash Can -->
+                  <!-- Edit & Delete Icons -->
+                  <div class="action-icons">
+                    <ion-icon
+                      name="create-outline"
+                      class="edit-icon"
+                      (click)="editTask(task)"
+                    ></ion-icon>
+
+                    <ion-icon
+                      name="trash-outline"
+                      class="delete-icon"
+                      (click)="confirmDelete(task.id)"
+                    ></ion-icon>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- BACK SIDE: SCHEDULE STUDY -->
-          <div class="glass-card tasks-card back">
-            <div class="tasks-header">
-              <div style="display: flex; align-items: center; gap: 0.5rem">
-                <ion-button
-                  fill="clear"
-                  color="medium"
-                  (click)="toggleView()"
-                  class="sort-btn"
-                  style="margin: 0; --padding-start: 0; --padding-end: 8px"
-                >
-                  <ion-icon
-                    slot="icon-only"
-                    name="arrow-back-outline"
-                  ></ion-icon>
-                </ion-button>
-                <h2 style="margin: 0">Schedule Study</h2>
+            <!-- BACK SIDE: SCHEDULE STUDY -->
+            <div class="glass-card tasks-card back">
+              <div class="tasks-header">
+                <div style="display: flex; align-items: center; gap: 0.5rem">
+                  <ion-button
+                    fill="clear"
+                    color="medium"
+                    (click)="toggleView()"
+                    class="sort-btn"
+                    style="margin: 0; --padding-start: 0; --padding-end: 8px"
+                  >
+                    <ion-icon
+                      slot="icon-only"
+                      name="arrow-back-outline"
+                    ></ion-icon>
+                  </ion-button>
+                  <h2 style="margin: 0">Schedule Study</h2>
+                </div>
+                <div class="header-actions"></div>
               </div>
-              <div class="header-actions"></div>
-            </div>
 
-            <app-schedule-study
-              [currentUserId]="currentUserId"
-            ></app-schedule-study>
+              <app-schedule-study
+                [currentUserId]="currentUserId"
+              ></app-schedule-study>
+            </div>
           </div>
+          <!-- Close .flipper -->
         </div>
-        <!-- Close .flipper -->
-      </div>
-      <!-- Close .flip-container -->
+        <!-- Close .flip-container -->
 
-      <!-- ===================================== -->
-      <!-- RIGHT SIDE: STATS & FOCUS TIMER       -->
-      <!-- ===================================== -->
-      <div class="right-column">
-        <!-- STATS WIDGET -->
-        <div class="glass-card stats-card">
-          <h3>Weekly Focus</h3>
-          <div class="stat-value">{{ totalStudyTime }}</div>
-          <p class="stat-label">Total time studied this week</p>
-        </div>
-
-        <!-- FOCUS TIMER WIDGET -->
-        <div class="glass-card timer-card">
-          <h2>Focus Timer</h2>
-
-          <!-- Giant Glowing Numbers -->
-          <div class="timer-display" [class.running]="isTimerRunning">
-            {{ displayTime }}
+        <!-- ===================================== -->
+        <!-- RIGHT SIDE: STATS & FOCUS TIMER       -->
+        <!-- ===================================== -->
+        <div class="right-column">
+          <!-- STATS WIDGET -->
+          <div class="glass-card stats-card">
+            <h3>Weekly Focus</h3>
+            <div class="stat-value">{{ totalStudyTime }}</div>
+            <p class="stat-label">Total time studied this week</p>
           </div>
 
-          <div class="time-presets" *ngIf="!isTimerRunning">
-            <!-- MAIN SELECTOR: 3-Part Custom Time Input -->
-            <div class="custom-time-input">
-              <input
-                type="number"
-                [(ngModel)]="inputHours"
-                (ngModelChange)="onCustomTimeChange()"
-                min="0"
-                max="99"
-              />
-              <span>h</span>
+          <!-- FOCUS TIMER WIDGET -->
+          <div class="glass-card timer-card">
+            <h2>Focus Timer</h2>
 
-              <input
-                type="number"
-                [(ngModel)]="inputMinutes"
-                (ngModelChange)="onCustomTimeChange()"
-                min="0"
-                max="59"
-              />
-              <span>m</span>
-
-              <input
-                type="number"
-                [(ngModel)]="inputSeconds"
-                (ngModelChange)="onCustomTimeChange()"
-                min="0"
-                max="59"
-              />
-              <span>s</span>
+            <!-- Giant Glowing Numbers -->
+            <div class="timer-display" [class.running]="isTimerRunning">
+              {{ displayTime }}
             </div>
 
-            <!-- QUICK CHIPS: Smaller preset buttons -->
-            <div class="small-presets">
-              <button
-                (click)="setCustomTime(5)"
-                [class.active]="timerMinutes === 5 && inputSeconds === 0"
-              >
-                5m
-              </button>
-              <button
-                (click)="setCustomTime(15)"
-                [class.active]="timerMinutes === 15 && inputSeconds === 0"
-              >
-                15m
-              </button>
-              <button
-                (click)="setCustomTime(30)"
-                [class.active]="timerMinutes === 30 && inputSeconds === 0"
-              >
-                30m
-              </button>
+            <div class="time-presets" *ngIf="!isTimerRunning">
+              <!-- MAIN SELECTOR: 3-Part Custom Time Input -->
+              <div class="custom-time-input">
+                <input
+                  type="number"
+                  [(ngModel)]="inputHours"
+                  (ngModelChange)="onCustomTimeChange()"
+                  min="0"
+                  max="99"
+                />
+                <span>h</span>
+
+                <input
+                  type="number"
+                  [(ngModel)]="inputMinutes"
+                  (ngModelChange)="onCustomTimeChange()"
+                  min="0"
+                  max="59"
+                />
+                <span>m</span>
+
+                <input
+                  type="number"
+                  [(ngModel)]="inputSeconds"
+                  (ngModelChange)="onCustomTimeChange()"
+                  min="0"
+                  max="59"
+                />
+                <span>s</span>
+              </div>
+
+              <!-- QUICK CHIPS: Smaller preset buttons -->
+              <div class="small-presets">
+                <button
+                  (click)="setCustomTime(5)"
+                  [class.active]="timerMinutes === 5 && inputSeconds === 0"
+                >
+                  5m
+                </button>
+                <button
+                  (click)="setCustomTime(15)"
+                  [class.active]="timerMinutes === 15 && inputSeconds === 0"
+                >
+                  15m
+                </button>
+                <button
+                  (click)="setCustomTime(30)"
+                  [class.active]="timerMinutes === 30 && inputSeconds === 0"
+                >
+                  30m
+                </button>
+              </div>
             </div>
-          </div>
 
-          <!-- Start / Stop Controls -->
-          <div class="timer-controls">
-            <!-- NOT running: Show Start + Reset -->
-            <app-button
-              *ngIf="!isTimerRunning"
-              label="Start Focus"
-              icon="play-outline"
-              variant="primary"
-              (clicked)="startTimer()"
-            ></app-button>
+            <!-- Start / Stop Controls -->
+            <div class="timer-controls">
+              <!-- NOT running: Show Start + Reset -->
+              <app-button
+                *ngIf="!isTimerRunning"
+                label="Start Focus"
+                icon="play-outline"
+                variant="primary"
+                (clicked)="startTimer()"
+              ></app-button>
 
-            <app-button
-              *ngIf="!isTimerRunning"
-              label="Reset"
-              icon="refresh-outline"
-              variant="transparent"
-              (clicked)="resetTimer()"
-            ></app-button>
+              <app-button
+                *ngIf="!isTimerRunning"
+                label="Reset"
+                icon="refresh-outline"
+                variant="transparent"
+                (clicked)="resetTimer()"
+              ></app-button>
 
-            <!-- RUNNING: Show Done + Reset (with confirmations) -->
-            <app-button
-              *ngIf="isTimerRunning"
-              label="Done"
-              icon="checkmark-outline"
-              variant="primary"
-              (clicked)="doneTimer()"
-            ></app-button>
+              <!-- RUNNING: Show Done + Reset (with confirmations) -->
+              <app-button
+                *ngIf="isTimerRunning"
+                label="Done"
+                icon="checkmark-outline"
+                variant="primary"
+                (clicked)="doneTimer()"
+              ></app-button>
 
-            <app-button
-              *ngIf="isTimerRunning"
-              label="Reset"
-              icon="refresh-outline"
-              variant="outline"
-              (clicked)="confirmReset()"
-            ></app-button>
+              <app-button
+                *ngIf="isTimerRunning"
+                label="Reset"
+                icon="refresh-outline"
+                variant="outline"
+                (clicked)="confirmReset()"
+              ></app-button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</ion-content>
+  </ion-content>
+</div>

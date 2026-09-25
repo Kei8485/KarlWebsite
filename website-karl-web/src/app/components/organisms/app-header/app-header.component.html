@@ -39,10 +39,10 @@
         <app-button
           label="Community"
           [variant]="
-            currentUrl.includes('/planner') ? 'primary' : 'transparent'
+            currentUrl.includes('/community') ? 'primary' : 'transparent'
           "
-          [disabled]="currentUrl.includes('/planner')"
-          routerLink="/planner"
+          [disabled]="currentUrl.includes('/community')"
+          routerLink="/community"
         ></app-button>
       </div>
       <!-- 3. Desktop User Profile & Logout -->
@@ -88,8 +88,11 @@
 
       <app-button
         label="Community"
-        [variant]="currentUrl.includes('/planner') ? 'primary' : 'transparent'"
-        routerLink="/planner"
+        [variant]="
+          currentUrl.includes('/community') ? 'primary' : 'transparent'
+        "
+        [disabled]="currentUrl.includes('/community')"
+        routerLink="/community"
       ></app-button>
 
       <app-button

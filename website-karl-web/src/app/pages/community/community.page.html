@@ -1,13 +1,19 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>community</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">community</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div class="community-container">
+    <div class="community-card">
+      <div class="card-icon">
+        <ion-icon name="people-outline"></ion-icon>
+      </div>
+      <h1 class="card-title">ApexEng Community</h1>
+      <p class="card-desc">
+        Join our group chat to ask questions, share notes, and stay updated with
+        your classmates.
+      </p>
+      <button class="gc-btn" (click)="openGC()">
+        <ion-icon name="logo-facebook"></ion-icon>
+        <span>Join the Messenger Group Chat</span>
+        <ion-icon name="open-outline" class="btn-arrow"></ion-icon>
+      </button>
+    </div>
+  </div>
 </ion-content>

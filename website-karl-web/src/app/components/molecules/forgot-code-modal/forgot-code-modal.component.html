@@ -1,0 +1,54 @@
+<div class="modal-backdrop" (click)="close()"></div>
+
+<div class="modal-card">
+  <!-- Header -->
+  <div class="modal-header">
+    <div class="modal-icon">
+      <ion-icon name="mail-outline"></ion-icon>
+    </div>
+    <div class="modal-title-group">
+      <h2 class="modal-title">Forgot Your Code?</h2>
+      <p class="modal-subtitle">Enter your email and we'll send a new access code.</p>
+    </div>
+    <button class="close-btn" (click)="close()">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="modal-body">
+
+    <!-- Success State -->
+    <div class="success-state" *ngIf="successMessage">
+      <div class="success-icon">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </div>
+      <p class="success-text">{{ successMessage }}</p>
+      <button class="submit-btn" (click)="close()">Close</button>
+    </div>
+
+    <!-- Form State -->
+    <ng-container *ngIf="!successMessage">
+      <div class="input-group">
+        <label class="input-label">Email Address</label>
+        <div class="input-wrapper" [class.has-error]="errorMessage">
+          <ion-icon name="mail-outline"></ion-icon>
+          <input
+            type="email"
+            class="email-input"
+            placeholder="Enter your registered email"
+            [(ngModel)]="email"
+            (keyup.enter)="sendCode()"
+          />
+        </div>
+        <p class="error-text" *ngIf="errorMessage">{{ errorMessage }}</p>
+      </div>
+
+      <button class="submit-btn" (click)="sendCode()" [disabled]="isLoading">
+        <ion-icon name="paper-plane-outline" *ngIf="!isLoading"></ion-icon>
+        <span>{{ isLoading ? 'Sending...' : 'Send New Code' }}</span>
+      </button>
+    </ng-container>
+
+  </div>
+</div>

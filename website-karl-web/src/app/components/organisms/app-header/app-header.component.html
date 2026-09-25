@@ -35,6 +35,15 @@
           [disabled]="currentUrl.includes('/planner')"
           routerLink="/planner"
         ></app-button>
+
+        <app-button
+          label="Community"
+          [variant]="
+            currentUrl.includes('/planner') ? 'primary' : 'transparent'
+          "
+          [disabled]="currentUrl.includes('/planner')"
+          routerLink="/planner"
+        ></app-button>
       </div>
       <!-- 3. Desktop User Profile & Logout -->
       <div class="user-profile desktop-only">
@@ -76,6 +85,13 @@
         [variant]="currentUrl.includes('/planner') ? 'primary' : 'transparent'"
         routerLink="/planner"
       ></app-button>
+
+      <app-button
+        label="Community"
+        [variant]="currentUrl.includes('/planner') ? 'primary' : 'transparent'"
+        routerLink="/planner"
+      ></app-button>
+
       <app-button
         *ngIf="currentUserRole === 'admin'"
         label="Manage Users"

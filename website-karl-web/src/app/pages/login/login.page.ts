@@ -2,11 +2,12 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { personOutline, keyOutline, mailOutline, lockClosedOutline } from 'ionicons/icons';
-import { IonContent, IonGrid, IonRow, IonCol, IonIcon } from '@ionic/angular';
+import { IonContent, IonGrid, IonRow, IonCol, IonIcon, ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';  
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
 import { AppInputComponent } from '../../components/atoms/app-input/app-input.component';
 import { AuthService } from '../../services/auth';
+import { ForgotCodeModalComponent } from '../../components/molecules/forgot-code-modal/forgot-code-modal.component';
 
 @Component({
   selector: 'app-login',
@@ -34,7 +35,8 @@ export class LoginPage {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef  
+    private cdr: ChangeDetectorRef,
+    private modalCtrl: ModalController
   ) {
      addIcons({ personOutline, keyOutline, mailOutline, lockClosedOutline });
   }
@@ -77,7 +79,11 @@ export class LoginPage {
     });
   }
 
-  onForgot() {
-    console.log('Forgot password clicked');
+  async onForgot() {
+    const modal = await this.modalCtrl.create({
+      component: ForgotCodeModalComponent,
+      cssClass: 'transparent-modal',
+    });
+    await modal.present();
   }
 }

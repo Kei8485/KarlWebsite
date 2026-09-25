@@ -40,7 +40,11 @@ const routes: Routes = [
   {
     path: 'manage-topic/:subjectId/:topicId',
     loadComponent: () => import('./pages/manage-topic/manage-topic.page').then( m => m.ManageTopicPage)
+  },  {
+    path: 'community',
+    loadChildren: () => import('./pages/community/community.module').then( m => m.CommunityPageModule)
   }
+
 
 
 ];

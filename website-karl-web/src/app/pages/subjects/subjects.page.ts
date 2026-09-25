@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router'; 
@@ -56,7 +57,7 @@ export class SubjectsPage implements OnInit {
   }
 
   fetchSubjects(event?: any) {
-    const url = 'http://127.0.0.1:8000/api/subjects/';
+    const url = `${environment.apiUrl}/subjects/`;
     
     this.http.get(url).subscribe({
       next: (response: any) => {

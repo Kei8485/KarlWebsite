@@ -1,7 +1,11 @@
 from django.db import models
 
-import random 
+import secrets
 import string
+import hashlib
+from datetime import timedelta
+from django.utils import timezone
+from django.contrib.auth.hashers import make_password
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
@@ -13,20 +17,21 @@ class User(models.Model):
      
     email = models.EmailField(unique=True)
     userName= models.CharField(max_length=50, default='')
-    codePass = models.CharField(max_length=16, blank=True)
+    codePass = models.CharField(max_length=128, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
     created_at = models.DateTimeField(auto_now_add=True)
     
     def generate_code(self):
         # 1. Generate the code
-        self.codePass = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        code = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+        self.codePass = make_password(code)
         self.save()
         
         # 2. Automatically send the email every time a code is generated!
         subject = 'Website ni Karl Try Try'
         from_email = settings.DEFAULT_FROM_EMAIL
         to = [self.email]
-        text_content = f'Your access code is: {self.codePass}\n\nGo to the site and enter your email + this code to log in.'
+        text_content = f'Your access code is: {code}\n\nGo to the site and enter your email + this code to log in.'
         html_content = f'''
             <!DOCTYPE html>
             <html>
@@ -80,7 +85,7 @@ class User(models.Model):
                             <td style="background-color:#1e293b;border:1px solid #334155;border-radius:10px;padding:24px;text-align:center;">
                                 <p style="color:#64748b;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin:0 0 8px 0;">Your Code</p>
                                 <!-- Notice self.codePass instead of obj.codePass -->
-                                <p style="color:#2563eb;font-size:32px;font-weight:700;letter-spacing:8px;margin:0;font-family:monospace;">{self.codePass}</p>
+                                <p style="color:#2563eb;font-size:32px;font-weight:700;letter-spacing:8px;margin:0;font-family:monospace;">{code}</p>
                             </td>
                             </tr>
                         </table>
@@ -194,3 +199,20 @@ class QuizQuestion(models.Model):
 
     def __str__(self):
         return f"Question: {self.question_text[:50]}..."
+
+
+class SessionToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='session_tokens')
+    token_hash = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    @classmethod
+    def issue(cls, user):
+        raw = secrets.token_urlsafe(32)
+        token = cls.objects.create(
+            user=user,
+            token_hash=hashlib.sha256(raw.encode()).hexdigest(),
+            expires_at=timezone.now() + timedelta(days=7),
+        )
+        return raw, token

@@ -24,17 +24,21 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'userName', 'role', 'created_at']
+        read_only_fields = ['id', 'role', 'created_at']
         
 class PlannerTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlannerTask
         fields = '__all__'
+        read_only_fields = ['user', 'created_at']
 class StudySessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudySession
         fields = '__all__'
+        read_only_fields = ['user', 'created_at']
 
 class ScheduledStudySerializer(serializers.ModelSerializer):
     class Meta:
         model = ScheduledStudy
         fields = '__all__'
+        read_only_fields = ['user', 'created_at']

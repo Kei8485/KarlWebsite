@@ -7,10 +7,33 @@ from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
 from rest_framework.decorators import api_view
+from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Subject, Topic, User, PlannerTask, StudySession
+from .models import Subject, Topic, User, PlannerTask, StudySession, SessionToken
+from .authentication import IsAuthenticated, IsAdmin
+from django.contrib.auth.hashers import check_password
+
+
+def _is_authenticated(request):
+    return bool(getattr(request, 'user', None) and getattr(request.user, 'id', None))
+
+
+def _owner_or_admin(request, user_id):
+    if not _is_authenticated(request):
+        return Response({'detail': 'Authentication credentials were not provided.'}, status=401)
+    if request.user.role != 'admin' and request.user.id != user_id:
+        return Response({'detail': 'You do not have permission to access this resource.'}, status=403)
+    return None
+
+
+def _admin_only(request):
+    if not _is_authenticated(request):
+        return Response({'detail': 'Authentication credentials were not provided.'}, status=401)
+    if request.user.role != 'admin':
+        return Response({'detail': 'Admin permission required.'}, status=403)
+    return None
 
 from .serializers import SubjectSerializer, TopicSerializer, QuizQuestionSerializer, UserSerializer, PlannerTaskSerializer, StudySessionSerializer
 
@@ -64,8 +87,11 @@ def login(request):
     email = request.data.get('email')
     code = request.data.get('code')
     try:
-        user = User.objects.get(email=email, codePass=code)
-        return Response({'success': True, 'id': user.id, 'email': user.email, 'role': user.role, 'userName': user.userName})
+        user = User.objects.get(email=email)
+        if not check_password(code or '', user.codePass):
+            raise User.DoesNotExist
+        raw_token, _ = SessionToken.issue(user)
+        return Response({'success': True, 'token': raw_token, 'id': user.id, 'email': user.email, 'role': user.role, 'userName': user.userName})
     except User.DoesNotExist:
         return Response({'error': 'Invalid email or code'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -76,58 +102,6 @@ def forgot_code(request):
         user = User.objects.get(email=email)
         user.generate_code()
 
-        text_content = f'Your new access code is: {user.codePass}'
-        html_content = f'''
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background-color:#0f172a;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;padding:40px 0;">
-    <tr><td align="center">
-      <table width="560" cellpadding="0" cellspacing="0" style="background-color:#0f172a;border:1px solid #1e293b;border-radius:12px;overflow:hidden;">
-        <tr>
-          <td style="padding:32px 40px 24px 40px;border-bottom:1px solid #1e293b;">
-            <table cellpadding="0" cellspacing="0"><tr>
-              <td style="background-color:#2563eb;border-radius:8px;padding:8px 12px;">
-                <span style="color:#fff;font-size:14px;font-weight:700;">AE</span>
-              </td>
-              <td style="padding-left:12px;">
-                <span style="color:#fff;font-size:18px;font-weight:700;">ApexEng</span><br>
-                <span style="color:#64748b;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Apex Engineering</span>
-              </td>
-            </tr></table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:40px;">
-            <p style="color:#94a3b8;font-size:13px;letter-spacing:2px;text-transform:uppercase;margin:0 0 16px 0;">New Access Code</p>
-            <h1 style="color:#fff;font-size:28px;font-weight:700;margin:0 0 16px 0;">Your new code<br>is ready.</h1>
-            <p style="color:#94a3b8;font-size:15px;margin:0 0 32px 0;">Here is your new access code. Your old code is no longer valid.</p>
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
-              <tr>
-                <td style="background-color:#1e293b;border:1px solid #334155;border-radius:10px;padding:24px;text-align:center;">
-                  <p style="color:#64748b;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin:0 0 8px 0;">Your Code</p>
-                  <p style="color:#2563eb;font-size:32px;font-weight:700;letter-spacing:8px;margin:0;font-family:monospace;">{user.codePass}</p>
-                </td>
-              </tr>
-            </table>
-            <p style="color:#475569;font-size:13px;margin:0;">This code is linked to <strong style="color:#64748b;">{user.email}</strong>.</p>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:20px 40px;border-top:1px solid #1e293b;">
-            <p style="color:#334155;font-size:12px;margin:0;text-align:center;">© 2026 ApexEng · Apex Engineering</p>
-          </td>
-        </tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>
-'''
-        msg = EmailMultiAlternatives('Your New ApexEng Access Code', text_content, settings.DEFAULT_FROM_EMAIL, [user.email])
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
         return Response({'success': True})
     except User.DoesNotExist:
         return Response({'error': 'Email not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -138,12 +112,16 @@ def forgot_code(request):
 # USER ADMIN HTTP REQUEST
 @api_view(['GET'])
 def get_all_users(request):
+    denied = _admin_only(request)
+    if denied: return denied
     users = User.objects.all().order_by('-created_at')
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])
 def create_user(request):
+    denied = _admin_only(request)
+    if denied: return denied
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         new_user = serializer.save()
@@ -156,6 +134,8 @@ def create_user(request):
 
 @api_view(['DELETE'])
 def delete_user(request, pk):
+    denied = _admin_only(request)
+    if denied: return denied
     try:
         user = User.objects.get(id=pk)
         user.delete()
@@ -167,6 +147,8 @@ def delete_user(request, pk):
 # 1. Manage Tasks (Get all tasks, or Create a new one)
 @api_view(['GET', 'POST'])
 def planner_tasks(request, user_id):
+    denied = _owner_or_admin(request, user_id)
+    if denied: return denied
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist:
@@ -179,10 +161,9 @@ def planner_tasks(request, user_id):
     elif request.method == 'POST':
         # When Angular creates a new task
         data = request.data.copy()
-        data['user'] = user.id
         serializer = PlannerTaskSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=user)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
       
@@ -196,6 +177,8 @@ def task_detail(request, task_id):
         task = PlannerTask.objects.get(id=task_id)
     except PlannerTask.DoesNotExist:
         return Response({'error': 'Task not found'}, status=404)
+    denied = _owner_or_admin(request, task.user_id)
+    if denied: return denied
         
     if request.method == 'PATCH':
         # Flips it from False to True (Completed!)
@@ -230,6 +213,8 @@ def task_detail(request, task_id):
 # 3. Save Timer & Get Weekly Stats!
 @api_view(['GET', 'POST'])
 def study_sessions(request, user_id):
+    denied = _owner_or_admin(request, user_id)
+    if denied: return denied
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist:
@@ -255,6 +240,8 @@ def study_sessions(request, user_id):
 
 @api_view(['GET', 'POST'])
 def schedule_study(request, user_id):
+    denied = _owner_or_admin(request, user_id)
+    if denied: return denied
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist:
@@ -271,10 +258,9 @@ def schedule_study(request, user_id):
 
     elif request.method == 'POST':
         data = request.data.copy()
-        data['user'] = user.id
         serializer = ScheduledStudySerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=user)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
@@ -286,6 +272,8 @@ def manage_scheduled_study(request, study_id):
         study = ScheduledStudy.objects.get(id=study_id)
     except ScheduledStudy.DoesNotExist:
         return Response({'error': 'Study not found'}, status=404)
+    denied = _owner_or_admin(request, study.user_id)
+    if denied: return denied
         
     if request.method == 'DELETE':
         study.delete()
@@ -304,6 +292,8 @@ from .models import QuizQuestion
 
 @api_view(['POST'])
 def create_subject(request):
+    denied = _admin_only(request)
+    if denied: return denied
     serializer = SubjectSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -312,6 +302,8 @@ def create_subject(request):
 
 @api_view(['PUT', 'DELETE'])
 def manage_subject(request, subject_id):
+    denied = _admin_only(request)
+    if denied: return denied
     try:
         subject = Subject.objects.get(id=subject_id)
     except Subject.DoesNotExist:
@@ -331,6 +323,8 @@ def manage_subject(request, subject_id):
 
 @api_view(['POST'])
 def create_topic(request):
+    denied = _admin_only(request)
+    if denied: return denied
     serializer = TopicSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -339,6 +333,8 @@ def create_topic(request):
 
 @api_view(['PUT', 'DELETE'])
 def manage_topic(request, topic_id):
+    denied = _admin_only(request)
+    if denied: return denied
     try:
         topic = Topic.objects.get(id=topic_id)
     except Topic.DoesNotExist:
@@ -358,6 +354,8 @@ def manage_topic(request, topic_id):
 
 @api_view(['POST'])
 def create_quiz(request):
+    denied = _admin_only(request)
+    if denied: return denied
     serializer = QuizQuestionSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -366,6 +364,8 @@ def create_quiz(request):
 
 @api_view(['PUT', 'DELETE'])
 def manage_quiz(request, quiz_id):
+    denied = _admin_only(request)
+    if denied: return denied
     try:
         quiz = QuizQuestion.objects.get(id=quiz_id)
     except QuizQuestion.DoesNotExist:
@@ -386,6 +386,8 @@ def manage_quiz(request, quiz_id):
 
 @api_view(['PUT'])
 def update_user_profile(request, user_id):
+    denied = _owner_or_admin(request, user_id)
+    if denied: return denied
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist:
@@ -395,7 +397,8 @@ def update_user_profile(request, user_id):
     
     codePass = request.data.get('codePass')
     if codePass:
-        user.codePass = codePass
+        from django.contrib.auth.hashers import make_password
+        user.codePass = make_password(codePass)
         
     user.save()
     serializer = UserSerializer(user)

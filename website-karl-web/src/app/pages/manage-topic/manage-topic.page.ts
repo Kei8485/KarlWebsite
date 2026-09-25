@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -24,7 +25,7 @@ export class ManageTopicPage implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private modalCtrl = inject(ModalController);
 
-  apiSystemUrl = 'http://127.0.0.1:8000/api';
+  apiSystemUrl = environment.apiUrl;
   
   subjectId: string | null = null;
   topicId: string | null = null;

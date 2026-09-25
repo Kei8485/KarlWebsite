@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 1. Added ChangeDetectorRef
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -35,7 +36,7 @@ export class TopicTreePage implements OnInit {
     fetchTopics() {
     console.log('1. Starting fetch for subject ID:', this.subjectId);
     
-    this.http.get(`http://127.0.0.1:8000/api/subjects/${this.subjectId}/topics/`)
+    this.http.get(`${environment.apiUrl}/subjects/${this.subjectId}/topics/`)
       .subscribe({
                 next: (data: any) => {
           this.subjectData = data;

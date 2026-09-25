@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit, inject, ChangeDetectorRef  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -61,13 +62,13 @@ export class TopicDetailPage implements OnInit {
   }
 
     fetchTopicDetail() {
-    this.http.get(`http://127.0.0.1:8000/api/topics/${this.topicId}/`).subscribe({
+    this.http.get(`${environment.apiUrl}/topics/${this.topicId}/`).subscribe({
       next: (data: any) => {
         this.topic = data;
         
         if (this.topic.youtube_url) {
           
-          // 🚨 THE MAGIC CONVERTER 🚨
+          // ðŸš¨ THE MAGIC CONVERTER ðŸš¨
           let finalUrl = this.topic.youtube_url;
           
           // 1. If it's a standard desktop link (youtube.com/watch?v=12345)

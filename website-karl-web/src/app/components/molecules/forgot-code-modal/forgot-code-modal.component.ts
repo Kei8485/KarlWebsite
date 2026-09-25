@@ -1,3 +1,4 @@
+import { environment } from '../../../../environments/environment';
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,7 +24,7 @@ export class ForgotCodeModalComponent {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
 
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = environment.apiUrl;
 
   constructor() {
     addIcons({ mailOutline, paperPlaneOutline, closeOutline, checkmarkCircleOutline });

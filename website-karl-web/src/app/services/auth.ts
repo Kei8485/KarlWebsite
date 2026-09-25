@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ // old syntax na nakalagay ung Service - Dapat Injectible
   providedIn: 'root' // who can acces
 })
 export class AuthService {
   // This is the URL to your Django local server
-  private apiUrl = 'http://127.0.0.1:8000/api'; 
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }  //httpClient data type | http variable name
 

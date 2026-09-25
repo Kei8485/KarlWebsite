@@ -59,6 +59,7 @@ export class LoginPage {
       next: (response: any) => {
         this.isLoading = false;
         localStorage.setItem('userId', response.id);
+        localStorage.setItem('authToken', response.token);
         localStorage.setItem('email', response.email);
         localStorage.setItem('userName', response.userName);
         localStorage.setItem('userRole', response.role);

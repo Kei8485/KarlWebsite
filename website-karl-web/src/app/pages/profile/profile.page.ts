@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,7 +28,7 @@ export class ProfilePage implements OnInit {
   successMessage: string = '';
   errorMessage: string = '';
   
-  apiSystemUrl = 'http://127.0.0.1:8000/api';
+  apiSystemUrl = environment.apiUrl;
 
   constructor(private http: HttpClient, private modalCtrl: ModalController, private toastCtrl: ToastController) {
     addIcons({ saveOutline, personCircleOutline, checkmarkCircleOutline });

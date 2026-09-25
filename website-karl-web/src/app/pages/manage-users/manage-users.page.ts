@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -20,7 +21,7 @@ import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/
 })
 export class ManageUsersPage implements OnInit, OnDestroy  {
   private http = inject(HttpClient);
-  private apiUrl = 'http://127.0.0.1:8000/api/users'; 
+  private apiUrl = `${environment.apiUrl}/users`;
   private cdr = inject(ChangeDetectorRef); 
   private modalCtrl = inject(ModalController);
   private router = inject(Router); 
@@ -34,7 +35,7 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
   showQuizEditor: boolean = false;
 
   // CMS State
-  apiSystemUrl = 'http://127.0.0.1:8000/api';
+  apiSystemUrl = environment.apiUrl;
   subjectsList: any[] = [];
   activeSubject: any = null;
   expandedTopicId: number | null = null;

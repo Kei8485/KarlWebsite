@@ -275,7 +275,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  padding: 10px;
   
   h2 { margin-bottom: 0; }
 
@@ -511,7 +511,7 @@ input.input-error {
   display: flex;
   gap: 0.5rem;
   background: rgba(0, 0, 0, 0.2);
-  padding: 4px;
+  padding: 7px;
   border-radius: 8px;
   
   button {

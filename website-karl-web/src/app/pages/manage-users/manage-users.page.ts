@@ -58,6 +58,8 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     addIcons({ trashOutline, personAddOutline, saveOutline, pencilOutline, addOutline, bookOutline });
   }
 
+  ionViewWillEnter() { this.loadSubjects(); }
+
   ngOnInit() {
     this.loadUsers();
     this.loadSubjects();

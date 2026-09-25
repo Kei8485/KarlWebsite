@@ -6,7 +6,7 @@ import { IonContent, IonIcon, IonSelect, IonSelectOption, ModalController } from
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
 import { addIcons } from 'ionicons';
-import { trashOutline, personAddOutline } from 'ionicons/icons';
+import { trashOutline, personAddOutline, saveOutline } from 'ionicons/icons';
 
 // 🚨 Import your new custom modal! (Adjust path if needed based on your folder structure)
 import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/confirm-modal.component';
@@ -45,7 +45,7 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
   };
 
   constructor() {
-    addIcons({ trashOutline, personAddOutline });
+    addIcons({ trashOutline, personAddOutline, saveOutline });
   }
 
   ngOnInit() {

@@ -29,7 +29,7 @@
     </div>
 
     <div class="form-bottom" style="margin-top: 15px;">
-      <button id="open-schedule-datetime" class="modern-date-picker full-click-btn">
+      <button id="open-schedule-datetime" class="modern-date-picker full-click-btn" (click)="prepareSchedulePicker()">
         <ion-icon name="time-outline"></ion-icon>
         <span>{{ scheduleDate | date:'medium' }}</span>
       </button>
@@ -50,6 +50,7 @@
               presentation="time"
               [preferWheel]="true"
               [(ngModel)]="scheduleDate"
+              [min]="todayDate"
             ></ion-datetime>
             
             <div class="calendar-action-bar">

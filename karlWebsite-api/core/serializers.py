@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils import timezone
 from .models import Subject, Topic, User, PlannerTask, StudySession, ScheduledStudy, QuizQuestion
 
 class QuizQuestionSerializer(serializers.ModelSerializer):
@@ -42,3 +43,8 @@ class ScheduledStudySerializer(serializers.ModelSerializer):
         model = ScheduledStudy
         fields = '__all__'
         read_only_fields = ['user', 'created_at']
+
+    def validate_scheduled_time(self, value):
+        if value <= timezone.now():
+            raise serializers.ValidationError('Scheduled time must be in the future.')
+        return value

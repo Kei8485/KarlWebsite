@@ -38,6 +38,14 @@ export class ScheduleStudyComponent implements OnInit {
     return now.toISOString().slice(0, -1); // Remove the 'Z' so Ionic treats it as local time
   }
 
+  prepareSchedulePicker() {
+    const now = new Date();
+    this.todayDate = this.getLocalISOString();
+    if (new Date(this.scheduleDate).getTime() < now.getTime()) {
+      this.scheduleDate = this.todayDate;
+    }
+  }
+
   constructor(
     private plannerService: PlannerService,
     private modalCtrl: ModalController
@@ -118,6 +126,11 @@ export class ScheduleStudyComponent implements OnInit {
     
     if (!this.scheduleTitle || !this.scheduleTitle.trim()) {
       await this.showNotification('Missing Field', 'Please enter a topic to review!', true);
+      return;
+    }
+
+    if (new Date(this.scheduleDate).getTime() <= Date.now()) {
+      await this.showNotification('Invalid Time', 'Please choose a future date and time.', true);
       return;
     }
 

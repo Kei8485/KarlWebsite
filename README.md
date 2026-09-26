@@ -10,6 +10,126 @@ An engineering learning platform built with **Ionic + Angular** (frontend) and *
 - **Backend:** Hosted on [Render](https://render.com) (e.g. `apexeng-api.onrender.com`)
 - **Database:** Hosted on [Supabase](https://supabase.com)
 
+# Deploying Django with Supabase (PostgreSQL)
+
+This guide walks through connecting a Django backend to a Supabase-hosted PostgreSQL database.
+
+## 1. Set Up the Database in Supabase
+
+1. Create a new Supabase project.
+2. Select an **Asia** region.
+3. Leave the initial optional setting/checkbox unchecked (same as during project creation).
+4. After the project is created, click **Connect**.
+5. Get the PostgreSQL connection info from either:
+   - **Direct connection**, or
+   - **Session Pooler**
+6. Copy the connection details you'll need for Django (host, port, database name, user, password).
+
+## 2. Configure Django for Supabase
+
+### Update `.env`
+
+Add your Supabase database credentials:
+
+```env
+DB_NAME=postgres
+DB_USER=postgres.awrvncbeiuuogzlbdyvb
+DB_PASSWORD=YOUR_SUPABASE_DATABASE_PASSWORD
+DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com
+DB_PORT=5432
+```
+
+### Update `settings.py`
+
+Load the `.env` file so Django can read the environment variables:
+
+```python
+from dotenv import load_dotenv
+
+load_dotenv()
+```
+
+Then point Django's database config at those variables:
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+    }
+}
+```
+
+## 3. Install the Required Packages
+
+Install the PostgreSQL driver:
+
+```bash
+pip install psycopg2-binary
+```
+
+Install `.env` support:
+
+```bash
+pip install python-dotenv
+```
+
+## 4. Connect Django to Supabase
+
+Check your Django configuration:
+
+```bash
+python manage.py check
+```
+
+Run the database migrations:
+
+```bash
+python manage.py migrate
+```
+
+The migrations will create the Django tables in Supabase.
+
+## 5. Set Up the Admin Account
+
+Check whether a superuser already exists in the Supabase database. If not, create one:
+
+```bash
+python manage.py createsuperuser
+```
+
+Verify the superuser exists:
+
+```bash
+python manage.py shell -c "from django.contrib.auth import get_user_model; print(get_user_model().objects.filter(is_superuser=True).values('username','email'))"
+```
+
+## 6. Test the Connection
+
+Start the Django dev server:
+
+```bash
+python manage.py runserver
+```
+
+Open the admin panel:
+
+```
+http://127.0.0.1:8000/admin/
+```
+
+Log in and confirm access works.
+
+## Result
+
+At this point:
+
+**Django Backend → Supabase PostgreSQL ✅**
+
 ### Capacity notes
 
 - Estimated load: 20–30 concurrent users.

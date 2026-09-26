@@ -4,7 +4,35 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 
-from .models import SessionToken, User
+from .models import SessionToken, Subject, Topic, User
+
+
+class CreateTopicTests(TestCase):
+    def setUp(self):
+        admin = User.objects.create(email='topic-admin@example.com', role='admin')
+        token, _ = SessionToken.issue(admin)
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+        self.subject = Subject.objects.create(title='Mathematics')
+
+    def test_topic_is_created_for_the_supplied_subject(self):
+        response = self.client.post('/api/topics/create/', {
+            'title': 'Algebra',
+            'subject': self.subject.id,
+        }, format='json')
+
+        self.assertEqual(response.status_code, 201)
+        topic = Topic.objects.get(title='Algebra')
+        self.assertEqual(topic.subject, self.subject)
+
+    def test_topic_without_subject_returns_validation_error(self):
+        response = self.client.post('/api/topics/create/', {
+            'title': 'Algebra',
+        }, format='json')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('subject', response.data)
+        self.assertFalse(Topic.objects.filter(title='Algebra').exists())
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend')

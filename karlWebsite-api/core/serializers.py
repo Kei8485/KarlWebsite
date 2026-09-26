@@ -8,11 +8,15 @@ class QuizQuestionSerializer(serializers.ModelSerializer):
         fields = ['id', 'topic', 'question_text', 'option_a', 'option_b', 'option_c', 'option_d', 'correct_option']
 
 class TopicSerializer(serializers.ModelSerializer):
+    subject = serializers.PrimaryKeyRelatedField(
+        queryset=Subject.objects.all(),
+        write_only=True,
+    )
     questions = QuizQuestionSerializer(many=True, read_only=True)
     
     class Meta:
         model = Topic #model is suspected by the ModelSerializer
-        fields = ['id', 'title', 'notes', 'youtube_url', 'order', 'questions']
+        fields = ['id', 'subject', 'title', 'notes', 'youtube_url', 'order', 'questions']
 
 class SubjectSerializer(serializers.ModelSerializer): # happends first
     topics = TopicSerializer(many=True, read_only=True)

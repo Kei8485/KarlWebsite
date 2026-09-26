@@ -91,12 +91,29 @@ export class ManageTopicPage implements OnInit {
     });
   }
 
-  removeQuestion(index: number) {
+  async removeQuestion(index: number) {
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Remove Question?',
+        message: 'Are you sure you want to remove this question? Click Save All Changes above to apply this removal.',
+        confirmText: 'Remove Question',
+        cancelText: 'Back',
+        isDanger: true
+      }
+    });
+
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    if (data !== true) return;
+
     const q = this.topic.questions[index];
     if (q.id) {
       this.deletedQuestions.push(q.id);
     }
     this.topic.questions.splice(index, 1);
+    this.cdr.detectChanges();
   }
 
   setCorrectOption(qIndex: number, option: string) {
@@ -144,7 +161,6 @@ export class ManageTopicPage implements OnInit {
   }
 
   async saveQuizzes() {
-    // Basic loop approach for simplicity
     const requests: any[] = [];
     
     for (const id of this.deletedQuestions) {
@@ -164,10 +180,34 @@ export class ManageTopicPage implements OnInit {
       if (requests.length > 0) {
         await Promise.all(requests);
       }
-    } catch(err) {
+    } catch (err) {
       console.error('Error saving quizzes:', err);
+      await this.showNotification(
+        'Save Failed',
+        'Your topic was saved, but one or more quiz changes could not be saved. Please try Save All Changes again.',
+        true
+      );
+      return;
     }
-    
+
+    this.deletedQuestions = [];
     this.goBack();
+  }
+
+  async showNotification(title: string, message: string, isDanger = false) {
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title,
+        message,
+        confirmText: 'OK',
+        cancelText: '',
+        isDanger
+      }
+    });
+
+    await modal.present();
+    await modal.onWillDismiss();
   }
 }

@@ -107,7 +107,7 @@ steps
         -in the design, created a filer
         -all function has a validation modal
         -before starting the security of the ai I finished all of the other pages first so this is the last part
-        -Uses ai to generate the code to secure the API (since d ko pa alam to)
+        -Uses ai to generate the syntaxes to secure the API (since d ko pa alam to)
         -
 
         (development of the Planner page)

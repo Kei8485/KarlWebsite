@@ -70,6 +70,9 @@
       <h3 style="color: #4facfe; margin-bottom: 1rem">
         Quizzes for: {{ topic.title || 'Untitled Topic' }}
       </h3>
+      <p class="save-reminder">
+        Remember to click <strong>Save All Changes</strong> above to save your edits or question removals.
+      </p>
 
       <div class="quiz-list">
         <div class="quiz-item" *ngFor="let q of topic.questions; let i = index">

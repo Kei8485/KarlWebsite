@@ -55,6 +55,16 @@
   margin-bottom: 1.5rem;
 }
 
+.save-reminder {
+  margin: -0.5rem 0 1.25rem;
+  color: #8b96ab;
+  font-size: 0.9rem;
+
+  strong {
+    color: #4facfe;
+  }
+}
+
 .quiz-item {
   background: rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.05);

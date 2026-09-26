@@ -144,6 +144,7 @@
                             </ion-button>
                           </div>
                         </div>
+
                       </div>
                     </ng-template>
                   </ion-modal>
@@ -168,25 +169,58 @@
               <!-- 🚨 UPDATED: Task List -->
               <div class="task-list">
                 <div
+                  class="task-list-status"
+                  *ngIf="isLoadingTasks && tasks.length === 0"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+                  <span>Loading your tasks...</span>
+                </div>
+
+                <div
+                  class="task-list-refresh"
+                  *ngIf="isLoadingTasks && tasks.length > 0"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+                  <span>Updating tasks...</span>
+                </div>
+
+                <div class="task-list-status task-list-error" *ngIf="taskLoadError" role="alert">
+                  <span>{{ taskLoadError }}</span>
+                  <button type="button" (click)="loadTasks()">Try again</button>
+                </div>
+
+                <div
                   class="empty-state"
-                  *ngIf="filteredAndSortedTasks.length === 0"
+                  *ngIf="!isLoadingTasks && !taskLoadError && filteredAndSortedTasks.length === 0"
                 >
                   No upcoming tasks! You are all caught up.
                 </div>
 
                 <div
                   class="task-row"
-                  *ngFor="let task of filteredAndSortedTasks"
+                  *ngFor="let task of filteredAndSortedTasks; let i = index; trackBy: trackTaskById"
                   [class.completed]="task.is_completed"
                   [class.is-being-edited]="task.id === editingTaskId"
+                  [style.animation-delay]="(i < 8 ? i * 45 : 360) + 'ms'"
                 >
                   <!-- Custom Checkbox Icon -->
-                  <ion-icon
-                    [name]="task.is_completed ? 'checkmark-circle-outline' : 'ellipse-outline'"
+                  <button
+                    type="button"
                     class="check-icon"
+                    [class.is-updating]="taskUpdateIds.has(task.id)"
+                    [disabled]="taskUpdateIds.has(task.id) || isDeletingCompletedTasks"
+                    [attr.aria-label]="task.is_completed ? 'Mark task incomplete' : 'Mark task complete'"
+                    [attr.aria-pressed]="task.is_completed"
                     (click)="toggleTask(task.id)"
                   >
-                  </ion-icon>
+                    <ion-icon
+                      [name]="task.is_completed ? 'checkmark-circle-outline' : 'ellipse-outline'"
+                    ></ion-icon>
+                  </button>
 
                   <!-- 🚨 PRO UI: Removes text labels and uses Badges & Icons instead -->
                   <div class="task-info">
@@ -216,6 +250,20 @@
                     ></ion-icon>
                   </div>
                 </div>
+              </div>
+
+              <div class="completed-actions" *ngIf="completedTasks.length > 0">
+                <button
+                  type="button"
+                  class="delete-completed-btn"
+                  [disabled]="taskUpdateIds.size > 0"
+                  [attr.aria-busy]="isDeletingCompletedTasks"
+                  (click)="deleteCompletedTasks()"
+                >
+                  <ion-spinner *ngIf="isDeletingCompletedTasks" name="crescent"></ion-spinner>
+                  <ion-icon *ngIf="!isDeletingCompletedTasks" name="trash-outline"></ion-icon>
+                  <span>{{ isDeletingCompletedTasks ? 'Deleting...' : 'Delete (' + completedTasks.length + ')' }}</span>
+                </button>
               </div>
             </div>
 

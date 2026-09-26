@@ -65,6 +65,10 @@
   }
 }
 
+.tasks-card.front {
+  padding-bottom: 0;
+}
+
 .right-column {
   display: flex;
   flex-direction: column;
@@ -101,11 +105,71 @@
     display: flex; 
     gap: 0.8rem; 
     align-items: center; 
-    flex-shrink: 0; 
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    min-width: 0;
   }
 }
 
 .sort-btn { --border-radius: 50%; }
+
+.completed-actions {
+  box-sizing: border-box;
+  display: flex;
+  height: 76px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.delete-completed-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 38px;
+  max-width: 100%;
+  margin: 0;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgba(239, 68, 68, 0.38);
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+
+  ion-icon {
+    flex: 0 0 auto;
+    font-size: 1rem;
+    color: #ef4444;
+  }
+
+  ion-spinner {
+    width: 16px;
+    height: 16px;
+    color: #f87171;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.65);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
+}
 
 .form-inputs { 
   display: flex; 
@@ -221,6 +285,67 @@ ion-datetime-button::part(native) {
   padding-right: 8px; /* Breathing room for scrollbar */
 }
 
+.task-list-status {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  color: #94a3b8;
+  text-align: center;
+  animation: taskStatusIn 250ms ease both;
+
+  ion-spinner {
+    width: 42px;
+    height: 42px;
+    color: #4facfe;
+  }
+
+  button {
+    border: 1px solid rgba(79, 172, 254, 0.45);
+    border-radius: 8px;
+    padding: 0.55rem 1rem;
+    background: rgba(79, 172, 254, 0.12);
+    color: #4facfe;
+    font: inherit;
+    cursor: pointer;
+  }
+}
+
+.task-list-refresh {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0 0.5rem;
+  color: #94a3b8;
+  font-size: 0.85rem;
+
+  ion-spinner {
+    width: 18px;
+    height: 18px;
+    color: #4facfe;
+  }
+}
+
+.task-list-error {
+  min-height: 160px;
+  color: #fca5a5;
+}
+
+@keyframes taskStatusIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Sleek Custom Scrollbar */
 .task-list::-webkit-scrollbar {
   width: 6px;
@@ -245,7 +370,8 @@ ion-datetime-button::part(native) {
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-left: 4px solid var(--primary); 
-  transition: all 0.3s ease; 
+  transition: all 0.3s ease;
+  animation: taskRowIn 300ms ease both;
 
   &:hover {
     transform: translateY(-3px);
@@ -253,9 +379,23 @@ ion-datetime-button::part(native) {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   }
 
+  @keyframes taskRowIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   &.completed {
-    opacity: 0.4;
+    opacity: 1;
     border-left: 4px solid rgba(255, 255, 255, 0.2); 
+    background: rgba(255, 255, 255, 0.015);
+
     &:hover {
       transform: none;
       box-shadow: none;
@@ -264,12 +404,35 @@ ion-datetime-button::part(native) {
   }
 
   .check-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
     font-size: 2rem;
     color: var(--primary);
     cursor: pointer;
     margin-right: 1rem;
     transition: 0.2s ease;
     &:active { transform: scale(0.8); }
+
+    ion-icon {
+      font-size: inherit;
+    }
+
+    &:disabled {
+      cursor: wait;
+    }
+
+    &.is-updating {
+      opacity: 0.65;
+    }
+
+    .completed & {
+      color: #94a3b8;
+    }
   }
 
   .task-info {
@@ -308,6 +471,11 @@ ion-datetime-button::part(native) {
       text-transform: uppercase;
       letter-spacing: 0.8px;
       white-space: nowrap;
+
+      .completed & {
+        background: rgba(100, 116, 139, 0.16);
+        color: #94a3b8;
+      }
     }
 
     .task-date {
@@ -316,8 +484,42 @@ ion-datetime-button::part(native) {
       gap: 0.3rem;
       white-space: nowrap;
       ion-icon { font-size: 1rem; color: #8B96AB; }
+
+      .completed & {
+        color: #64748b;
+
+        ion-icon {
+          color: #64748b;
+        }
+      }
     }
   } /* ← .task-info closes HERE */
+
+  &.completed .task-info .task-title {
+    color: #94a3b8;
+    text-decoration: line-through;
+  }
+
+  &.completed .task-info .task-meta {
+    color: #64748b;
+  }
+
+  &.completed .task-info .subject-badge {
+    background: rgba(100, 116, 139, 0.16);
+    color: #94a3b8;
+  }
+
+  &.completed .task-info .task-date {
+    color: #64748b;
+
+    ion-icon {
+      color: #64748b;
+    }
+  }
+
+  &.completed .action-icons .edit-icon {
+    color: #94a3b8;
+  }
 
   /* Edit & Delete Icons Wrapper */
   .action-icons {

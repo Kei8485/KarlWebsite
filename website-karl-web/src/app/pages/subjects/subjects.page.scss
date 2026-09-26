@@ -33,6 +33,42 @@
     }
 }
 
+.subjects-status {
+  min-height: 45vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: #94a3b8;
+  text-align: center;
+
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+    color: #4facfe;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  button {
+    border: 1px solid rgba(79, 172, 254, 0.45);
+    border-radius: 8px;
+    padding: 0.65rem 1.1rem;
+    background: rgba(79, 172, 254, 0.12);
+    color: #4facfe;
+    font: inherit;
+    cursor: pointer;
+  }
+}
+
+.subjects-error p {
+  color: #fca5a5;
+}
+
 /* -----------------------------
    Subject Card Layout Styles 
 --------------------------------*/

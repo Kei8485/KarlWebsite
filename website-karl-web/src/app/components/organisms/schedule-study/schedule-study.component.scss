@@ -258,6 +258,114 @@ ion-datetime[presentation="time"] {
   margin-top: 2rem;
 }
 
+.archive-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.archive-select-all,
+.archive-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #cbd5e1;
+  cursor: pointer;
+
+  input {
+    appearance: none;
+    display: grid;
+    place-content: center;
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    border: 1.5px solid #52627b;
+    border-radius: 50%;
+    background: #111c30;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+
+    &::after {
+      content: '';
+      width: 4px;
+      height: 8px;
+      border: solid #102039;
+      border-width: 0 2px 2px 0;
+      opacity: 0;
+      transform: rotate(45deg) translate(-1px, -1px) scale(0.7);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    &:checked {
+      border-color: #4facfe;
+      background: #4facfe;
+      box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.12);
+
+      &::after {
+        opacity: 1;
+        transform: rotate(45deg) translate(-1px, -1px) scale(1);
+      }
+    }
+
+    &:hover:not(:disabled) {
+      border-color: #4facfe;
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(79, 172, 254, 0.75);
+      outline-offset: 3px;
+    }
+  }
+
+  input:disabled {
+    cursor: wait;
+    opacity: 0.55;
+  }
+}
+
+.archive-delete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.archive-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 36px;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 1rem;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.18);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}
+
 .schedule-item {
   display: flex;
   align-items: center;
@@ -385,6 +493,13 @@ ion-datetime[presentation="time"] {
     background: rgba(0, 0, 0, 0.2);
     border-color: rgba(255, 255, 255, 0.02);
     
+    .info {
+      @media (max-width: 480px) {
+        flex: 1 1 0%;
+        margin-bottom: 0;
+      }
+    }
+
     .status-indicator {
       ion-icon {
         font-size: 1.5rem;
@@ -392,5 +507,15 @@ ion-datetime[presentation="time"] {
         margin-left: 1rem;
       }
     }
+  }
+
+  &.selected {
+    border-color: rgba(239, 68, 68, 0.35);
+    background: rgba(239, 68, 68, 0.04);
+  }
+
+  .archive-select {
+    flex: 0 0 auto;
+    margin-right: 0.75rem;
   }
 }

@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, ModalController, IonPicker, IonPickerColumn, IonPickerColumnOption } from '@ionic/angular';
+import { IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, ModalController, IonPicker, IonPickerColumn, IonPickerColumnOption, IonSpinner } from '@ionic/angular';
 import { PlannerService } from '../../services/planner'; 
+import { finalize, forkJoin } from 'rxjs';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/confirm-modal.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component'; 
@@ -18,7 +19,7 @@ import { IonButtons } from "@ionic/angular";
   templateUrl: './planner.page.html',
   styleUrls: ['./planner.page.scss'],
   standalone: true,
-  imports: [IonContent, IonButton, IonIcon, IonDatetime, IonModal, CommonModule, FormsModule, AppButtonComponent, AppInputComponent, ScheduleStudyComponent]
+  imports: [IonContent, IonButton, IonIcon, IonDatetime, IonModal, IonSpinner, CommonModule, FormsModule, AppButtonComponent, AppInputComponent, ScheduleStudyComponent]
 })
 export class PlannerPage implements OnInit, OnDestroy {
   
@@ -26,6 +27,10 @@ export class PlannerPage implements OnInit, OnDestroy {
   currentUserId: number = 1; 
   totalStudyTime: string = '0h 0m';
   tasks: any[] = [];
+  isLoadingTasks = false;
+  taskLoadError = '';
+  taskUpdateIds = new Set<number>();
+  isDeletingCompletedTasks = false;
   
   // Task Form & Sorting State
   isAddingTask: boolean = false;
@@ -122,6 +127,14 @@ export class PlannerPage implements OnInit, OnDestroy {
     return result;
   }
 
+  get completedTasks() {
+    return this.tasks.filter(task => task.is_completed);
+  }
+
+  trackTaskById(_index: number, task: { id: number }) {
+    return task.id;
+  }
+
   toggleSort() {
     this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
   }
@@ -142,10 +155,24 @@ export class PlannerPage implements OnInit, OnDestroy {
   }
 
   loadTasks() {
-    this.plannerService.getTasks(this.currentUserId).subscribe(res => {
-      this.tasks = res;
-      this.cdr.detectChanges(); 
-    });
+    this.isLoadingTasks = true;
+    this.taskLoadError = '';
+    this.plannerService.getTasks(this.currentUserId)
+      .pipe(finalize(() => {
+        this.isLoadingTasks = false;
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (res) => {
+          this.tasks = res;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error loading tasks:', err);
+          this.taskLoadError = 'Could not load your tasks. Please check your connection and try again.';
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   loadStats() {
@@ -210,9 +237,74 @@ export class PlannerPage implements OnInit, OnDestroy {
   }
 
   toggleTask(taskId: number) {
-    this.plannerService.toggleTaskComplete(taskId).subscribe(() => {
-      this.loadTasks();
+    if (this.taskUpdateIds.has(taskId) || this.isDeletingCompletedTasks) return;
+    const task = this.tasks.find(item => item.id === taskId);
+    if (!task) return;
+
+    const previousValue = task.is_completed;
+    task.is_completed = !previousValue;
+    this.taskUpdateIds.add(taskId);
+    this.cdr.detectChanges();
+
+    this.plannerService.toggleTaskComplete(taskId)
+      .pipe(finalize(() => {
+        this.taskUpdateIds.delete(taskId);
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (response) => {
+          if (typeof response?.is_completed === 'boolean') {
+            task.is_completed = response.is_completed;
+            this.cdr.detectChanges();
+          }
+        },
+        error: (err) => {
+          task.is_completed = previousValue;
+          console.error('Error updating task completion:', err);
+          this.cdr.detectChanges();
+          this.loadTasks();
+          void this.showNotification('Update Failed', 'Could not update the task. Please try again.', true);
+        }
+      });
+  }
+
+  async deleteCompletedTasks() {
+    const completed = this.completedTasks;
+    if (completed.length === 0 || this.isDeletingCompletedTasks || this.taskUpdateIds.size > 0) return;
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Delete Completed Tasks',
+        message: `Permanently delete all <strong>${completed.length}</strong> checked tasks? This cannot be undone.`,
+        confirmText: 'Delete Completed',
+        isDanger: true
+      }
     });
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    if (data !== true) return;
+
+    const taskIds = completed.map(task => task.id);
+    this.isDeletingCompletedTasks = true;
+    forkJoin(taskIds.map(taskId => this.plannerService.deleteTask(taskId)))
+      .pipe(finalize(() => {
+        this.isDeletingCompletedTasks = false;
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: () => {
+          const deletedIds = new Set(taskIds);
+          this.tasks = this.tasks.filter(task => !deletedIds.has(task.id));
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error deleting completed tasks:', err);
+          this.loadTasks();
+          void this.showNotification('Delete Failed', 'Some completed tasks could not be deleted. The task list has been refreshed.', true);
+        }
+      });
   }
 
   async confirmDelete(taskId: number) {

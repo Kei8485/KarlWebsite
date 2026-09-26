@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonIcon, IonDatetime, IonModal, IonButton, IonButtons, ModalController } from '@ionic/angular';
+import { finalize, forkJoin } from 'rxjs';
 import { AppButtonComponent } from '../../atoms/app-button/app-button.component';
 import { AppInputComponent } from '../../atoms/app-input/app-input.component';
 import { ConfirmModalComponent } from '../../molecules/confirm-modal/confirm-modal.component';
@@ -29,7 +30,14 @@ export class ScheduleStudyComponent implements OnInit {
   activeTab: 'new' | 'upcoming' | 'archived' = 'new';
   upcomingStudies: any[] = [];
   archivedStudies: any[] = [];
+  selectedArchivedIds = new Set<number>();
+  isDeletingArchived = false;
   editingStudyId: number | null = null; // Track if we're editing an existing study
+
+  get allArchivedSelected() {
+    return this.archivedStudies.length > 0 &&
+      this.archivedStudies.every(study => this.selectedArchivedIds.has(study.id));
+  }
 
   getLocalISOString(dateString?: string) {
     const now = dateString ? new Date(dateString) : new Date();
@@ -63,8 +71,90 @@ export class ScheduleStudyComponent implements OnInit {
     this.plannerService.getScheduledStudies(this.currentUserId).subscribe(res => {
       this.upcomingStudies = res.filter((study: any) => !study.is_sent);
       this.archivedStudies = res.filter((study: any) => study.is_sent);
+      const archivedIds = new Set(this.archivedStudies.map((study: any) => study.id));
+      this.selectedArchivedIds = new Set(
+        [...this.selectedArchivedIds].filter(id => archivedIds.has(id))
+      );
       this.cdr.detectChanges();
     });
+  }
+
+  toggleArchivedSelection(studyId: number, selected: boolean) {
+    if (this.isDeletingArchived) return;
+    if (selected) {
+      this.selectedArchivedIds.add(studyId);
+    } else {
+      this.selectedArchivedIds.delete(studyId);
+    }
+  }
+
+  toggleSelectAllArchived(selected: boolean) {
+    if (this.isDeletingArchived) return;
+    this.selectedArchivedIds = selected
+      ? new Set(this.archivedStudies.map(study => study.id))
+      : new Set<number>();
+  }
+
+  onArchivedSelectionChange(event: Event, studyId?: number) {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) return;
+
+    if (studyId === undefined) {
+      this.toggleSelectAllArchived(target.checked);
+    } else {
+      this.toggleArchivedSelection(studyId, target.checked);
+    }
+  }
+
+  async deleteArchivedStudies(deleteAll: boolean) {
+    if (this.isDeletingArchived) return;
+
+    const studiesToDelete = deleteAll
+      ? [...this.archivedStudies]
+      : this.archivedStudies.filter(study => this.selectedArchivedIds.has(study.id));
+    if (studiesToDelete.length === 0) return;
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: deleteAll ? 'Delete All Archived Sessions' : 'Delete Selected Sessions',
+        message: deleteAll
+          ? `Permanently delete all <strong>${studiesToDelete.length}</strong> archived study sessions? This cannot be undone.`
+          : `Permanently delete <strong>${studiesToDelete.length}</strong> selected archived study sessions? This cannot be undone.`,
+        confirmText: deleteAll ? 'Delete All' : 'Delete Selected',
+        isDanger: true
+      }
+    });
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    if (data !== true) return;
+
+    this.isDeletingArchived = true;
+    forkJoin(studiesToDelete.map(study => this.plannerService.deleteScheduledStudy(study.id)))
+      .pipe(finalize(() => {
+        this.isDeletingArchived = false;
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: () => {
+          const deletedIds = new Set(studiesToDelete.map(study => study.id));
+          this.archivedStudies = this.archivedStudies.filter(study => !deletedIds.has(study.id));
+          this.selectedArchivedIds = new Set(
+            [...this.selectedArchivedIds].filter(id => !deletedIds.has(id))
+          );
+          this.cdr.detectChanges();
+        },
+        error: async (err) => {
+          console.error('Error deleting archived study sessions:', err);
+          this.loadStudies();
+          await this.showNotification(
+            'Delete Failed',
+            'Some archived sessions could not be deleted. The archive has been refreshed.',
+            true
+          );
+        }
+      });
   }
 
   editStudy(study: any) {

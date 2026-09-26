@@ -15,7 +15,7 @@
         <div class="flip-container" [class.is-flipped]="showSchedule">
           <div class="flipper">
             <!-- FRONT SIDE: TASKS -->
-            <div class="glass-card tasks-card front">
+            <div class="glass-card tasks-card front" [class.has-completed-tasks]="completedTasks.length > 0">
               <!-- 🚨 PREMIUM: Header with New Button -->
               <div class="tasks-header">
                 <h2>Upcoming Tasks</h2>

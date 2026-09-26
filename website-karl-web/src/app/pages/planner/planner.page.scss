@@ -283,6 +283,11 @@ ion-datetime-button::part(native) {
   max-height: 500px; 
   overflow-y: auto;
   padding-right: 8px; /* Breathing room for scrollbar */
+  box-sizing: border-box;
+}
+
+.tasks-card.front:not(.has-completed-tasks) .task-list {
+  padding-bottom: 1rem;
 }
 
 .task-list-status {
@@ -774,34 +779,55 @@ ion-datetime {
 }
 
 /* ========================================================= */
-/* FLIP ANIMATION FOR SCHEDULE TOGGLE                        */
+/* VIEW TRANSITION FOR SCHEDULE TOGGLE                       */
 /* ========================================================= */
 .flip-container {
-  perspective: 1200px;
   width: 100%;
 }
 
-.flip-container.is-flipped .flipper {
-  transform: rotateY(180deg);
-}
-
 .flipper {
-  display: grid; /* Grid trick to make front and back overlap and share height */
-  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
-  transform-style: preserve-3d;
+  position: relative;
 }
 
 .front, .back {
-  grid-area: 1 / 1; /* Puts both in the exact same cell */
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden; /* Safari support */
+  transition: opacity 220ms ease, transform 220ms ease;
 }
 
 .front {
-  transform: rotateY(0deg);
-  z-index: 2;
+  position: relative;
+  opacity: 1;
+  transform: translateX(0);
+  z-index: 1;
 }
 
 .back {
-  transform: rotateY(180deg);
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(8px);
+  z-index: 0;
+}
+
+.flip-container.is-flipped {
+  .front {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-8px);
+    z-index: 0;
+  }
+
+  .back {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+    z-index: 1;
+  }
 }

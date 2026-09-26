@@ -1,251 +1,253 @@
-documentation
+# ApexEng
 
-when publish (tatry dito kung kaya ihandle pag pinublish)
-Frontend: Hosted on Netlify (e.g., apexeng.netlify.app)
-Backend: Hosted on Render (e.g., apexeng-api.onrender.com)
-
--estimated users 20-30???
-can the server handle it
--base sa research(AI hehe) kaya daw upto 500 users
--try to make it optimized like:
--using youtube links instead of actual posting it in the website
--removes the profile pic so the server doesn't have to worry about posting any image
-
-another thing (sabi ng AI)
-🚨 The Only Catch (Important since users are paying!): Because Render is free, it has a "Sleep" feature. If nobody visits the website for 15 minutes, Render puts your backend to sleep to save money. When the next student tries to log in, it will take about 30 to 50 seconds for the server to wake up.
+An engineering learning platform built with **Ionic + Angular** (frontend) and **Django + Django REST Framework** (backend).
 
 ---
 
-karlWebsite_api - holds the project setting
-karlWebsite-api - has the core. (models, api logic, migration)
-manage.py - eto ung pinaka irurun parang sa java main class
+## Deployment
 
-- - - - terminal prompt for starting - - - -
-        Run this to run virtual environment - venv\Scripts\activate (mag cd muna sa api folder)
-        Run to run the backend server - python manage.py runserver
+- **Frontend:** Hosted on [Netlify](https://netlify.com) (e.g. `apexeng.netlify.app`)
+- **Backend:** Hosted on [Render](https://render.com) (e.g. `apexeng-api.onrender.com`)
+- **Database:** Hosted on [Supabase](https://supabase.com)
 
-for installing the jdongo frame work - pip install django djangorestframework django-cors-headers
+### Capacity notes
 
-steps
+- Estimated load: 20–30 concurrent users.
+- Research suggests the current setup can comfortably handle up to ~500 users.
+- Optimizations to keep the free-tier hosting lightweight:
+  - Videos are linked from YouTube instead of being uploaded/hosted directly.
+  - Profile pictures were removed so the server doesn't have to store/serve images.
 
-1.  backend first
-    \*run this commands (setup na ginawa ko) - mkdir name of folder (pang create ng folder) - cd name of folder
+> **⚠️ Important — Render free tier "sleep" behavior:**
+> Since users are paying for access, keep in mind that Render's free tier puts the backend to sleep after 15 minutes of inactivity. The next login attempt after that will take roughly 30–50 seconds while the server wakes up.
 
-            - python -m venv venv (for creating a virtual environment)
-            - venv\Scripts\activate (starting the virtual environment) (eto ung asa taas na command)
-            - pip install django djangorestframework django-cors-headers (need to install para maconnect ung backend and frontend)
+---
 
-            - django-admin startproject project_name .  (creates the folder structure parang ionic start) (ex. setting.py)
-            - python manage.py startapp core   (runs the manage.py) (ex. , migrations, models,apps) (run once)
-            - python manage.py runserver (run in the server)
+## Project Structure
 
-            - lalagay to sa setting.py
-            INSTALLED_APPS = [
-                ...
-                'rest_framework',
-                'corsheaders',
-                'core',
-            ]
+```
+karlWebsite_api/     # Project settings
+karlWebsite-api/     # Core app — models, API logic, migrations
+manage.py            # Entry point (equivalent to a Java main class)
+```
 
+---
 
+## Getting Started
 
-        *Done the Model
-        *Done Migration
-            run for migration - |python manage.py makemigrations | - creates migration files (inside the migration folder) and related files (uulitin ulit command nato pag may naupdate sa model)
-            | python manage.py migrate | - creates the sql queries na naka base sa model mo (automatic) (ran this if there is a updated model this will create a updated database)
-            | python manage.py createsuperuser |- for the super admin - bypass all permision (different from admin)
+### Running the backend
 
-        *Done admin setup
-            - register the models
+```bash
+# from the api folder
+venv\Scripts\activate       # activate the virtual environment
+python manage.py runserver  # start the backend server
+```
 
-        *Done Gmail API
-            - add email config in the settings.py
-            - putting the auto email in the admin
+### Backend setup (from scratch)
 
-        *Done Building the API
-            -create new file inside core folder -  | serializers.py | - converting obj to json
-            -Current data flow:
-                Database -> Models -> Serializer(converts the python obj to json) -> HTTP response (sends the data from backend to frontend) ->Angular (frontend dito lalabas)
+```bash
+mkdir <project-folder>
+cd <project-folder>
 
-        *Done Connecting the URL
-            -Go to the views.py and create the api (when creating a API function snake_casing is better)
-            -Create new urls.py (putting the paths of the url)
-            -check in postman if the urls are working (the GET and POST)
+python -m venv venv               # create a virtual environment
+venv\Scripts\activate             # activate it
 
-2.  Front end
-    ** dapat ionic standalone gagamitin para iwas bugs and less files and folders **
-    (development ng login page)
-    -run ionic start tas ionic serve
-    -delete ung home.page folder
-    -replace and run these: (automatically creates templete )
-    *ionic generate page pages/login
-    *ionic generate page pages/subjects
-    \*ionic generate page pages/topic-detail
-    -run for atomic folder - ionic generate component components/atoms/app-button
-    -run for creating a page - ionic generate page pages/dev-preview
-    -run for generating auth - ionic generate service services/auth (kailangan to para ibigay ng frontend ung data sa backend)
+pip install django djangorestframework django-cors-headers
 
-        (Development of Subject page)
-        - added username in the model and in the database (need this) -> python manage.py makemigrations
-        - created a card component
-        - connects the frontend  and backend logic of the subject
+django-admin startproject project_name .   # scaffolds settings.py, etc.
+python manage.py startapp core             # creates models, migrations, apps (run once)
+python manage.py runserver                 # run the server
+```
 
-        (Development of Topic Tree page)
-        -when a subj is click it takes it to the corresponding subject using the routes (maraming gagawin dito na logic)
-        -Created a topic card component
-        -connects the front and backend logic of the topics
-        -uses GET HTTP method to get the datas
-        -replaces the current temporary datas inside the ts and html
+Add the following to `settings.py`:
 
-        (development of the admin page)
-        -creates new pages standalone component
-        -creates the design of the admin page
-        -main logic: Add users and delete users here
-        -only admins can access this: also created this logic
-        -creates a new method inside the Model of the datas: replaces the funcion of acc creation in super admin
-        -putted it in the user method for the auto gmail
-        -in the design, created a filer
-        -all function has a validation modal
-        -before starting the security of the ai I finished all of the other pages first so this is the last part
-        -Uses ai to generate the syntaxes to secure the API (since d ko pa alam to)
-        -
+```python
+INSTALLED_APPS = [
+    ...
+    'rest_framework',
+    'corsheaders',
+    'core',
+]
+```
 
-        (development of the Planner page)
-        -created the design
-        -connects it to the backend
-        -Planner add edit
-        -Planner add schedule for study time
-        -most of the logic here came from AI (medjo komplikado d ko pa kaya aralin)
-        -used the REST API email code generator
-        -The planner page has 3 functions
-            -focus timer for pomodoro timer or something
-            -can also add todo task and scheduling it (has the CRUD)
-            -user can schedule a study session (this will send a email to the user when the time comes)
-        -Users cant choose past times for scheduling
-        -has validation for all confirmation
+### Backend build order
 
-        (development of the Community page)
-        -created the frontend logic(very simple since its just a btn)
-        -The btn just links into a messenger group chat link
+1. **Models** — done
+2. **Migrations**
+   ```bash
+   python manage.py makemigrations   # generate migration files (rerun after any model change)
+   python manage.py migrate          # apply migrations / build the schema
+   python manage.py createsuperuser  # create a superuser (full permissions, distinct from a regular admin)
+   ```
+3. **Admin setup** — register models in `admin.py`
+4. **Gmail API** — email config added to `settings.py`; used for sending auto-generated emails from the admin panel
+5. **Building the API**
+   - `serializers.py` converts Python objects to JSON.
+   - Data flow: **Database → Models → Serializer (object → JSON) → HTTP response → Angular frontend**
+6. **Connecting the URLs**
+   - Define API views in `views.py` (snake_case is the convention for API function names).
+   - Wire up `urls.py` with the corresponding paths.
+   - Verify GET/POST endpoints in Postman before connecting the frontend.
 
-        (development of the user settings)
-        -created the front end structure
-        -emails are not editable
-        -Username, Passwords are the editable things here
-        -has validation and confimation
-        -cannot change profile picture for the efficiency of the free backend and frontend server hosting
+---
 
-front end lesson na natutunan:
+## Frontend (Ionic + Angular)
 
-how to properly build components
+> Uses **standalone components** to avoid extra boilerplate/bugs and keep the file structure lean.
 
-complete the component.ts to set the setting of that app
-set the:
-selector: 'app-button',
-templateUrl: './app-button.component.html',
-styleUrls: ['./app-button.component.scss'],
-standalone: true,
-imports: [CommonModule, IonButton]
+### Useful CLI commands
 
-this is for connecting your html and css component
-app-button is your new element name <app-button> - your template
-
-then:
-
-export class AppButtonComponent {
-@Input() label: string = 'Button';
-@Input() variant: 'primary' | 'outline' = 'primary';
-@Input() disabled: boolean = false;
-@Input() size: 'small' | 'medium' | 'large' = 'medium';
-@Output() clicked = new EventEmitter<void>();
-}
-
-the input are your scss
-
-the label, variant, disable, size, clicked are your properties which chooses the setting
-
-the label: string = 'Button'; - is your label
-
-the variant: 'primary' | 'outline' = 'primary'; - you will set your scss variable here
-ex.
-
-&--primary {
---background: var(--primary);
---color: var(--primary-foreground);
-}
-
-the &-- will find it if you set it inside your = in the export which is the primary and outline
-
-then the last part ung sa dulo ay = thats the default
-
-next and error for http request (like try and catch in java but for internet)
-
-Natutunan ko sa pag lilink
--Pag may HTML SCSS ka konektado un sa ts ng page nayun
--then may nakahawak rin sakanya na parent ts
--so ts pinaka main logic mo dito and then connector of the Ionic Modules,HTTP Request, Validation ETC
--so pag may gusto ka idagdag na logic sa ts ka gagawa
-
-ORM stands for Object-Relational Mapping
-
+```bash
 ionic start my-app-name blank --type=angular-standalone
-Fast Page: ionic g p pages/topic-detail --standalone
-Fast Component: ionic g c components/atoms/my-button --standalone
-Fast Service: ionic g s services/auth
 
-pang create ng modal
-pero need muna mag create ng component para magamit to
-const modal = await this.modalCtrl.create({
-component: ConfirmModalComponent,
-cssClass: 'transparent-modal',
-componentProps: {
-title: 'Delete Account?',
-message: `Are you sure you want to permanently delete <strong>${nameToDisplay}</strong>? This cannot be undone.`,
-confirmText: 'Delete',
-isDanger: false // Turns the modal danger colors on!
+ionic g p pages/topic-detail --standalone        # generate a page
+ionic g c components/atoms/my-button --standalone # generate a component
+ionic g s services/auth                          # generate a service
+```
+
+### Feature build log
+
+**Login page**
+
+- Initial scaffold: `ionic start` → `ionic serve`, removed the default `home` page.
+- Generated `pages/login`, `pages/subjects`, `pages/topic-detail`.
+- Generated a reusable `atoms/app-button` component and a `services/auth` service (bridges frontend data to the backend).
+
+**Subjects page**
+
+- Added `username` to the model/database (`makemigrations` after the change).
+- Built a subject card component.
+- Connected frontend ↔ backend logic for subjects.
+
+**Topic tree page**
+
+- Clicking a subject routes to its topics via Angular routing.
+- Built a topic card component.
+- Connected frontend ↔ backend logic; fetches data via `GET` and replaces the placeholder data in the `.ts`/`.html` files.
+
+**Admin page**
+
+- Standalone component with its own design.
+- Core logic: add/delete users, restricted to admin accounts only.
+- Added a model method to replace manual account creation via the Django superuser flow.
+- Wired into the auto-email (Gmail) flow.
+- Includes a filter in the UI and validation modals on every action.
+- Security-hardening (API auth/permissions) was tackled last, with AI assistance for the syntax, since this was new territory.
+
+**Planner page**
+
+- Built the design and connected it to the backend.
+- Add/edit tasks, plus scheduling for study time (most of this logic was AI-assisted — fairly complex).
+- Uses the REST email code generator.
+- Three core functions:
+  1. Pomodoro-style focus timer
+  2. To-do task CRUD with scheduling
+  3. Study session scheduling — sends an email reminder when the session starts
+- Validation: users can't select past times; all actions require confirmation.
+
+**Community page**
+
+- Simple frontend logic — a single button linking out to a Messenger group chat.
+
+**User settings page**
+
+- Editable: username, password.
+- Not editable: email.
+- Profile picture editing was intentionally left out to keep the free-tier hosting lightweight.
+- Includes validation and confirmation on changes.
+
+---
+
+## Frontend Concepts & Lessons Learned
+
+### Building a component
+
+```ts
+@Component({
+  selector: "app-button",
+  templateUrl: "./app-button.component.html",
+  styleUrls: ["./app-button.component.scss"],
+  standalone: true,
+  imports: [CommonModule, IonButton],
+})
+export class AppButtonComponent {
+  @Input() label: string = "Button";
+  @Input() variant: "primary" | "outline" = "primary";
+  @Input() disabled: boolean = false;
+  @Input() size: "small" | "medium" | "large" = "medium";
+  @Output() clicked = new EventEmitter<void>();
 }
+```
+
+- `selector` defines the custom element tag (`<app-button>`) used in templates.
+- `@Input()` properties (`label`, `variant`, `disabled`, `size`) configure the component's behavior/appearance; the value after `=` is the default.
+- `variant` maps to SCSS modifier classes, e.g.:
+  ```scss
+  &--primary {
+    --background: var(--primary);
+    --color: var(--primary-foreground);
+  }
+  ```
+  The `&--<value>` naming matches the value passed into the `variant` input.
+
+### How the pieces connect
+
+- HTML/SCSS are tied to their `.ts` file, which in turn is the "parent" holding the page's logic.
+- The `.ts` file is where Ionic modules, HTTP requests, and validation logic live — any new logic goes here.
+
+### HTTP error handling
+
+Similar to try/catch, but for network requests — used to handle failed API calls gracefully.
+
+### ORM
+
+**ORM = Object-Relational Mapping** — lets you work with the database using Python objects instead of raw SQL.
+
+### Modals
+
+Requires a component to be created first, then presented via `ModalController`:
+
+```ts
+const modal = await this.modalCtrl.create({
+  component: ConfirmModalComponent,
+  cssClass: "transparent-modal",
+  componentProps: {
+    title: "Delete Account?",
+    message: `Are you sure you want to permanently delete <strong>${nameToDisplay}</strong>? This cannot be undone.`,
+    confirmText: "Delete",
+    isDanger: false, // toggles the modal's danger color scheme
+  },
 });
+```
 
-    logic of the modal creation in ts
-    modalCtrl is a ionic function
-    when creating it it needs the   async like | async addUser()  |
-    async is needed to tell the browser that a pause will happen because of a modal
-    await is the one going to cause the pause
-    then the present() is for the animation
-    then another await gets executed to get the data of the user
+- `modalCtrl` is Ionic's modal controller.
+- The method must be `async` since a pause is expected while the modal is open.
+- `await` triggers the pause; `present()` handles the animation; a second `await` retrieves the result once the user responds.
 
+### RxJS & Observables (used in Auth)
 
-    Logic of the auth - the rxjs(rxjs is for observable tools)
+|                  | Observable                                                                                                                     | Async / Await                                       |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------- |
+| **Use case**     | Continuous/ongoing data streams (stopwatch, live clock, repeating interval)                                                    | Pausing for a single result (a delay, an API fetch) |
+| **Subscription** | Uses `subscribe()` / `unsubscribe()` — though HTTP calls auto-unsubscribe, and login typically redirects to a new route anyway | N/A                                                 |
+| **Handles**      | Multiple/ongoing values                                                                                                        | One value                                           |
 
-    Observable tool is for API because API takes time to load
+**Auth service flow:**
 
-    observable is just like async but does more
-    observable - handles more data
-    async - handles one value
+1. Import RxJS in the service class.
+2. `@Injectable({ providedIn: 'root' })` so it's available app-wide.
+3. Inject `HttpClient` via the constructor.
+4. Create a `login()` method to send frontend credentials to the backend for comparison.
 
-    diffrerence between observable and async
+**Using it in a component:**
 
-    observable uses subcribe - runs continuously and to stop we use unsubscribe
-                             - if you use HTTP method there is no unsubscribe even if we use it because its automatic and we will direct it in a new route if in login system
+- Import the `AuthService`.
+- Call its method with `.subscribe({ next, error })`.
+- On `next`: store the returned data in `localStorage` (so the app knows the user is logged in).
+- On `error`: handle/display the failure.
 
-    async uses await - it is for pausing or delaying mostly used for UI like modals
+---
 
-    Observable: Used for continuous, ongoing streams of time or data (like a stopwatch, live clock, or repeating interval).
+## Next Steps
 
-    Async / Await: Used to pause execution, delay, or wait for a single result (like a 3-second delay timer or an API fetch).
-
-
-        - First the creation of the class - I import the rxjs here
-        - inject it and provide it in the root - so every class can use it
-        - create a constructor for the add the HttpClient - to say that this class will use the api
-        - create a login method for sending the frontend data to the backend to get compared
-
-        -in the ts logic:
-        - you import that auth service class
-        - to use the method inside the rxjs class fill in the parameters of the function
-        - that function will use the | next and error |
-        - if its correct it will say next and then store the data of the database to the localStorage file
-        (it needs to set it so that the website can know that the user is still login and using that account)
-        -and in error it will throw in your error logic
-
-study the urls and how the serializer and views work
+- Study how URLs, serializers, and views work together in more depth.

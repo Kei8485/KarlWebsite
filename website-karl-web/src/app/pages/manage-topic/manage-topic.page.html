@@ -24,6 +24,7 @@
           </h2>
         </div>
         <app-button
+          *ngIf="topicId === 'new' || !isLoadingTopic"
           variant="primary"
           label="Save All Changes"
           [loading]="isSaving"
@@ -33,6 +34,21 @@
         ></app-button>
       </div>
 
+      <div class="topic-loading" *ngIf="isLoadingTopic" role="status" aria-live="polite">
+        <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+        <span>Loading topic...</span>
+      </div>
+
+      <div class="topic-load-error" *ngIf="topicLoadError" role="alert">
+        <p>{{ topicLoadError }}</p>
+        <button type="button" (click)="loadTopic()">Try again</button>
+      </div>
+
+      <ng-container *ngIf="topicId === 'new' || (!isLoadingTopic && !topicLoadError)">
+      <div class="topic-save-error" *ngIf="topicSaveError" role="alert">
+        {{ topicSaveError }}
+      </div>
+
       <!-- TOPIC DETAILS -->
       <h3 style="color: #4facfe; margin-bottom: 1rem">Topic Details</h3>
       <div class="form-group">
@@ -40,6 +56,7 @@
         <input
           type="text"
           [(ngModel)]="topic.title"
+          (ngModelChange)="clearTopicErrors()"
           placeholder="e.g. Introduction to Derivatives"
           class="dummy-input"
         />
@@ -50,20 +67,27 @@
         <input
           type="text"
           [(ngModel)]="topic.youtube_url"
+          (ngModelChange)="clearTopicErrors()"
           placeholder="https://youtube.com/..."
           class="dummy-input"
+          [class.input-invalid]="videoUrlError"
         />
+        <small class="field-error" *ngIf="videoUrlError" role="alert">{{ videoUrlError }}</small>
       </div>
 
       <div class="form-group">
         <label>Notes / Content</label>
         <textarea
           [(ngModel)]="topic.notes"
+          (ngModelChange)="clearTopicErrors()"
           placeholder="Enter topic lesson notes..."
           class="dummy-input"
           rows="6"
           style="resize: vertical"
         ></textarea>
+        <small class="notes-hint">
+          Paste a full link, including https://, into your notes. It will be clickable for learners.
+        </small>
       </div>
 
       <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 2rem 0" />
@@ -197,6 +221,7 @@
           (clicked)="addQuestion()"
         ></app-button>
       </div>
+      </ng-container>
     </div>
   </div>
 </ion-content>

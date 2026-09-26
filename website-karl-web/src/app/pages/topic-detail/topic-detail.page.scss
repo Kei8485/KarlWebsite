@@ -127,6 +127,7 @@
     padding-right: 0.5rem;
     white-space: pre-wrap; /* MAGIC FIX: Preserves newlines from Django text fields! */
     font-size: 1.05rem;
+    overflow-wrap: anywhere;
 
     &::-webkit-scrollbar {
       width: 6px;
@@ -144,6 +145,16 @@
     }
     
     ::ng-deep {
+      a {
+        color: #4facfe;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+
+        &:hover {
+          color: #00f2fe;
+        }
+      }
+
       h3 {
         color: white;
         margin-top: 1.5rem;
@@ -360,4 +371,3 @@
     }
   }
 }
-

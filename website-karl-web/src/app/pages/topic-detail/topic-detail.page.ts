@@ -25,6 +25,7 @@ export class TopicDetailPage implements OnInit {
 
   topicId: string | null = null;
   topic: any = {}; // Starts empty so the HTML doesn't crash while loading!
+  linkifiedNotes = '';
   safeVideoUrl!: SafeResourceUrl;
   isLoading = true;
 
@@ -65,6 +66,7 @@ export class TopicDetailPage implements OnInit {
     this.http.get(`${environment.apiUrl}/topics/${this.topicId}/`).subscribe({
       next: (data: any) => {
         this.topic = data;
+        this.linkifiedNotes = this.linkifyNoteUrls(this.topic.notes || '');
         
         if (this.topic.youtube_url) {
           
@@ -95,5 +97,59 @@ export class TopicDetailPage implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  private linkifyNoteUrls(notes: string): string {
+    const container = document.createElement('div');
+    container.innerHTML = notes;
+
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+    const textNodes: Text[] = [];
+    let node: Node | null;
+    while ((node = walker.nextNode())) {
+      if (!node.parentElement?.closest('a, script, style')) {
+        textNodes.push(node as Text);
+      }
+    }
+
+    const urlPattern = /https?:\/\/[^\s<>"']+/gi;
+    for (const textNode of textNodes) {
+      const content = textNode.textContent || '';
+      const fragment = document.createDocumentFragment();
+      let cursor = 0;
+      let match: RegExpExecArray | null;
+
+      urlPattern.lastIndex = 0;
+      while ((match = urlPattern.exec(content))) {
+        let urlText = match[0];
+        const trailingPunctuation = urlText.match(/[.,!?;:]+$/)?.[0] || '';
+        urlText = urlText.slice(0, urlText.length - trailingPunctuation.length);
+
+        if (!urlText) continue;
+        let url: URL;
+        try {
+          url = new URL(urlText);
+        } catch {
+          continue;
+        }
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') continue;
+
+        fragment.append(document.createTextNode(content.slice(cursor, match.index)));
+        const link = document.createElement('a');
+        link.href = url.href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = urlText;
+        fragment.append(link, document.createTextNode(trailingPunctuation));
+        cursor = match.index + match[0].length;
+      }
+
+      if (cursor > 0) {
+        fragment.append(document.createTextNode(content.slice(cursor)));
+        textNode.parentNode?.replaceChild(fragment, textNode);
+      }
+    }
+
+    return container.innerHTML;
   }
 }

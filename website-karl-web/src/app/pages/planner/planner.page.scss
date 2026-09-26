@@ -2,9 +2,9 @@
 :host {
   display: block;
   background: var(--background, #091222); 
-  min-height: 100vh;
+  min-height: 100%;
   color: white;
-  width: 100vw;
+  width: 100%;
   overflow-x: hidden;
 }
 
@@ -13,11 +13,9 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  margin-bottom: 100px;
   
   @media (max-width: 768px) {
     padding: 1rem !important;
-    margin-bottom: 150px !important;
   }
 }
 

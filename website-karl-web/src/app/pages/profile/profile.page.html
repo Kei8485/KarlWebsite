@@ -91,7 +91,8 @@
           label="Save Changes"
           variant="primary"
           icon="save-outline"
-          [disabled]="isLoading"
+          [loading]="isLoading"
+          loadingLabel="Saving..."
           (clicked)="saveProfile()"
         ></app-button>
       </div>

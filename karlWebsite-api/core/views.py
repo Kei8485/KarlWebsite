@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db import transaction
 
 # Create your views here.
 from django.utils import timezone
@@ -12,7 +13,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Subject, Topic, User, PlannerTask, StudySession, SessionToken
+from .models import Subject, Topic, User, PlannerTask, StudySession, SessionToken, EmailDeliveryError
 from .authentication import IsAuthenticated, IsAdmin
 from django.contrib.auth.hashers import check_password
 
@@ -101,7 +102,13 @@ def forgot_code(request):
     email = request.data.get('email')
     try:
         user = User.objects.get(email=email)
-        user.generate_code()
+        try:
+            user.generate_code()
+        except EmailDeliveryError:
+            return Response(
+                {'error': 'Could not send the access code. Check the email configuration and try again.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
 
         return Response({'success': True})
     except User.DoesNotExist:
@@ -125,12 +132,16 @@ def create_user(request):
     if denied: return denied
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        new_user = serializer.save()
-        
-        # 🚨 Call the function from your models.py to generate the code!
-        new_user.generate_code()
-        
-        return Response(serializer.data, status=201)
+        try:
+            with transaction.atomic():
+                new_user = serializer.save()
+                new_user.generate_code()
+            return Response(serializer.data, status=201)
+        except EmailDeliveryError:
+            return Response(
+                {'error': 'Could not send the access code. The account was not created. Check the backend server logs and SMTP settings, then try again.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
     return Response(serializer.errors, status=400)
 
 @api_view(['DELETE'])

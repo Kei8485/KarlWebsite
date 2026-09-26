@@ -90,8 +90,10 @@
               <app-button
                 variant="primary"
                 label="Create User"
+                [loading]="crudLoading === 'create-user'"
+                loadingLabel="Sending email..."
                 icon="person-add-outline"
-                [disabled]="userForm.invalid || false"
+                [disabled]="userForm.invalid || !!crudLoading"
                 (clicked)="addUser()"
               ></app-button>
             </form>
@@ -131,6 +133,10 @@
 
             <!-- The List of Users -->
 
+            <p class="error-msg" *ngIf="deleteUserErrorMessage" role="alert">
+              {{ deleteUserErrorMessage }}
+            </p>
+
             <div class="user-list">
               <div class="user-row" *ngFor="let user of filteredUsers">
                 <div class="user-info">
@@ -146,11 +152,23 @@
                   {{ user.role | titlecase }}
                 </div>
 
-                <ion-icon
-                  name="trash-outline"
+                <button
                   class="delete-icon"
+                  type="button"
+                  [disabled]="!!crudLoading"
+                  [attr.aria-label]="'Delete ' + user.userName"
+                  [attr.aria-busy]="crudLoading === 'delete-user-' + user.id"
                   (click)="deleteUser(user.id)"
-                ></ion-icon>
+                >
+                  <ion-spinner
+                    *ngIf="crudLoading === 'delete-user-' + user.id"
+                    name="crescent"
+                  ></ion-spinner>
+                  <ion-icon
+                    *ngIf="crudLoading !== 'delete-user-' + user.id"
+                    name="trash-outline"
+                  ></ion-icon>
+                </button>
               </div>
             </div>
           </div>
@@ -264,16 +282,26 @@
                 ></textarea>
               </div>
 
+              <p class="error-msg" *ngIf="cmsErrorMessage" role="alert">
+                {{ cmsErrorMessage }}
+              </p>
+
               <div style="margin-top: 1.5rem; display: flex; gap: 1rem">
                 <app-button
                   variant="primary"
                   label="Save Changes"
+                  [loading]="crudLoading === 'save-subject'"
+                  loadingLabel="Saving..."
+                  [disabled]="!!crudLoading"
                   icon="save-outline"
                   (clicked)="saveSubject()"
                 ></app-button>
                 <app-button
                   variant="danger-outline"
                   label="Delete"
+                  [loading]="crudLoading === 'delete-subject'"
+                  loadingLabel="Deleting..."
+                  [disabled]="!!crudLoading"
                   icon="trash-outline"
                   (clicked)="deleteSubject()"
                   *ngIf="activeSubject.id"
@@ -313,11 +341,23 @@
                         class="action-icon edit"
                         (click)="goToEditTopic(topic.id)"
                       ></ion-icon>
-                      <ion-icon
-                        name="trash-outline"
+                      <button
                         class="action-icon delete"
+                        type="button"
+                        [disabled]="!!crudLoading"
+                        [attr.aria-label]="'Delete topic ' + topic.title"
+                        [attr.aria-busy]="crudLoading === 'delete-topic-' + topic.id"
                         (click)="deleteTopic(topic)"
-                      ></ion-icon>
+                      >
+                        <ion-spinner
+                          *ngIf="crudLoading === 'delete-topic-' + topic.id"
+                          name="crescent"
+                        ></ion-spinner>
+                        <ion-icon
+                          *ngIf="crudLoading !== 'delete-topic-' + topic.id"
+                          name="trash-outline"
+                        ></ion-icon>
+                      </button>
                     </div>
                   </div>
 
@@ -340,6 +380,7 @@
                   <app-button
                     variant="primary"
                     label="Add New Topic"
+                    [disabled]="!!crudLoading"
                     icon="add-outline"
                     (clicked)="goToAddTopic()"
                   ></app-button>

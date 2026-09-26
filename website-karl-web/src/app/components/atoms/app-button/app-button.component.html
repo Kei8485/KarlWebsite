@@ -8,18 +8,20 @@
           ? 'solid'
           : 'clear'
   "
-  [disabled]="disabled"
+  [disabled]="disabled || loading"
+  [attr.aria-busy]="loading"
   (click)="handleClick($event)"
   class="app-btn app-btn--{{ variant }} app-btn--{{ size }}"
 >
+  <ion-spinner *ngIf="loading" name="crescent" slot="start"></ion-spinner>
   <ion-icon
-    *ngIf="icon && iconPosition === 'start'"
+    *ngIf="icon && iconPosition === 'start' && !loading"
     [name]="icon"
     slot="start"
   ></ion-icon>
-  {{ label }}
+  {{ loading ? loadingLabel : label }}
   <ion-icon
-    *ngIf="icon && iconPosition === 'end'"
+    *ngIf="icon && iconPosition === 'end' && !loading"
     [name]="icon"
     slot="end"
   ></ion-icon>

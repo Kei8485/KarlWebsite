@@ -26,6 +26,8 @@
         <app-button
           variant="primary"
           label="Save All Changes"
+          [loading]="isSaving"
+          loadingLabel="Saving topic and quizzes..."
           icon="save-outline"
           (clicked)="saveTopic()"
         ></app-button>

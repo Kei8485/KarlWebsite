@@ -253,11 +253,22 @@
   }
   
   .delete-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
     color: #ef4444;
     font-size: 1.5rem;
     margin-left: 1rem;
     cursor: pointer;
     transition: 0.2s ease;
+
+    &:disabled {
+      cursor: wait;
+      opacity: 0.7;
+    }
     
     /* 🚨 NEW: Pushes the trash can beautifully to the far right edge of the second row */
     @media (max-width: 480px) {
@@ -714,6 +725,21 @@ input.input-error {
       cursor: pointer;
       color: #8B96AB;
       transition: color 0.2s ease;
+
+      &.delete {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: #8B96AB;
+
+        &:disabled {
+          cursor: wait;
+          opacity: 0.7;
+        }
+      }
 
       &.edit:hover {
         color: #4facfe;

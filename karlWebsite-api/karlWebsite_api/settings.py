@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,8 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-development-only-change-me')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = [host.strip() for host in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if host.strip()]
 
 
@@ -79,8 +80,12 @@ WSGI_APPLICATION = 'karlWebsite_api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
@@ -125,7 +130,7 @@ STATIC_URL = 'static/'
 # Email configuration is environment-driven; development uses console delivery.
 EMAIL_BACKEND = os.environ.get(
     'EMAIL_BACKEND',
-    'django.core.mail.backends.console.EmailBackend',
+    'django.core.mail.backends.smtp.EmailBackend',
 )
 EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))

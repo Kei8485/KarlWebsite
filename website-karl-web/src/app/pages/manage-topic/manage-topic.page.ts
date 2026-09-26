@@ -76,6 +76,7 @@ export class ManageTopicPage implements OnInit {
   }
 
   deletedQuestions: number[] = [];
+  isSaving = false;
 
   addQuestion() {
     if (!this.topic.questions) {
@@ -121,6 +122,7 @@ export class ManageTopicPage implements OnInit {
   }
 
   async saveTopic() {
+    if (this.isSaving) return;
     const modal = await this.modalCtrl.create({
       component: ConfirmModalComponent,
       cssClass: 'transparent-modal',
@@ -136,6 +138,7 @@ export class ManageTopicPage implements OnInit {
     const { data } = await modal.onWillDismiss();
     
     if (data === true) {
+      this.isSaving = true;
       const payload = {
         ...this.topic,
         subject: this.subjectId
@@ -144,17 +147,25 @@ export class ManageTopicPage implements OnInit {
       if (this.topicId !== 'new') {
         this.http.put(`${this.apiSystemUrl}/topics/manage/${this.topicId}/`, payload).subscribe({
           next: () => {
-            this.saveQuizzes();
+            void this.saveQuizzes();
           },
-          error: (err) => console.error(err)
+          error: (err) => {
+            this.isSaving = false;
+            console.error('Error saving topic:', err);
+            void this.showNotification('Save Failed', 'Could not save the topic. Please try again.', true);
+          }
         });
       } else {
         this.http.post(`${this.apiSystemUrl}/topics/create/`, payload).subscribe({
           next: (res: any) => {
             this.topicId = res.id;
-            this.saveQuizzes();
+            void this.saveQuizzes();
           },
-          error: (err) => console.error(err)
+          error: (err) => {
+            this.isSaving = false;
+            console.error('Error creating topic:', err);
+            void this.showNotification('Save Failed', 'Could not create the topic. Please try again.', true);
+          }
         });
       }
     }
@@ -182,6 +193,8 @@ export class ManageTopicPage implements OnInit {
       }
     } catch (err) {
       console.error('Error saving quizzes:', err);
+      this.isSaving = false;
+      this.cdr.detectChanges();
       await this.showNotification(
         'Save Failed',
         'Your topic was saved, but one or more quiz changes could not be saved. Please try Save All Changes again.',
@@ -191,6 +204,7 @@ export class ManageTopicPage implements OnInit {
     }
 
     this.deletedQuestions = [];
+    this.isSaving = false;
     this.goBack();
   }
 

@@ -3,11 +3,23 @@ from django.db import models
 import secrets
 import string
 import hashlib
+import logging
+import smtplib
 from datetime import timedelta
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, get_connection
+from django.core.mail.backends.console import EmailBackend as ConsoleEmailBackend
 from django.conf import settings
+from django.db import transaction
+
+
+logger = logging.getLogger(__name__)
+
+
+class EmailDeliveryError(Exception):
+    pass
+
 
 class User(models.Model):
     ROLE_CHOICES = [
@@ -21,6 +33,7 @@ class User(models.Model):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
     created_at = models.DateTimeField(auto_now_add=True)
     
+    @transaction.atomic
     def generate_code(self):
         # 1. Generate the code
         code = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(8))
@@ -118,9 +131,26 @@ class User(models.Model):
             </html>
         '''
         
-        msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+        connection = get_connection()
+        if isinstance(connection, ConsoleEmailBackend):
+            logger.error('Email delivery is disabled: Django is using the console email backend.')
+            raise EmailDeliveryError('The console email backend does not deliver email.')
+
+        msg = EmailMultiAlternatives(subject, text_content, from_email, to, connection=connection)
         msg.attach_alternative(html_content, "text/html")
-        msg.send()
+        try:
+            if msg.send(fail_silently=False) != 1:
+                logger.error('Email backend %s did not accept the access-code email.', settings.EMAIL_BACKEND)
+                raise EmailDeliveryError('The email backend did not accept the message.')
+        except (OSError, smtplib.SMTPException) as exc:
+            smtp_code = getattr(exc, 'smtp_code', None)
+            logger.error(
+                'Access-code email failed using backend %s (%s%s).',
+                settings.EMAIL_BACKEND,
+                type(exc).__name__,
+                f', SMTP status {smtp_code}' if smtp_code is not None else '',
+            )
+            raise EmailDeliveryError('The email could not be sent.') from exc
     
     def __str__(self): # '__str__' (built-in function) for turning the obj into a string
         return self.email    

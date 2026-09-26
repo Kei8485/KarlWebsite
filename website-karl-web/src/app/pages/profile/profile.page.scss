@@ -66,6 +66,10 @@
     outline: none;
     transition: border-color 0.2s ease;
 
+    &:hover {
+      border-color: rgba(79, 172, 254, 0.7);
+    }
+
     &:focus {
       border-color: #4facfe;
     }
@@ -74,6 +78,32 @@
       opacity: 0.6;
       cursor: not-allowed;
       border-color: transparent;
+    }
+  }
+
+  .password-input-wrapper {
+    position: relative;
+
+    .dummy-input {
+      padding-right: 3rem;
+    }
+  }
+
+  .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    padding: 0.25rem;
+    border: 0;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #4facfe;
     }
   }
 

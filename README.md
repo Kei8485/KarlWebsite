@@ -105,13 +105,35 @@ steps
         -creates a new method inside the Model of the datas: replaces the funcion of acc creation in super admin
         -putted it in the user method for the auto gmail
         -in the design, created a filer
-        -(Putting a search function???)
         -all function has a validation modal
+        -before starting the security of the ai I finished all of the other pages first so this is the last part
+        -Uses ai to generate the code to secure the API (since d ko pa alam to)
+        -
 
-
+        (development of the Planner page)
+        -created the design
+        -connects it to the backend
         -Planner add edit
         -Planner add schedule for study time
-        -
+        -most of the logic here came from AI (medjo komplikado d ko pa kaya aralin)
+        -used the REST API email code generator
+        -The planner page has 3 functions
+            -focus timer for pomodoro timer or something
+            -can also add todo task and scheduling it (has the CRUD)
+            -user can schedule a study session (this will send a email to the user when the time comes)
+        -Users cant choose past times for scheduling
+        -has validation for all confirmation
+
+        (development of the Community page)
+        -created the frontend logic(very simple since its just a btn)
+        -The btn just links into a messenger group chat link
+
+        (development of the user settings)
+        -created the front end structure
+        -emails are not editable
+        -Username, Passwords are the editable things here
+        -has validation and confimation
+        -cannot change profile picture for the efficiency of the free backend and frontend server hosting
 
 front end lesson na natutunan:
 
@@ -227,4 +249,3 @@ isDanger: false // Turns the modal danger colors on!
         -and in error it will throw in your error logic
 
 study the urls and how the serializer and views work
-

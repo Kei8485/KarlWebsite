@@ -49,6 +49,15 @@
     margin-right: 8px; /* Spacing between icon and text */
   }
 
+  .app-input-icon--clickable {
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--primary);
+    }
+  }
+
   .app-input-error {
     font-family: var(--font-sans);
     font-size: var(--text-size-sm);

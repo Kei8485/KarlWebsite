@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
 import { addIcons } from 'ionicons';
-import { saveOutline, personCircleOutline, checkmarkCircleOutline } from 'ionicons/icons';
+import { saveOutline, personCircleOutline, checkmarkCircleOutline, eyeOutline, eyeOffOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-profile',
@@ -23,6 +23,8 @@ export class ProfilePage implements OnInit {
   userName: string = '';
   codePass: string = '';
   confirmCodePass: string = '';
+  showCodePass: boolean = false;
+  showConfirmCodePass: boolean = false;
 
   isLoading: boolean = false;
   successMessage: string = '';
@@ -31,7 +33,7 @@ export class ProfilePage implements OnInit {
   apiSystemUrl = environment.apiUrl;
 
   constructor(private http: HttpClient, private modalCtrl: ModalController, private toastCtrl: ToastController) {
-    addIcons({ saveOutline, personCircleOutline, checkmarkCircleOutline });
+    addIcons({ saveOutline, personCircleOutline, checkmarkCircleOutline, eyeOutline, eyeOffOutline });
   }
 
   ngOnInit() {

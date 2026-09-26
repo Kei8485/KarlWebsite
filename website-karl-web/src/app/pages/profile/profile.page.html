@@ -41,22 +41,42 @@
 
       <div class="form-group">
         <label>New Password (Access Code)</label>
-        <input
-          type="password"
-          [(ngModel)]="codePass"
-          placeholder="Leave blank to keep current password"
-          class="dummy-input"
-        />
+        <div class="password-input-wrapper">
+          <input
+            [type]="showCodePass ? 'text' : 'password'"
+            [(ngModel)]="codePass"
+            placeholder="Leave blank to keep current password"
+            class="dummy-input"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            [attr.aria-label]="showCodePass ? 'Hide new password' : 'Show new password'"
+            (click)="showCodePass = !showCodePass"
+          >
+            <ion-icon [name]="showCodePass ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </button>
+        </div>
       </div>
 
       <div class="form-group">
         <label>Confirm New Password</label>
-        <input
-          type="password"
-          [(ngModel)]="confirmCodePass"
-          placeholder="Confirm new password"
-          class="dummy-input"
-        />
+        <div class="password-input-wrapper">
+          <input
+            [type]="showConfirmCodePass ? 'text' : 'password'"
+            [(ngModel)]="confirmCodePass"
+            placeholder="Confirm new password"
+            class="dummy-input"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            [attr.aria-label]="showConfirmCodePass ? 'Hide confirmation password' : 'Show confirmation password'"
+            (click)="showConfirmCodePass = !showConfirmCodePass"
+          >
+            <ion-icon [name]="showConfirmCodePass ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </button>
+        </div>
       </div>
 
       <div class="message error-msg" *ngIf="errorMessage">

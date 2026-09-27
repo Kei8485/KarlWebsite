@@ -42,6 +42,8 @@ export class LoginPage {
   }
 
   onLogin() {
+    if (this.isLoading) return;
+
     if (!this.email || !this.accessCode) {
       this.loginError = 'Please enter both email and access code.';
       this.isShaking = true;

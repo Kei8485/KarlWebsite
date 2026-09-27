@@ -2,7 +2,7 @@ import { environment } from '../../../../environments/environment';
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ModalController, IonIcon } from '@ionic/angular';
+import { ModalController, IonIcon, IonSpinner } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { addIcons } from 'ionicons';
 import { mailOutline, paperPlaneOutline, closeOutline, checkmarkCircleOutline } from 'ionicons/icons';
@@ -12,7 +12,7 @@ import { mailOutline, paperPlaneOutline, closeOutline, checkmarkCircleOutline } 
   templateUrl: './forgot-code-modal.component.html',
   styleUrls: ['./forgot-code-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonIcon]
+  imports: [CommonModule, FormsModule, IonIcon, IonSpinner]
 })
 export class ForgotCodeModalComponent {
   email: string = '';
@@ -31,10 +31,13 @@ export class ForgotCodeModalComponent {
   }
 
   close() {
+    if (this.isLoading) return;
     this.modalCtrl.dismiss();
   }
 
   sendCode() {
+    if (this.isLoading) return;
+
     this.errorMessage = '';
     this.successMessage = '';
 

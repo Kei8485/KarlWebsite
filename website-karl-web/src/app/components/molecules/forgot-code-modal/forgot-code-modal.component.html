@@ -10,7 +10,7 @@
       <h2 class="modal-title">Forgot Your Code?</h2>
       <p class="modal-subtitle">Enter your email and we'll send a new access code.</p>
     </div>
-    <button class="close-btn" (click)="close()">
+    <button class="close-btn" (click)="close()" [disabled]="isLoading" aria-label="Close">
       <ion-icon name="close-outline"></ion-icon>
     </button>
   </div>
@@ -38,15 +38,22 @@
             class="email-input"
             placeholder="Enter your registered email"
             [(ngModel)]="email"
+            [disabled]="isLoading"
             (keyup.enter)="sendCode()"
           />
         </div>
         <p class="error-text" *ngIf="errorMessage">{{ errorMessage }}</p>
       </div>
 
-      <button class="submit-btn" (click)="sendCode()" [disabled]="isLoading">
+      <button
+        class="submit-btn"
+        (click)="sendCode()"
+        [disabled]="isLoading"
+        [attr.aria-busy]="isLoading"
+      >
+        <ion-spinner *ngIf="isLoading" name="crescent" aria-hidden="true"></ion-spinner>
         <ion-icon name="paper-plane-outline" *ngIf="!isLoading"></ion-icon>
-        <span>{{ isLoading ? 'Sending...' : 'Send New Code' }}</span>
+        <span>{{ isLoading ? 'Sending your code...' : 'Send New Code' }}</span>
       </button>
     </ng-container>
 

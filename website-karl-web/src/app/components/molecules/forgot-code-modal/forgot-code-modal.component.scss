@@ -81,6 +81,11 @@
   ion-icon { font-size: 22px; }
 
   &:hover { color: white; }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.5;
+  }
 }
 
 /* Input */
@@ -158,7 +163,13 @@
   cursor: pointer;
   transition: all 0.2s ease;
 
-  ion-icon { font-size: 18px; }
+  ion-icon,
+  ion-spinner {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    color: white;
+  }
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);

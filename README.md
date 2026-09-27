@@ -130,6 +130,341 @@ At this point:
 
 **Django Backend → Supabase PostgreSQL ✅**
 
+# Backend Deployment to Render
+
+Deployment guide for the Django backend (`karlWebsite-api`) to Render, using Supabase as the database.
+
+## Table of Contents
+
+1. [Create `requirements.txt`](#1-create-requirementstxt)
+2. [Install Gunicorn](#2-install-gunicorn)
+3. [Install WhiteNoise](#3-install-whitenoise)
+4. [Create Procfile](#4-create-procfile)
+5. [Configure WhiteNoise](#5-configure-whitenoise)
+6. [Configure Static Files](#6-configure-static-files)
+7. [Collect Static Files](#7-collect-static-files)
+8. [Update `.gitignore`](#8-update-gitignore)
+9. [Commit Changes](#9-commit-changes)
+10. [Create Render Account](#10-create-render-account)
+11. [Create Web Service](#11-create-web-service)
+12. [Configure Service](#12-configure-service)
+13. [Build Command](#13-build-command)
+14. [Start Command](#14-start-command)
+15. [Add Environment Variables](#15-add-environment-variables)
+16. [Deploy Web Service](#16-deploy-web-service)
+17. [Verify Deployment](#17-verify-deployment)
+18. [Secure ALLOWED_HOSTS](#18-secure-allowed_hosts)
+
+---
+
+## 1. Create `requirements.txt`
+
+From the Django project directory:
+
+```bash
+pip freeze > requirements.txt
+```
+
+Verify:
+
+```bash
+type requirements.txt
+```
+
+Expected packages:
+
+```
+APScheduler==3.11.3
+asgiref==3.12.1
+Django==6.1.1
+django-cors-headers==4.9.0
+djangorestframework==3.18.1
+psycopg2-binary==2.9.13
+python-dotenv==1.2.3
+sqlparse==0.6.0
+tzdata==2026.4
+tzlocal==5.4.4
+```
+
+## 2. Install Gunicorn
+
+```bash
+pip install gunicorn
+```
+
+Update requirements:
+
+```bash
+pip freeze > requirements.txt
+```
+
+Verify:
+
+```bash
+type requirements.txt
+```
+
+Should contain:
+
+```
+gunicorn==26.2.0
+```
+
+## 3. Install WhiteNoise
+
+```bash
+pip install whitenoise
+```
+
+Update requirements:
+
+```bash
+pip freeze > requirements.txt
+```
+
+Verify:
+
+```bash
+type requirements.txt
+```
+
+Should contain:
+
+```
+whitenoise==6.12.0
+```
+
+## 4. Create Procfile
+
+Create file:
+
+```
+karlWebsite-api/Procfile
+```
+
+Contents:
+
+```
+web: gunicorn karlWebsite_api.wsgi:application
+```
+
+## 5. Configure WhiteNoise
+
+Add to `MIDDLEWARE` in `karlWebsite_api/settings.py`:
+
+```python
+'whitenoise.middleware.WhiteNoiseMiddleware',
+```
+
+Verify:
+
+```bash
+findstr /n "WhiteNoiseMiddleware" karlWebsite_api\settings.py
+```
+
+## 6. Configure Static Files
+
+Verify:
+
+```python
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+```
+
+Check:
+
+```bash
+findstr /n "STATIC_URL STATIC_ROOT" karlWebsite_api\settings.py
+```
+
+Add:
+
+```python
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+```
+
+Verify:
+
+```bash
+findstr /n "STATICFILES_STORAGE" karlWebsite_api\settings.py
+```
+
+## 7. Collect Static Files
+
+```bash
+python manage.py collectstatic --noinput
+```
+
+Expected:
+
+```
+157 static files copied to 'staticfiles'
+```
+
+## 8. Update `.gitignore`
+
+Add:
+
+```
+staticfiles/
+```
+
+Current `.gitignore`:
+
+```
+# Angular / Node
+node_modules/
+.angular/
+dist/
+
+# Django / Python
+__pycache__/
+*.pyc
+db.sqlite3
+.env
+
+staticfiles/
+```
+
+## 9. Commit Changes
+
+```bash
+git add Procfile requirements.txt karlWebsite_api/settings.py ..\.gitignore
+git commit -m "Prepare Django backend for Render deployment"
+git push origin main
+```
+
+## 10. Create Render Account
+
+1. Go to Render.
+2. Sign in with GitHub.
+3. Install Render GitHub App.
+4. Allow access to repository:
+
+```
+Kei8485/KarlWebsite
+```
+
+## 11. Create Web Service
+
+Render Dashboard:
+
+```
+New +
+→ Web Service
+```
+
+Select repository:
+
+```
+KarlWebsite
+```
+
+## 12. Configure Service
+
+| Setting        | Value              |
+| -------------- | ------------------ |
+| Name           | `KarlWebsite`      |
+| Language       | `Python 3`         |
+| Branch         | `main`             |
+| Region         | `Oregon (US West)` |
+| Root Directory | `karlWebsite-api`  |
+
+## 13. Build Command
+
+```bash
+pip install -r requirements.txt && python manage.py collectstatic --noinput
+```
+
+## 14. Start Command
+
+```bash
+gunicorn karlWebsite_api.wsgi:application
+```
+
+## 15. Add Environment Variables
+
+Used **Add from .env** and imported:
+
+```env
+DJANGO_SECRET_KEY=...
+DJANGO_ALLOWED_HOSTS=*
+DJANGO_DEBUG=False
+
+CORS_ALLOWED_ORIGINS=http://localhost:4200,http://localhost:8100
+
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=...
+EMAIL_HOST_PASSWORD=...
+EMAIL_USE_TLS=true
+DEFAULT_FROM_EMAIL=...
+
+DB_NAME=postgres
+DB_USER=...
+DB_PASSWORD=...
+DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com
+DB_PORT=5432
+```
+
+## 16. Deploy Web Service
+
+Click:
+
+```
+Deploy Web Service
+```
+
+Render automatically:
+
+```
+1. Clone GitHub repository
+2. Install requirements.txt
+3. Run collectstatic
+4. Start Gunicorn
+5. Launch Django
+```
+
+Deployment logs showed:
+
+```
+Build successful 🎉
+Your service is live 🎉
+```
+
+## 17. Verify Deployment
+
+Open:
+
+```
+https://karlwebsite.onrender.com/admin/
+```
+
+Successful result:
+
+```
+Django Administration Login
+```
+
+Login worked and existing Supabase data was visible.
+
+## 18. Secure ALLOWED_HOSTS
+
+Changed:
+
+```env
+DJANGO_ALLOWED_HOSTS=*
+```
+
+to:
+
+```env
+DJANGO_ALLOWED_HOSTS=karlwebsite.onrender.com
+```
+
+Redeployed service.
+
 ### Capacity notes
 
 - Estimated load: 20–30 concurrent users.

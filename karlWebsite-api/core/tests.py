@@ -25,6 +25,17 @@ class SubjectContentAuthenticationTests(TestCase):
                 response = self.client.get(endpoint)
                 self.assertEqual(response.status_code, 401)
 
+    def test_deployed_frontend_origin_receives_cors_header(self):
+        response = self.client.get(
+            '/api/subjects/',
+            HTTP_ORIGIN='https://6enginear.netlify.app',
+        )
+
+        self.assertEqual(
+            response['Access-Control-Allow-Origin'],
+            'https://6enginear.netlify.app',
+        )
+
     def test_subject_and_topic_endpoints_allow_authenticated_requests(self):
         user = User.objects.create(email='content-reader@example.com')
         token, _ = SessionToken.issue(user)

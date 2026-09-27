@@ -105,7 +105,7 @@
             <!-- Header with Filter Tabs -->
 
             <div class="header-with-filters">
-              <h2>Current Users: {{ filteredUsers.length }}</h2>
+              <h2>Current Users: {{ isLoadingUsers ? '...' : filteredUsers.length }}</h2>
 
               <div class="filter-tabs">
                 <button
@@ -137,7 +137,21 @@
               {{ deleteUserErrorMessage }}
             </p>
 
-            <div class="user-list">
+            <div class="users-loading" *ngIf="isLoadingUsers" role="status" aria-live="polite">
+              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+              <span>Loading users and admins...</span>
+            </div>
+
+            <div class="users-load-error" *ngIf="usersLoadError" role="alert">
+              <span>{{ usersLoadError }}</span>
+              <button type="button" (click)="loadUsers(true)">Try again</button>
+            </div>
+
+            <div class="users-empty" *ngIf="!isLoadingUsers && !usersLoadError && filteredUsers.length === 0">
+              No users found for this filter.
+            </div>
+
+            <div class="user-list" *ngIf="!isLoadingUsers && !usersLoadError && filteredUsers.length > 0">
               <div class="user-row" *ngFor="let user of filteredUsers">
                 <div class="user-info">
                   <div class="user-name">{{ user.userName }}</div>

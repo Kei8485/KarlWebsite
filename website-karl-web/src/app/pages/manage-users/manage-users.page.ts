@@ -29,6 +29,9 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
 
   users: any[] = [];
   filteredUsers: any[] = [];
+  isLoadingUsers = true;
+  usersLoadError = '';
+  private hasLoadedUsers = false;
   currentFilter: string = 'all';
   searchQuery: string = '';
   viewMode: 'users' | 'system' = 'users';
@@ -69,7 +72,7 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     this.loadUsers();
     this.loadSubjects();
     this.refreshTimer = setInterval(() => {
-      this.loadUsers();
+      this.loadUsers(false);
     }, 5000);
   }
 
@@ -84,14 +87,29 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     // You can implement actual search filtering here later
   }
 
-  loadUsers() {
+  loadUsers(showLoader = !this.hasLoadedUsers) {
+    if (showLoader) {
+      this.isLoadingUsers = true;
+      this.usersLoadError = '';
+    }
+
     this.http.get<any[]>(`${this.apiUrl}/`).subscribe({
       next: (data) => {
         this.users = data;
         this.applyFilter(this.currentFilter); 
+        this.hasLoadedUsers = true;
+        this.isLoadingUsers = false;
+        this.usersLoadError = '';
         this.cdr.detectChanges(); 
       },
-      error: (err) => console.error('Error loading users:', err)
+      error: (err) => {
+        console.error('Error loading users:', err);
+        if (showLoader) {
+          this.usersLoadError = 'Could not load users. Check your connection and try again.';
+          this.isLoadingUsers = false;
+        }
+        this.cdr.detectChanges();
+      }
     });
   }
 

@@ -192,14 +192,14 @@ INSTALLED_APPS = [
 
 ### Backend build order
 
-1. **Models** — done
-2. **Migrations**
+1. **Models** — the entity of the website (the ones we need like: users,subjects,plan etc) then put the attributes (like: topic, desc, time etc)
+2. **Migrations** - creates the migration of the models - turns them into sqllite
    ```bash
    python manage.py makemigrations   # generate migration files (rerun after any model change)
    python manage.py migrate          # apply migrations / build the schema
    python manage.py createsuperuser  # create a superuser (full permissions, distinct from a regular admin)
    ```
-3. **Admin setup** — register models in `admin.py`
+3. **Admin setup** — register models in `admin.py`(built in admin panel of djongo)
 4. **Gmail API** — email config added to `settings.py`; used for sending auto-generated emails from the admin panel
 5. **Building the API**
    - `serializers.py` converts Python objects to JSON.
@@ -232,10 +232,12 @@ ionic g s services/auth                          # generate a service
 - Initial scaffold: `ionic start` → `ionic serve`, removed the default `home` page.
 - Generated `pages/login`, `pages/subjects`, `pages/topic-detail`.
 - Generated a reusable `atoms/app-button` component and a `services/auth` service (bridges frontend data to the backend).
+  -Before starting all of the front end I've created the components first
 
 **Subjects page**
 
 - Added `username` to the model/database (`makemigrations` after the change).
+  -this will create a new initial in the migration
 - Built a subject card component.
 - Connected frontend ↔ backend logic for subjects.
 

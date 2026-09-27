@@ -159,6 +159,39 @@
   gap: 1rem;
 }
 
+.users-loading,
+.users-load-error,
+.users-empty {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: #8b96ab;
+  text-align: center;
+}
+
+.users-loading ion-spinner {
+  width: 36px;
+  height: 36px;
+  color: #4facfe;
+}
+
+.users-load-error {
+  color: #fca5a5;
+
+  button {
+    padding: 0.5rem 0.8rem;
+    border: 1px solid rgba(79, 172, 254, 0.35);
+    border-radius: 8px;
+    background: rgba(79, 172, 254, 0.1);
+    color: #4facfe;
+    font: inherit;
+    cursor: pointer;
+  }
+}
+
 .user-row {
   display: flex;
   align-items: center;

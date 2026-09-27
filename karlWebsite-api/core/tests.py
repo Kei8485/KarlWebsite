@@ -7,6 +7,40 @@ from rest_framework.test import APIClient
 from .models import SessionToken, Subject, Topic, User
 
 
+class SubjectContentAuthenticationTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.subject = Subject.objects.create(title='Mathematics')
+        self.topic = Topic.objects.create(subject=self.subject, title='Algebra')
+
+    def test_subject_and_topic_endpoints_reject_anonymous_requests(self):
+        endpoints = [
+            '/api/subjects/',
+            f'/api/subjects/{self.subject.id}/topics/',
+            f'/api/topics/{self.topic.id}/',
+        ]
+
+        for endpoint in endpoints:
+            with self.subTest(endpoint=endpoint):
+                response = self.client.get(endpoint)
+                self.assertEqual(response.status_code, 401)
+
+    def test_subject_and_topic_endpoints_allow_authenticated_requests(self):
+        user = User.objects.create(email='content-reader@example.com')
+        token, _ = SessionToken.issue(user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+        endpoints = [
+            '/api/subjects/',
+            f'/api/subjects/{self.subject.id}/topics/',
+            f'/api/topics/{self.topic.id}/',
+        ]
+
+        for endpoint in endpoints:
+            with self.subTest(endpoint=endpoint):
+                response = self.client.get(endpoint)
+                self.assertEqual(response.status_code, 200)
+
+
 class CreateTopicTests(TestCase):
     def setUp(self):
         admin = User.objects.create(email='topic-admin@example.com', role='admin')

@@ -21,6 +21,14 @@ from django.contrib.auth.hashers import check_password
 def _is_authenticated(request):
     return bool(getattr(request, 'user', None) and getattr(request.user, 'id', None))
 
+def _authentication_required(request):
+    if not _is_authenticated(request):
+        return Response(
+            {'detail': 'Authentication credentials were not provided.'},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+    return None
+
 
 def _owner_or_admin(request, user_id):
     if not _is_authenticated(request):
@@ -42,12 +50,16 @@ from .serializers import SubjectSerializer, TopicSerializer, QuizQuestionSeriali
 
 @api_view(['GET'])
 def get_subjects(request):
+    denied = _authentication_required(request)
+    if denied: return denied
     subjects = Subject.objects.all()
     serializer = SubjectSerializer(subjects, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def get_subject_topics(request, subject_id):
+    denied = _authentication_required(request)
+    if denied: return denied
     try:
         subject = Subject.objects.get(id=subject_id)
         topics = Topic.objects.filter(subject=subject).order_by('order')
@@ -67,6 +79,8 @@ def get_subject_topics(request, subject_id):
 
 @api_view(['GET'])
 def get_topic_detail(request, pk):
+    denied = _authentication_required(request)
+    if denied: return denied
     try:
         topic = Topic.objects.get(id=pk)
         serializer = TopicSerializer(topic)
@@ -77,6 +91,8 @@ def get_topic_detail(request, pk):
 
 @api_view(['GET'])
 def get_topic(request, topic_id):
+    denied = _authentication_required(request)
+    if denied: return denied
     try:
         topic = Topic.objects.get(id=topic_id)
     except Topic.DoesNotExist:

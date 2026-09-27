@@ -2,7 +2,7 @@ import { environment } from '../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router'; 
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { arrowForwardOutline } from 'ionicons/icons';
@@ -21,7 +21,6 @@ import { RouterModule } from '@angular/router';
   imports: [
     RouterModule,
     CommonModule, 
-    HttpClientModule, // The quick hack to allow HTTP requests here
     IonContent,
     IonRow,
     IonCol,

@@ -1,7 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { importProvidersFrom } from '@angular/core';
 import { RouteReuseStrategy } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './app/interceptors/auth.interceptor';
 
@@ -18,7 +17,7 @@ bootstrapApplication(AppComponent, {
     // 2. THIS IS THE MAGIC FUNCTION THAT TURNS ON STANDALONE STYLING!
     provideIonicAngular(), 
     
-    importProvidersFrom(AppRoutingModule, HttpClientModule),
+    importProvidersFrom(AppRoutingModule),
     provideHttpClient(withInterceptors([authInterceptor]))
   ],
 }).catch(err => console.log(err));

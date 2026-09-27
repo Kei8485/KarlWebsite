@@ -393,10 +393,12 @@ DJANGO_DEBUG=False
 
 CORS_ALLOWED_ORIGINS=https://6enginear.netlify.app,http://localhost:4200,http://localhost:8100
 
-EMAIL_BACKEND=core.email_backends.ResendEmailBackend
-RESEND_API_KEY=re_...
-RESEND_API_TIMEOUT=10
-DEFAULT_FROM_EMAIL=ApexEng <onboarding@your-verified-domain.example>
+EMAIL_BACKEND=core.email_backends.GmailApiEmailBackend
+DEFAULT_FROM_EMAIL=your-gmail-address@gmail.com
+GMAIL_OAUTH_CLIENT_ID=...
+GMAIL_OAUTH_CLIENT_SECRET=...
+GMAIL_OAUTH_REFRESH_TOKEN=...
+GMAIL_API_TIMEOUT=10
 
 DB_NAME=postgres
 DB_USER=...
@@ -405,10 +407,27 @@ DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com
 DB_PORT=5432
 ```
 
-The Resend sender domain must be verified in Resend. Store the API key only in
-Render's environment settings (and in a private local `.env` for development);
-never commit the key. The API backend uses HTTPS rather than SMTP, which avoids
-Render's SMTP connection timeout.
+The Gmail API backend sends mail over HTTPS rather than SMTP. In Google Cloud,
+enable the Gmail API, configure OAuth consent, and create OAuth credentials
+with the `https://www.googleapis.com/auth/gmail.send` scope. Obtain a refresh
+token for the Gmail account used as `DEFAULT_FROM_EMAIL`, then store the client
+ID, client secret, and refresh token only in Render's environment settings (and
+in a private local `.env` for development); never commit them. The sender must
+be the Gmail account that granted OAuth access, or an alias configured for that
+account. To obtain a refresh token, enable Gmail API in Google Cloud, add the
+sender account as an OAuth test user, and create a Web application OAuth client
+with `https://developers.google.com/oauthplayground` as an authorized redirect
+URI. In Google OAuth Playground, open its settings, select **Use your own
+OAuth credentials**, enter that client's ID and secret, authorize the
+`https://www.googleapis.com/auth/gmail.send` scope, and exchange the
+authorization code. Copy the resulting refresh token directly into Render;
+never paste it into chat or commit it.
+
+OAuth apps left in Testing mode issue refresh tokens that expire after seven
+days for this Gmail scope. That mode is suitable only for a short test; ongoing
+use requires changing the app's publishing status and meeting Google's current
+verification requirements for Gmail scopes. Remove the Resend and SMTP
+environment variables from Render after switching.
 
 ## 16. Deploy Web Service
 

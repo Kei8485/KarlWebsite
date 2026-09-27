@@ -151,6 +151,10 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true').lower() == 'true'
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
 RESEND_API_TIMEOUT = float(os.environ.get('RESEND_API_TIMEOUT', '10'))
+GMAIL_OAUTH_CLIENT_ID = os.environ.get('GMAIL_OAUTH_CLIENT_ID', '')
+GMAIL_OAUTH_CLIENT_SECRET = os.environ.get('GMAIL_OAUTH_CLIENT_SECRET', '')
+GMAIL_OAUTH_REFRESH_TOKEN = os.environ.get('GMAIL_OAUTH_REFRESH_TOKEN', '')
+GMAIL_API_TIMEOUT = float(os.environ.get('GMAIL_API_TIMEOUT', '10'))
 default_cors_origins = [
     'http://localhost:4200',
     'http://localhost:8100',

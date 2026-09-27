@@ -1,10 +1,59 @@
+import json
 from unittest.mock import patch
+from urllib.error import URLError
 
 from django.contrib.auth.hashers import check_password, make_password
+from django.core.mail import EmailMultiAlternatives
 from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 
-from .models import SessionToken, Subject, Topic, User
+from .models import EmailDeliveryError, SessionToken, Subject, Topic, User
+
+
+@override_settings(
+    EMAIL_BACKEND='core.email_backends.ResendEmailBackend',
+    RESEND_API_KEY='re_test_key',
+    RESEND_API_TIMEOUT=10,
+    DEFAULT_FROM_EMAIL='ApexEng <onboarding@example.com>',
+)
+class ResendEmailBackendTests(TestCase):
+    @patch('core.email_backends.urlopen')
+    def test_sends_text_and_html_using_resend_api(self, mock_urlopen):
+        response = mock_urlopen.return_value.__enter__.return_value
+        response.read.return_value = b'{"id":"email_test_id"}'
+        message = EmailMultiAlternatives(
+            'Access code',
+            'Your access code is ready.',
+            to=['student@example.com'],
+        )
+        message.attach_alternative('<p>Your access code is ready.</p>', 'text/html')
+
+        self.assertEqual(message.send(), 1)
+
+        request = mock_urlopen.call_args.args[0]
+        self.assertEqual(request.full_url, 'https://api.resend.com/emails')
+        self.assertEqual(request.get_header('Authorization'), 'Bearer re_test_key')
+        self.assertEqual(mock_urlopen.call_args.kwargs['timeout'], 10)
+        self.assertEqual(json.loads(request.data), {
+            'from': 'ApexEng <onboarding@example.com>',
+            'to': ['student@example.com'],
+            'subject': 'Access code',
+            'text': 'Your access code is ready.',
+            'html': '<p>Your access code is ready.</p>',
+        })
+
+    @patch('core.email_backends.urlopen', side_effect=URLError('connection failed'))
+    def test_delivery_failure_preserves_existing_access_code(self, mock_urlopen):
+        user = User.objects.create(
+            email='student@example.com',
+            codePass=make_password('PREVIOUS1'),
+        )
+
+        with self.assertRaises(EmailDeliveryError):
+            user.generate_code()
+
+        user.refresh_from_db()
+        self.assertTrue(check_password('PREVIOUS1', user.codePass))
 
 
 class SubjectContentAuthenticationTests(TestCase):

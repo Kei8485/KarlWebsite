@@ -388,18 +388,15 @@ Used **Add from .env** and imported:
 
 ```env
 DJANGO_SECRET_KEY=...
-DJANGO_ALLOWED_HOSTS=*
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,karlwebsite.onrender.com
 DJANGO_DEBUG=False
 
-CORS_ALLOWED_ORIGINS=http://localhost:4200,http://localhost:8100
+CORS_ALLOWED_ORIGINS=https://6enginear.netlify.app,http://localhost:4200,http://localhost:8100
 
-EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_HOST_USER=...
-EMAIL_HOST_PASSWORD=...
-EMAIL_USE_TLS=true
-DEFAULT_FROM_EMAIL=...
+EMAIL_BACKEND=core.email_backends.ResendEmailBackend
+RESEND_API_KEY=re_...
+RESEND_API_TIMEOUT=10
+DEFAULT_FROM_EMAIL=ApexEng <onboarding@your-verified-domain.example>
 
 DB_NAME=postgres
 DB_USER=...
@@ -407,6 +404,11 @@ DB_PASSWORD=...
 DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com
 DB_PORT=5432
 ```
+
+The Resend sender domain must be verified in Resend. Store the API key only in
+Render's environment settings (and in a private local `.env` for development);
+never commit the key. The API backend uses HTTPS rather than SMTP, which avoids
+Render's SMTP connection timeout.
 
 ## 16. Deploy Web Service
 

@@ -7,7 +7,7 @@ import { catchError, throwError } from 'rxjs';
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const router = inject(Router);
   const token = localStorage.getItem('authToken');
-  if (!token) return next(request);
+  if (!token || request.url.endsWith('/login/')) return next(request);
 
   const authenticatedRequest = request.clone({
     setHeaders: { Authorization: `Bearer ${token}` }

@@ -41,6 +41,24 @@ class SubjectContentAuthenticationTests(TestCase):
                 self.assertEqual(response.status_code, 200)
 
 
+class LoginAuthenticationTests(TestCase):
+    def test_login_ignores_a_stale_bearer_token(self):
+        user = User.objects.create(
+            email='login-user@example.com',
+            codePass=make_password('ACCESS42'),
+        )
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer stale-token')
+
+        response = client.post('/api/login/', {
+            'email': user.email,
+            'code': 'ACCESS42',
+        }, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['id'], user.id)
+
+
 class CreateTopicTests(TestCase):
     def setUp(self):
         admin = User.objects.create(email='topic-admin@example.com', role='admin')
@@ -106,6 +124,20 @@ class CreateUserEmailTests(TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertTrue(User.objects.filter(email='student@example.com').exists())
+
+    @patch('core.models.EmailMultiAlternatives.send', return_value=1)
+    def test_selected_admin_role_is_saved_when_creating_user(self, send_email):
+        response = self.client.post('/api/users/create/', {
+            'userName': 'New Admin',
+            'email': 'new-admin@example.com',
+            'role': 'admin',
+        }, format='json')
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(
+            User.objects.get(email='new-admin@example.com').role,
+            'admin',
+        )
 
     @override_settings(EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend')
     def test_console_backend_does_not_create_account(self):

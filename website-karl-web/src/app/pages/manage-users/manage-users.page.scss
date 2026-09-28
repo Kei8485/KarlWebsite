@@ -623,13 +623,27 @@ input.input-error {
     }
   }
 
-  .filter-tabs button {
-    padding: 9px 6px;
-    font-size: 0.8rem;
-  }
-
   .editor-header h2 {
     font-size: 1.25rem;
+  }
+
+  .users-list-card {
+    min-width: 0;
+  }
+
+  .filter-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filter-tabs button {
+    width: 100%;
+    min-width: 0;
+    padding: 9px 2px;
+    font-size: clamp(0.72rem, 3vw, 0.8rem);
+    white-space: nowrap;
   }
 
   .inner-tabs {

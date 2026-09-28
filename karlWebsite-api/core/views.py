@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 from rest_framework import status
@@ -101,6 +101,7 @@ def get_topic(request, topic_id):
     return Response(serializer.data)
 
 @api_view(['POST'])
+@authentication_classes([])
 def login(request):
     email = request.data.get('email')
     code = request.data.get('code')

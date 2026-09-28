@@ -29,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'userName', 'role', 'created_at']
-        read_only_fields = ['id', 'role', 'created_at']
+        read_only_fields = ['id', 'created_at']
         
 class PlannerTaskSerializer(serializers.ModelSerializer):
     class Meta:

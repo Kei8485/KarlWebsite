@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, ModalController, IonPicker, IonPickerColumn, IonPickerColumnOption, IonSpinner } from '@ionic/angular';
 import { PlannerService } from '../../services/planner'; 
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, Subscription } from 'rxjs';
+import { FocusTimerService } from '../../services/focus-timer';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/confirm-modal.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component'; 
@@ -49,23 +50,30 @@ export class PlannerPage implements OnInit, OnDestroy {
   todayDate: string = this.getLocalISOString();
   editingTaskId: number | null = null; // 🚨 Edit State
 
-  // Timer State
-  timerMinutes: number = 0; 
-  timeLeft: number = 0;
-  originalTimeLeft: number = 0;
-  timerInterval: any;
-  isTimerRunning: boolean = false;
-  displayTime: string = '00:00:00';
-  inputHours: number = 0;
-  inputMinutes: number = 0;
-  inputSeconds: number = 0;
+  get timerMinutes(): number { return this.focusTimer.timerMinutes; }
+  set timerMinutes(value: number) { this.focusTimer.timerMinutes = value; }
+  get timeLeft(): number { return this.focusTimer.timeLeft; }
+  set timeLeft(value: number) { this.focusTimer.timeLeft = value; }
+  get originalTimeLeft(): number { return this.focusTimer.originalTimeLeft; }
+  set originalTimeLeft(value: number) { this.focusTimer.originalTimeLeft = value; }
+  get isTimerRunning(): boolean { return this.focusTimer.isTimerRunning; }
+  get displayTime(): string { return this.focusTimer.displayTime; }
+  get inputHours(): number { return this.focusTimer.inputHours; }
+  set inputHours(value: number) { this.focusTimer.inputHours = value; }
+  get inputMinutes(): number { return this.focusTimer.inputMinutes; }
+  set inputMinutes(value: number) { this.focusTimer.inputMinutes = value; }
+  get inputSeconds(): number { return this.focusTimer.inputSeconds; }
+  set inputSeconds(value: number) { this.focusTimer.inputSeconds = value; }
   hoursList = Array.from({ length: 100 }, (_, i) => i);
   minsList = Array.from({ length: 60 }, (_, i) => i);
   secsList = Array.from({ length: 60 }, (_, i) => i);
+  private timerCompletionSubscription?: Subscription;
+  private timerUpdatedSubscription?: Subscription;
 
 
   constructor(
     private plannerService: PlannerService,
+    private focusTimer: FocusTimerService,
     private cdr: ChangeDetectorRef,
     private modalCtrl: ModalController
   ) {
@@ -86,11 +94,18 @@ export class PlannerPage implements OnInit, OnDestroy {
     if (storedId) this.currentUserId = parseInt(storedId, 10);
     this.loadTasks();
     this.loadStats();
-    this.updateDisplayTime();
+    this.timerUpdatedSubscription = this.focusTimer.timerUpdated$.subscribe(() => {
+      this.cdr.detectChanges();
+    });
+    this.timerCompletionSubscription = this.focusTimer.timerCompleted$.subscribe(({ saved }) => {
+      if (saved) this.loadStats();
+    });
   }
 
   ngOnDestroy() {
-    this.stopTimer(); 
+    // Timer state and its countdown live in the root-scoped FocusTimerService.
+    this.timerCompletionSubscription?.unsubscribe();
+    this.timerUpdatedSubscription?.unsubscribe();
   }
 
   // ==========================================
@@ -341,26 +356,11 @@ export class PlannerPage implements OnInit, OnDestroy {
   }
 
   setCustomTime(mins: number) {
-    this.stopTimer();
-    this.inputHours = Math.floor(mins / 60);
-    this.inputMinutes = mins % 60;
-    this.inputSeconds = 0;
-    this.timerMinutes = mins;
-    this.timeLeft = mins * 60;
-    this.updateDisplayTime();
+    this.focusTimer.setCustomTime(mins);
   }
 
   onCustomTimeChange() {
-    this.stopTimer();
-    if (this.inputHours == null) this.inputHours = 0;
-    if (this.inputMinutes == null) this.inputMinutes = 0;
-    if (this.inputSeconds == null) this.inputSeconds = 0;
-    if (this.inputHours > 99) this.inputHours = 99;
-    if (this.inputMinutes > 59) this.inputMinutes = 59;
-    if (this.inputSeconds > 59) this.inputSeconds = 59;
-    this.timeLeft = (this.inputHours * 3600) + (this.inputMinutes * 60) + this.inputSeconds;
-    this.timerMinutes = Math.round(this.timeLeft / 60);
-    this.updateDisplayTime();
+    this.focusTimer.onCustomTimeChange();
   }
 
   async startTimer() {
@@ -369,34 +369,15 @@ export class PlannerPage implements OnInit, OnDestroy {
       await this.showNotification('No Time Set', 'Please set a time before starting!', true);
       return;
     }
-    
-    this.originalTimeLeft = this.timeLeft;
-    this.isTimerRunning = true;
-
-    this.timerInterval = setInterval(() => {
-      this.timeLeft--;
-      this.updateDisplayTime();
-      this.cdr.detectChanges(); 
-      if (this.timeLeft <= 0) {
-        this.timerFinished();
-      }
-    }, 1000);
+    this.focusTimer.startTimer(this.currentUserId);
   }
 
   stopTimer() {
-    this.isTimerRunning = false;
-    clearInterval(this.timerInterval);
+    this.focusTimer.stopTimer();
   }
 
   resetTimer() {
-    this.stopTimer();
-    this.inputHours = 0;
-    this.inputMinutes = 0;
-    this.inputSeconds = 0;
-    this.timerMinutes = 0;
-    this.timeLeft = 0;
-    this.originalTimeLeft = 0;
-    this.updateDisplayTime();
+    this.focusTimer.resetTimer();
     this.cdr.detectChanges();
   }
 
@@ -451,35 +432,4 @@ export class PlannerPage implements OnInit, OnDestroy {
     }
   }
 
-  updateDisplayTime() {
-    const h = Math.floor(this.timeLeft / 3600);
-    const m = Math.floor((this.timeLeft % 3600) / 60);
-    const s = this.timeLeft % 60;
-    this.displayTime = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  }
-
-  timerFinished() {
-    this.stopTimer();
-    const audio = new Audio('../../../assets/audio/ssstik.io_1790134444520.mp3');
-    audio.loop = true;
-    audio.play();
-    
-    this.plannerService.saveStudySession(this.currentUserId, this.timerMinutes).subscribe({
-      next: () => {
-        this.loadStats(); 
-        // When they click OK, the modal dismisses and THEN we stop the sound
-        this.showNotification("Time's Up! 🎉", 'Amazing work! Your full session has been saved to Weekly Focus!').then(() => {
-          audio.pause();
-          audio.currentTime = 0;
-        });
-        this.resetTimer();
-      },
-      error: () => {
-        audio.pause();
-        audio.currentTime = 0;
-        this.showNotification('Error', 'Could not save your session.', true);
-        this.resetTimer();
-      }
-    });
-  }
 }

@@ -21,11 +21,14 @@ import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/
   imports: [IonContent, IonIcon, IonSelect, IonSelectOption, IonSpinner, CommonModule, FormsModule, AppButtonComponent]
 })
 export class ManageUsersPage implements OnInit, OnDestroy  {
+  private readonly deleteLoadingMinDurationMs = 700;
+  private readonly cmsLoadingMinDurationMs = 700;
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/users`;
   private cdr = inject(ChangeDetectorRef); 
   private modalCtrl = inject(ModalController);
   private router = inject(Router); 
+  readonly currentUserId = localStorage.getItem('userId');
 
   users: any[] = [];
   filteredUsers: any[] = [];
@@ -47,14 +50,38 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
   setViewMode(mode: 'users' | 'system') {
     this.viewMode = mode;
   }
+
+  get cmsLoadingMessage(): string {
+    if (this.crudLoading === 'save-subject') return 'Saving subject...';
+    if (this.crudLoading === 'delete-subject') return 'Deleting subject and its content...';
+    if (this.crudLoading?.startsWith('delete-topic-')) return 'Deleting topic and its quizzes...';
+    return '';
+  }
+
+  private finishCmsLoading(requestStartedAt: number) {
+    const remainingLoadingTime = Math.max(
+      0,
+      this.cmsLoadingMinDurationMs - (Date.now() - requestStartedAt)
+    );
+
+    this.cmsLoadingTimer = setTimeout(() => {
+      this.crudLoading = null;
+      this.cmsLoadingTimer = null;
+      this.cdr.detectChanges();
+    }, remainingLoadingTime);
+  }
   
   errorMessage: string = '';
+  emailAlreadyRegistered = false;
   successMessage: string = '';
   deleteUserErrorMessage: string = '';
   cmsErrorMessage: string = '';
   crudLoading: string | null = null;
+  isConfirmingUserCreation = false;
 
   refreshTimer: any;
+  private deleteLoadingTimer: ReturnType<typeof setTimeout> | null = null;
+  private cmsLoadingTimer: ReturnType<typeof setTimeout> | null = null;
 
   newUser = {
     userName: '',
@@ -79,6 +106,12 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
   ngOnDestroy() {
     if (this.refreshTimer) {
       clearInterval(this.refreshTimer);
+    }
+    if (this.deleteLoadingTimer) {
+      clearTimeout(this.deleteLoadingTimer);
+    }
+    if (this.cmsLoadingTimer) {
+      clearTimeout(this.cmsLoadingTimer);
     }
   }
 
@@ -128,28 +161,44 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     });
   }
 
+  onNewUserEmailChange() {
+    this.errorMessage = '';
+    this.emailAlreadyRegistered = false;
+    this.successMessage = '';
+  }
+
   async addUser() {
+    if (this.crudLoading || this.isConfirmingUserCreation) return;
+
     this.errorMessage = ''; 
+    this.emailAlreadyRegistered = false;
     this.successMessage = ''; 
 
     if (!this.newUser.userName || !this.newUser.email) return;
 
-    const modal = await this.modalCtrl.create({
-      component: ConfirmModalComponent,
-      cssClass: 'transparent-modal',
-      componentProps: {
-        title: 'Confirm Creation',
-        message: `Are you sure you want to create an account for <strong>${this.newUser.userName}</strong>?`,
-        confirmText: 'Create User',
-        isDanger: false
-      }
-    });
-    
-    await modal.present();
+    this.isConfirmingUserCreation = true;
+    this.cdr.detectChanges();
 
-    const { data } = await modal.onWillDismiss();
-    if (data === true) {
-      this.executeAddUser();
+    try {
+      const modal = await this.modalCtrl.create({
+        component: ConfirmModalComponent,
+        cssClass: 'transparent-modal',
+        componentProps: {
+          title: 'Confirm Creation',
+          message: `Are you sure you want to create an account for <strong>${this.newUser.userName}</strong>?`,
+          confirmText: 'Create User',
+          isDanger: false
+        }
+      });
+
+      await modal.present();
+      const { data } = await modal.onWillDismiss();
+      if (data === true) {
+        this.executeAddUser();
+      }
+    } finally {
+      this.isConfirmingUserCreation = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -175,6 +224,7 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
       },
       error: (err) => {
         if (err.error && err.error.email) {
+          this.emailAlreadyRegistered = true;
           this.errorMessage = "This email is already registered!";
         } else if (typeof err.error?.error === 'string') {
           this.errorMessage = err.error.error;
@@ -187,7 +237,7 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
   }
 
   async deleteUser(id: number) {
-    if (this.crudLoading) return;
+    if (this.crudLoading || this.isCurrentUser(id)) return;
     const targetUser = this.users.find(u => u.id === id);
     const nameToDisplay = targetUser ? targetUser.userName : 'this user';
 
@@ -210,14 +260,27 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     }
   }
 
+  isCurrentUser(userId: number | string): boolean {
+    return this.currentUserId !== null && String(userId) === this.currentUserId;
+  }
+
   private executeDeleteUser(id: number) {
     if (this.crudLoading) return;
     this.deleteUserErrorMessage = '';
     this.crudLoading = `delete-user-${id}`;
+    const requestStartedAt = Date.now();
+    this.cdr.detectChanges();
     this.http.delete(`${this.apiUrl}/delete/${id}/`)
       .pipe(finalize(() => {
-        this.crudLoading = null;
-        this.cdr.detectChanges();
+        const remainingLoadingTime = Math.max(
+          0,
+          this.deleteLoadingMinDurationMs - (Date.now() - requestStartedAt)
+        );
+        this.deleteLoadingTimer = setTimeout(() => {
+          this.crudLoading = null;
+          this.deleteLoadingTimer = null;
+          this.cdr.detectChanges();
+        }, remainingLoadingTime);
       }))
       .subscribe({
       next: () => {
@@ -288,13 +351,12 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     if (data === true) {
       this.crudLoading = 'save-subject';
       this.cmsErrorMessage = '';
+      const requestStartedAt = Date.now();
+      this.cdr.detectChanges();
       if (this.activeSubject.id) {
         // Update existing
         this.http.put(`${this.apiSystemUrl}/subjects/manage/${this.activeSubject.id}/`, this.activeSubject)
-          .pipe(finalize(() => {
-            this.crudLoading = null;
-            this.cdr.detectChanges();
-          }))
+          .pipe(finalize(() => this.finishCmsLoading(requestStartedAt)))
           .subscribe({
           next: () => this.loadSubjects(),
           error: (err) => {
@@ -305,10 +367,7 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
       } else {
         // Create new
         this.http.post(`${this.apiSystemUrl}/subjects/create/`, this.activeSubject)
-          .pipe(finalize(() => {
-            this.crudLoading = null;
-            this.cdr.detectChanges();
-          }))
+          .pipe(finalize(() => this.finishCmsLoading(requestStartedAt)))
           .subscribe({
           next: (newSub: any) => {
             this.activeSubject = newSub;
@@ -344,11 +403,10 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     if (data === true) {
       this.crudLoading = 'delete-subject';
       this.cmsErrorMessage = '';
+      const requestStartedAt = Date.now();
+      this.cdr.detectChanges();
       this.http.delete(`${this.apiSystemUrl}/subjects/manage/${subjectId}/`)
-        .pipe(finalize(() => {
-          this.crudLoading = null;
-          this.cdr.detectChanges();
-        }))
+        .pipe(finalize(() => this.finishCmsLoading(requestStartedAt)))
         .subscribe({
         next: () => {
           this.activeSubject = null;
@@ -392,11 +450,10 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     if (data === true) {
       this.crudLoading = `delete-topic-${topic.id}`;
       this.cmsErrorMessage = '';
+      const requestStartedAt = Date.now();
+      this.cdr.detectChanges();
       this.http.delete(`${this.apiSystemUrl}/topics/manage/${topic.id}/`)
-        .pipe(finalize(() => {
-          this.crudLoading = null;
-          this.cdr.detectChanges();
-        }))
+        .pipe(finalize(() => this.finishCmsLoading(requestStartedAt)))
         .subscribe({
         next: () => this.loadSubjects(),
         error: (err) => {

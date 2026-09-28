@@ -56,12 +56,17 @@
                 <input
                   type="email"
                   name="email"
+                  #emailField="ngModel"
                   [(ngModel)]="newUser.email"
+                  (ngModelChange)="onNewUserEmailChange()"
                   placeholder="client@email.com"
                   required
                   email
-                  [ngClass]="{'input-error': errorMessage}"
+                  [ngClass]="{'input-error': (emailField.errors?.['email'] && emailField.touched) || emailAlreadyRegistered}"
                 />
+                <p class="field-error" *ngIf="emailField.touched && emailField.errors?.['email']">
+                  Please enter a valid email address.
+                </p>
               </div>
 
               <div class="form-group">
@@ -81,7 +86,7 @@
 
               <!-- Feedback Messages -->
 
-              <p class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</p>
+              <p class="error-msg" *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
 
               <p class="success-msg" *ngIf="successMessage">
                 {{ successMessage }}
@@ -90,12 +95,25 @@
               <app-button
                 variant="primary"
                 label="Create User"
-                [loading]="crudLoading === 'create-user'"
-                loadingLabel="Sending email..."
+                [loading]="crudLoading === 'create-user' || isConfirmingUserCreation"
+                [loadingLabel]="isConfirmingUserCreation ? 'Confirming...' : 'Creating user...'"
                 icon="person-add-outline"
                 [disabled]="userForm.invalid || !!crudLoading"
                 (clicked)="addUser()"
               ></app-button>
+              <div
+                class="create-user-loading"
+                *ngIf="crudLoading === 'create-user' || isConfirmingUserCreation"
+                role="status"
+                aria-live="polite"
+              >
+                <ion-spinner name="crescent"></ion-spinner>
+                <span>
+                  {{ isConfirmingUserCreation
+                    ? 'Please confirm account creation...'
+                    : 'Creating the account and sending the access code...' }}
+                </span>
+              </div>
             </form>
           </div>
 
@@ -137,6 +155,16 @@
               {{ deleteUserErrorMessage }}
             </p>
 
+            <div
+              class="delete-user-loading"
+              *ngIf="crudLoading?.startsWith('delete-user-')"
+              role="status"
+              aria-live="polite"
+            >
+              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+              <span>Deleting user...</span>
+            </div>
+
             <div class="users-loading" *ngIf="isLoadingUsers" role="status" aria-live="polite">
               <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
               <span>Loading users and admins...</span>
@@ -152,7 +180,12 @@
             </div>
 
             <div class="user-list" *ngIf="!isLoadingUsers && !usersLoadError && filteredUsers.length > 0">
-              <div class="user-row" *ngFor="let user of filteredUsers">
+              <div
+                class="user-row"
+                *ngFor="let user of filteredUsers; let userIndex = index"
+                [class.admin-user]="user.role === 'admin'"
+              >
+                <span class="user-index" aria-hidden="true">{{ userIndex + 1 }}</span>
                 <div class="user-info">
                   <div class="user-name">{{ user.userName }}</div>
 
@@ -168,9 +201,11 @@
 
                 <button
                   class="delete-icon"
+                  [class.is-deleting]="crudLoading === 'delete-user-' + user.id"
                   type="button"
-                  [disabled]="!!crudLoading"
-                  [attr.aria-label]="'Delete ' + user.userName"
+                  [disabled]="!!crudLoading || isCurrentUser(user.id)"
+                  [attr.aria-label]="isCurrentUser(user.id) ? 'Your account cannot be deleted here' : 'Delete ' + user.userName"
+                  [attr.title]="isCurrentUser(user.id) ? 'You cannot delete your own account' : null"
                   [attr.aria-busy]="crudLoading === 'delete-user-' + user.id"
                   (click)="deleteUser(user.id)"
                 >
@@ -202,6 +237,16 @@
         <div class="admin-grid system-grid">
           <!-- CMS Left Column: List -->
           <div class="glass-card list-card">
+            <div
+              class="cms-library-loading"
+              *ngIf="crudLoading === 'save-subject' || crudLoading === 'delete-subject'"
+              role="status"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+              <span>{{ cmsLoadingMessage }}</span>
+            </div>
             <h2>Content Library</h2>
             <div class="placeholder-list">
               <div
@@ -220,6 +265,17 @@
 
           <!-- CMS Right Column: Editor -->
           <div class="glass-card editor-card" *ngIf="activeSubject">
+            <div
+              class="cms-action-overlay"
+              *ngIf="cmsLoadingMessage"
+              role="status"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+              <span>{{ cmsLoadingMessage }}</span>
+            </div>
+
             <div class="editor-header">
               <h2>{{ activeSubject.id ? 'Edit Subject' : 'New Subject' }}</h2>
 
@@ -299,6 +355,16 @@
               <p class="error-msg" *ngIf="cmsErrorMessage" role="alert">
                 {{ cmsErrorMessage }}
               </p>
+
+              <div
+                class="cms-action-loading"
+                *ngIf="cmsLoadingMessage"
+                role="status"
+                aria-live="polite"
+              >
+                <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+                <span>{{ cmsLoadingMessage }}</span>
+              </div>
 
               <div style="margin-top: 1.5rem; display: flex; gap: 1rem">
                 <app-button

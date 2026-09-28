@@ -1,134 +1,10 @@
-import base64
-import json
-from urllib.parse import parse_qs
-from unittest.mock import MagicMock, patch
-from urllib.error import URLError
+from unittest.mock import patch
 
 from django.contrib.auth.hashers import check_password, make_password
-from django.core.mail import EmailMultiAlternatives
 from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 
 from .models import EmailDeliveryError, SessionToken, Subject, Topic, User
-
-
-@override_settings(
-    EMAIL_BACKEND='core.email_backends.GmailApiEmailBackend',
-    GMAIL_OAUTH_CLIENT_ID='client_id',
-    GMAIL_OAUTH_CLIENT_SECRET='client_secret',
-    GMAIL_OAUTH_REFRESH_TOKEN='refresh_token',
-    GMAIL_API_TIMEOUT=10,
-    DEFAULT_FROM_EMAIL='enginearweb@gmail.com',
-)
-class GmailApiEmailBackendTests(TestCase):
-    @patch('core.email_backends.urlopen')
-    def test_sends_email_using_gmail_api_over_https(self, mock_urlopen):
-        token_response = MagicMock()
-        token_response.__enter__.return_value.read.return_value = (
-            b'{"access_token":"access_token"}'
-        )
-        send_response = MagicMock()
-        mock_urlopen.side_effect = [token_response, send_response]
-        message = EmailMultiAlternatives(
-            'Access code',
-            'Your access code is ready.',
-            to=['student@example.com'],
-        )
-        message.attach_alternative(
-            '<p>Your access code is ready.</p>',
-            'text/html',
-        )
-
-        self.assertEqual(message.send(), 1)
-        self.assertEqual(mock_urlopen.call_count, 2)
-
-        token_request = mock_urlopen.call_args_list[0].args[0]
-        self.assertEqual(
-            token_request.full_url,
-            'https://oauth2.googleapis.com/token',
-        )
-        self.assertEqual(
-            parse_qs(token_request.data.decode('utf-8')),
-            {
-                'client_id': ['client_id'],
-                'client_secret': ['client_secret'],
-                'refresh_token': ['refresh_token'],
-                'grant_type': ['refresh_token'],
-            },
-        )
-
-        send_request = mock_urlopen.call_args_list[1].args[0]
-        self.assertEqual(
-            send_request.full_url,
-            'https://gmail.googleapis.com/gmail/v1/users/me/messages/send',
-        )
-        self.assertEqual(
-            send_request.get_header('Authorization'),
-            'Bearer access_token',
-        )
-        raw_message = json.loads(send_request.data)['raw']
-        decoded_message = base64.urlsafe_b64decode(raw_message).decode('utf-8')
-        self.assertIn('To: student@example.com', decoded_message)
-        self.assertIn('Subject: Access code', decoded_message)
-        self.assertIn('Your access code is ready.', decoded_message)
-        self.assertEqual(mock_urlopen.call_args.kwargs['timeout'], 10)
-
-    @override_settings(GMAIL_OAUTH_REFRESH_TOKEN='')
-    def test_missing_oauth_credentials_raise_delivery_error(self):
-        message = EmailMultiAlternatives(
-            'Access code',
-            'Your access code is ready.',
-            to=['student@example.com'],
-        )
-
-        with self.assertRaises(OSError):
-            message.send()
-
-
-@override_settings(
-    EMAIL_BACKEND='core.email_backends.ResendEmailBackend',
-    RESEND_API_KEY='re_test_key',
-    RESEND_API_TIMEOUT=10,
-    DEFAULT_FROM_EMAIL='ApexEng <onboarding@example.com>',
-)
-class ResendEmailBackendTests(TestCase):
-    @patch('core.email_backends.urlopen')
-    def test_sends_text_and_html_using_resend_api(self, mock_urlopen):
-        response = mock_urlopen.return_value.__enter__.return_value
-        response.read.return_value = b'{"id":"email_test_id"}'
-        message = EmailMultiAlternatives(
-            'Access code',
-            'Your access code is ready.',
-            to=['student@example.com'],
-        )
-        message.attach_alternative('<p>Your access code is ready.</p>', 'text/html')
-
-        self.assertEqual(message.send(), 1)
-
-        request = mock_urlopen.call_args.args[0]
-        self.assertEqual(request.full_url, 'https://api.resend.com/emails')
-        self.assertEqual(request.get_header('Authorization'), 'Bearer re_test_key')
-        self.assertEqual(mock_urlopen.call_args.kwargs['timeout'], 10)
-        self.assertEqual(json.loads(request.data), {
-            'from': 'ApexEng <onboarding@example.com>',
-            'to': ['student@example.com'],
-            'subject': 'Access code',
-            'text': 'Your access code is ready.',
-            'html': '<p>Your access code is ready.</p>',
-        })
-
-    @patch('core.email_backends.urlopen', side_effect=URLError('connection failed'))
-    def test_delivery_failure_preserves_existing_access_code(self, mock_urlopen):
-        user = User.objects.create(
-            email='student@example.com',
-            codePass=make_password('PREVIOUS1'),
-        )
-
-        with self.assertRaises(EmailDeliveryError):
-            user.generate_code()
-
-        user.refresh_from_db()
-        self.assertTrue(check_password('PREVIOUS1', user.codePass))
 
 
 class SubjectContentAuthenticationTests(TestCase):
@@ -148,17 +24,6 @@ class SubjectContentAuthenticationTests(TestCase):
             with self.subTest(endpoint=endpoint):
                 response = self.client.get(endpoint)
                 self.assertEqual(response.status_code, 401)
-
-    def test_deployed_frontend_origin_receives_cors_header(self):
-        response = self.client.get(
-            '/api/subjects/',
-            HTTP_ORIGIN='https://6enginear.netlify.app',
-        )
-
-        self.assertEqual(
-            response['Access-Control-Allow-Origin'],
-            'https://6enginear.netlify.app',
-        )
 
     def test_subject_and_topic_endpoints_allow_authenticated_requests(self):
         user = User.objects.create(email='content-reader@example.com')

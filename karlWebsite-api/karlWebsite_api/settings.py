@@ -153,7 +153,7 @@ ANYMAIL = {
 
 DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL',
-    'ynandandrei.bautista.200625@gmail.com',
+    'enginearsite@gmail.com',
 )
 default_cors_origins = [
     'http://localhost:4200',

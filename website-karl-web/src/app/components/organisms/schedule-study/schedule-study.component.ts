@@ -1,8 +1,8 @@
-import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonIcon, IonDatetime, IonModal, IonButton, IonButtons, ModalController } from '@ionic/angular';
-import { finalize, forkJoin } from 'rxjs';
+import { Subscription, finalize, forkJoin, interval } from 'rxjs';
 import { AppButtonComponent } from '../../atoms/app-button/app-button.component';
 import { AppInputComponent } from '../../atoms/app-input/app-input.component';
 import { ConfirmModalComponent } from '../../molecules/confirm-modal/confirm-modal.component';
@@ -17,7 +17,7 @@ import { PlannerService } from '../../../services/planner';
   standalone: true,
   imports: [CommonModule, FormsModule, IonIcon, IonDatetime, IonModal, IonButton, AppButtonComponent, AppInputComponent]
 })
-export class ScheduleStudyComponent implements OnInit {
+export class ScheduleStudyComponent implements OnInit, OnDestroy {
   scheduleTitle: string = '';
   scheduleSubject: string = '';
   
@@ -33,6 +33,8 @@ export class ScheduleStudyComponent implements OnInit {
   selectedArchivedIds = new Set<number>();
   isDeletingArchived = false;
   editingStudyId: number | null = null; // Track if we're editing an existing study
+  private isLoadingStudies = false;
+  private refreshSubscription?: Subscription;
 
   get allArchivedSelected() {
     return this.archivedStudies.length > 0 &&
@@ -64,19 +66,35 @@ export class ScheduleStudyComponent implements OnInit {
 
   ngOnInit() {
     this.loadStudies();
+    this.refreshSubscription = interval(15000).subscribe(() => this.loadStudies());
+  }
+
+  ngOnDestroy() {
+    this.refreshSubscription?.unsubscribe();
   }
 
   loadStudies() {
-    if (!this.currentUserId) return;
-    this.plannerService.getScheduledStudies(this.currentUserId).subscribe(res => {
-      this.upcomingStudies = res.filter((study: any) => !study.is_sent);
-      this.archivedStudies = res.filter((study: any) => study.is_sent);
-      const archivedIds = new Set(this.archivedStudies.map((study: any) => study.id));
-      this.selectedArchivedIds = new Set(
-        [...this.selectedArchivedIds].filter(id => archivedIds.has(id))
-      );
-      this.cdr.detectChanges();
-    });
+    if (!this.currentUserId || this.isLoadingStudies) return;
+
+    this.isLoadingStudies = true;
+    this.plannerService.getScheduledStudies(this.currentUserId)
+      .pipe(finalize(() => {
+        this.isLoadingStudies = false;
+      }))
+      .subscribe({
+        next: (res: any[]) => {
+          this.upcomingStudies = res.filter(study => !study.is_sent);
+          this.archivedStudies = res.filter(study => study.is_sent);
+          const archivedIds = new Set(this.archivedStudies.map(study => study.id));
+          this.selectedArchivedIds = new Set(
+            [...this.selectedArchivedIds].filter(id => archivedIds.has(id))
+          );
+          this.cdr.detectChanges();
+        },
+        error: err => {
+          console.error('Failed to refresh scheduled study sessions:', err);
+        }
+      });
   }
 
   toggleArchivedSelection(studyId: number, selected: boolean) {

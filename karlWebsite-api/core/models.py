@@ -105,7 +105,7 @@ class User(models.Model):
                         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
                             <tr>
                             <td align="center">
-                                <a href="#" style="display:inline-block;background-color:#2563eb;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 36px;border-radius:8px;">
+                                <a href="https://6enginear.netlify.app/login" style="display:inline-block;background-color:#2563eb;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 36px;border-radius:8px;">
                                 Start Learning →
                                 </a>
                             </td>

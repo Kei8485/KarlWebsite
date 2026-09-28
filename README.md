@@ -9,6 +9,7 @@ An engineering learning platform built with **Ionic + Angular** (frontend) and *
 - **Frontend:** Hosted on [Netlify](https://netlify.com) (e.g. `apexeng.netlify.app`)
 - **Backend:** Hosted on [Render](https://render.com) (e.g. `apexeng-api.onrender.com`)
 - **Database:** Hosted on [Supabase](https://supabase.com)
+- **EmailAPI:** Used https://app.brevo.com/
 
 # Deploying Django with Supabase (PostgreSQL)
 

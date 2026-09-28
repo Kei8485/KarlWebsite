@@ -393,12 +393,13 @@ DJANGO_DEBUG=False
 
 CORS_ALLOWED_ORIGINS=https://6enginear.netlify.app,http://localhost:4200,http://localhost:8100
 
-EMAIL_BACKEND=core.email_backends.GmailApiEmailBackend
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-gmail-address@gmail.com
+EMAIL_HOST_PASSWORD=your-gmail-app-password
+EMAIL_USE_TLS=true
 DEFAULT_FROM_EMAIL=your-gmail-address@gmail.com
-GMAIL_OAUTH_CLIENT_ID=...
-GMAIL_OAUTH_CLIENT_SECRET=...
-GMAIL_OAUTH_REFRESH_TOKEN=...
-GMAIL_API_TIMEOUT=10
 
 DB_NAME=postgres
 DB_USER=...
@@ -407,27 +408,10 @@ DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com
 DB_PORT=5432
 ```
 
-The Gmail API backend sends mail over HTTPS rather than SMTP. In Google Cloud,
-enable the Gmail API, configure OAuth consent, and create OAuth credentials
-with the `https://www.googleapis.com/auth/gmail.send` scope. Obtain a refresh
-token for the Gmail account used as `DEFAULT_FROM_EMAIL`, then store the client
-ID, client secret, and refresh token only in Render's environment settings (and
-in a private local `.env` for development); never commit them. The sender must
-be the Gmail account that granted OAuth access, or an alias configured for that
-account. To obtain a refresh token, enable Gmail API in Google Cloud, add the
-sender account as an OAuth test user, and create a Web application OAuth client
-with `https://developers.google.com/oauthplayground` as an authorized redirect
-URI. In Google OAuth Playground, open its settings, select **Use your own
-OAuth credentials**, enter that client's ID and secret, authorize the
-`https://www.googleapis.com/auth/gmail.send` scope, and exchange the
-authorization code. Copy the resulting refresh token directly into Render;
-never paste it into chat or commit it.
-
-OAuth apps left in Testing mode issue refresh tokens that expire after seven
-days for this Gmail scope. That mode is suitable only for a short test; ongoing
-use requires changing the app's publishing status and meeting Google's current
-verification requirements for Gmail scopes. Remove the Resend and SMTP
-environment variables from Render after switching.
+Use a Gmail App Password for `EMAIL_HOST_PASSWORD` (not your normal Gmail
+password). Keep it private in Render's environment settings and in a local
+`.env` file; never commit it. This configuration uses Django's built-in SMTP
+backend.
 
 ## 16. Deploy Web Service
 
@@ -795,7 +779,7 @@ INSTALLED_APPS = [
    python manage.py createsuperuser  # create a superuser (full permissions, distinct from a regular admin)
    ```
 3. **Admin setup** — register models in `admin.py`(built in admin panel of djongo)
-4. **Gmail API** — email config added to `settings.py`; used for sending auto-generated emails from the admin panel
+4. **Gmail SMTP** — Django email configuration sends auto-generated emails using Gmail SMTP
 5. **Building the API**
    - `serializers.py` converts Python objects to JSON.
    - Data flow: **Database → Models → Serializer (object → JSON) → HTTP response → Angular frontend**

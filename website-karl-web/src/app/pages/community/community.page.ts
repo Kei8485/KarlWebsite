@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, IonContent, IonIcon]
 })
 export class CommunityPage {
-  gcLink = 'https://www.facebook.com/';
+  gcLink = 'https://www.messenger.com/cm/sgCTUr69Hw-UPmRw/?send_source=cm%3Adirect_invite_group&join_source=cm%3Axma';
 
   constructor() {
     addIcons({ logoFacebook, peopleOutline, openOutline });

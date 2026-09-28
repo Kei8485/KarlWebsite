@@ -4,18 +4,22 @@
 }
 
 .page-container {
+  width: 100%;
+  min-width: 0;
   padding: 50px 100px;
 }
 
 @media (max-width: 768px) {
   .page-container {
-  padding: 5px;
+    padding: 24px 16px;
   }
 }
 
 .topics-grid {
   display: grid;
   gap: 24px;
+  width: 100%;
+  min-width: 0;
   
   /* 1. Mobile Phones (Default): 1 column per row */
   grid-template-columns: 1fr;
@@ -54,10 +58,30 @@
   color: #ffffff;
   margin: 0 0 24px 0;
   line-height: 1.2;
+  overflow-wrap: anywhere;
   
   .accent-code {
     color: #4a90e2;
     font-weight: 800;
+  }
+
+  @media (max-width: 576px) {
+    .subject-hero {
+      margin-bottom: 28px;
+    }
+
+    .page-title {
+      font-size: clamp(1.7rem, 8vw, 2.25rem);
+      margin-bottom: 18px;
+
+      .divider {
+        margin: 0 6px;
+      }
+    }
+
+    .desc-card {
+      padding: 18px 20px;
+    }
   }
   .divider {
     color: rgba(255, 255, 255, 0.15);

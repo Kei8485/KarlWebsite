@@ -1,9 +1,13 @@
 :host {
   display: block;
   height: 100%;
+  width: 100%;
+  min-width: 0;
 }
 
 .topic-card {
+  width: 100%;
+  min-width: 0;
   height: 100%;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -44,6 +48,7 @@
   font-weight: 600;
   color: #ffffff;
   margin: 0 0 10px 0;
+  overflow-wrap: anywhere;
 }
 
 .topic-notes {
@@ -55,9 +60,26 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .topic-action {
   margin-top: auto;
   align-self: flex-start;
+}
+
+@media (max-width: 576px) {
+  .topic-card {
+    padding: 18px;
+    gap: 14px;
+  }
+
+  .topic-title {
+    font-size: 19px;
+    line-height: 1.35;
+  }
+
+  .topic-action {
+    align-self: stretch;
+  }
 }

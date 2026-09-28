@@ -6,14 +6,17 @@
 }
 
 .page-container {
+  width: 100%;
+  min-width: 0;
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
   margin-bottom: 200px;
 
   @media (max-width: 576px) {
-      padding: 0px;
-    }
+    padding: 16px 12px;
+    margin-bottom: 80px;
+  }
 }
 
 /* Header */
@@ -38,6 +41,7 @@
     font-weight: 800;
     margin: 0 0 0.5rem 0;
     color: white;
+    overflow-wrap: anywhere;
   }
   
   .subtitle {
@@ -53,6 +57,7 @@
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 2rem;
+  min-width: 0;
   
   @media (max-width: 992px) {
     grid-template-columns: 1fr;
@@ -61,6 +66,7 @@
 
 /* Shared Glass Card */
 .glass-card {
+  min-width: 0;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
@@ -128,6 +134,7 @@
     white-space: pre-wrap; /* MAGIC FIX: Preserves newlines from Django text fields! */
     font-size: 1.05rem;
     overflow-wrap: anywhere;
+    word-break: break-word;
 
     &::-webkit-scrollbar {
       width: 6px;
@@ -367,6 +374,68 @@
           color: #f85149;
           border: 1px solid rgba(248, 81, 73, 0.3);
         }
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .topic-header {
+    margin-bottom: 1.25rem;
+
+    .page-title {
+      font-size: clamp(1.8rem, 9vw, 2.35rem);
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .theater-grid {
+    gap: 1rem;
+  }
+
+  .video-card {
+    padding: 0.65rem;
+  }
+
+  .notes-card {
+    padding: 1rem;
+    max-height: none;
+    height: auto;
+
+    .card-header {
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+    }
+
+    .notes-content {
+      max-height: 60vh;
+      font-size: 1rem;
+      padding-right: 0;
+    }
+  }
+
+  .quiz-card {
+    .quiz-header-row {
+      padding: 1rem;
+    }
+
+    .quiz-container {
+      padding: 0 1rem 1rem;
+
+      .question-text {
+        font-size: 1rem;
+        overflow-wrap: anywhere;
+      }
+
+      .option-btn {
+        align-items: flex-start;
+        padding: 0.9rem;
+        overflow-wrap: anywhere;
       }
     }
   }

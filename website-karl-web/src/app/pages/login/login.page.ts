@@ -1,8 +1,8 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
-import { personOutline, keyOutline, mailOutline, lockClosedOutline } from 'ionicons/icons';
-import { IonContent, IonGrid, IonRow, IonCol, IonIcon, ModalController } from '@ionic/angular';
+import { personOutline, keyOutline, mailOutline, lockClosedOutline, logInOutline, constructOutline, locateOutline, bookOutline, shieldCheckmarkOutline, peopleOutline } from 'ionicons/icons';
+import { IonContent, IonGrid, IonRow, IonCol, IonIcon, IonModal, ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';  
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
 import { AppInputComponent } from '../../components/atoms/app-input/app-input.component';
@@ -20,17 +20,24 @@ import { ForgotCodeModalComponent } from '../../components/molecules/forgot-code
     IonGrid, 
     IonRow, 
     IonCol, 
+    IonIcon,
+    IonModal,
     AppButtonComponent, 
     AppInputComponent,
   ]
 })
 export class LoginPage {
+  @ViewChild('featureTrack') featureTrack?: ElementRef<HTMLElement>;
+
+  readonly featureIndices = [0, 1, 2, 3];
   email: string = '';
   accessCode: string = '';
   
   isLoading: boolean = false;
   loginError: string = '';
   isShaking: boolean = false;
+  isLoginModalOpen: boolean = false;
+  activeFeatureIndex = 0;
 
   constructor(
     private authService: AuthService,
@@ -38,7 +45,40 @@ export class LoginPage {
     private cdr: ChangeDetectorRef,
     private modalCtrl: ModalController
   ) {
-     addIcons({ personOutline, keyOutline, mailOutline, lockClosedOutline });
+     addIcons({
+       personOutline,
+       keyOutline,
+       mailOutline,
+       lockClosedOutline,
+       logInOutline,
+       constructOutline,
+       locateOutline,
+       bookOutline,
+       shieldCheckmarkOutline,
+       peopleOutline,
+     });
+  }
+
+  openLoginModal() {
+    this.loginError = '';
+    this.isLoginModalOpen = true;
+  }
+
+  onFeatureScroll(event: Event) {
+    const track = event.currentTarget as HTMLElement;
+    if (track.clientWidth === 0) return;
+
+    this.activeFeatureIndex = Math.round(track.scrollLeft / track.clientWidth);
+  }
+
+  scrollToFeature(index: number) {
+    const track = this.featureTrack?.nativeElement;
+    if (!track) return;
+
+    track.scrollTo({
+      left: index * track.clientWidth,
+      behavior: 'smooth',
+    });
   }
 
   onLogin() {

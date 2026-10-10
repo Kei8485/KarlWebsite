@@ -110,7 +110,64 @@
   }
 }
 
-.sort-btn { --border-radius: 50%; }
+.sort-btn {
+  border-radius: 10px;
+}
+
+.planner-tool-btn {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 42px;
+  margin: 0;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(79, 172, 254, 0.38);
+  background: rgba(37, 99, 235, 0.18);
+  color: #eaf4ff;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+
+  &:hover {
+    border-color: rgba(79, 172, 254, 0.62);
+    background: rgba(37, 99, 235, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #7cc4ff;
+    outline-offset: 2px;
+  }
+
+  ion-icon {
+    flex: 0 0 auto;
+    color: #7cc4ff;
+    font-size: 1.05rem;
+  }
+
+  &:nth-child(2) {
+    border-color: rgba(148, 163, 184, 0.32);
+    background: rgba(51, 65, 85, 0.55);
+    color: #f1f5f9;
+
+    &:hover {
+      border-color: rgba(148, 163, 184, 0.55);
+      background: rgba(71, 85, 105, 0.72);
+    }
+
+    ion-icon {
+      color: #cbd5e1;
+    }
+  }
+}
 
 .completed-actions {
   box-sizing: border-box;
@@ -181,6 +238,12 @@
     .app-input-wrapper {
       margin-bottom: 0 !important; 
     }
+
+    .app-input-label {
+      color: #cbd5e1;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
     
     .app-input {
       --background: rgba(255, 255, 255, 0.04) !important;
@@ -218,13 +281,87 @@
 
 
 .form-bottom {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: end;
   gap: 1rem;
   padding-top: 1rem;
   margin-bottom: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.task-form-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+
+  .task-form-icon {
+    display: grid;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid rgba(79, 172, 254, 0.28);
+    border-radius: 12px;
+    background: rgba(79, 172, 254, 0.12);
+    color: #69b8ff;
+    font-size: 1.25rem;
+  }
+
+  h3 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+    color: #aab6ca;
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+}
+
+.task-date-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.task-field-label {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.task-calendar-card {
+  box-sizing: border-box;
+  width: min(350px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  min-width: 0;
+  margin: auto;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--navy);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+
+  ion-datetime {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+.task-calendar-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5rem 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -236,27 +373,48 @@
 
 .form-actions {
   display: flex;
+  align-items: center;
   gap: 0.8rem;
+
+  app-button {
+    display: block;
+
+    ::ng-deep ion-button {
+      min-height: 46px;
+      margin: 0;
+    }
+  }
 }
 
 .modern-date-picker {
   display: flex;
+  width: fit-content;
+  min-height: 46px;
   align-items: center;
+  gap: 0.45rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 0.5rem 1rem; /* Better padding for a full button */
-  cursor: pointer; /* Makes it act like a button */
+  border-radius: 10px;
+  padding: 0.55rem 0.85rem;
+  cursor: pointer;
   color: white;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: all 0.2s ease;
   
   &:hover { background: rgba(255, 255, 255, 0.1); }
-  &:active { transform: scale(0.97); } /* Cute click effect */
+  &:active { transform: scale(0.98); }
   
-  ion-icon { font-size: 1.2rem; color: var(--primary); margin-right: 0.4rem; }
+  ion-icon { flex: 0 0 auto; font-size: 1.1rem; color: var(--primary); }
+
+  .date-change-hint {
+    margin-left: 0.5rem;
+    color: #8dbce7;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
 }
 
 ion-datetime-button::part(native) {
@@ -463,7 +621,7 @@ ion-datetime-button::part(native) {
       color: #8B96AB; 
       font-size: 0.85rem; 
     }
-    
+
     .subject-badge {
       background: #273E5D;
       color: #4A92CE;
@@ -532,20 +690,51 @@ ion-datetime-button::part(native) {
     margin-left: auto; /* Push to the right */
 
     .edit-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      background: transparent;
       color: white; 
-      font-size: 1.4rem; 
+      font-size: 1.4rem;
       cursor: pointer;
       transition: 0.2s ease;
       &:hover { opacity: 0.7; }
-      padding-bottom: 1.5px;
+
+      &:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+
+      ion-icon {
+        font-size: inherit;
+      }
     }
     
     .delete-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      background: transparent;
       color: #ef4444; 
       font-size: 1.4rem; 
       cursor: pointer; 
       transition: 0.2s ease;
       &:hover { color: #f87171; }
+
+      &:focus-visible {
+        outline: 2px solid #ef4444;
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+
+      ion-icon {
+        font-size: inherit;
+      }
     }
   }
 
@@ -707,40 +896,25 @@ ion-datetime {
 /* 🚨 1. Add this somewhere inside your .tasks-card block */
 .add-task-form {
   margin-bottom: 1.5rem;
-  padding: 1rem;
+  padding: 1.25rem;
   border-radius: 12px;
-  border: 1px solid transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 18, 34, 0.42);
   transition: all 0.3s ease;
+
+  &.editing-mode {
+    border-color: rgba(79, 172, 254, 0.3);
+    background: rgba(79, 172, 254, 0.045);
+  }
 }
 
 .task-row {
 
   &.is-being-edited {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(207, 254, 79, 0.4);
+    background: rgba(79, 172, 254, 0.08);
+    border-color: rgba(79, 172, 254, 0.5);
   }
 }
-
-
-  /* Clean, professional text indicator */
-  .editing-label {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: var(--chart-3);
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 0.8rem;
-    margin-left: 0.2rem;
-
-    ion-icon {
-      font-size: 1.1rem;
-      padding-bottom: 1.8px;
-    }
-  }
-
 
 
   /* 🚨 Calendar Custom Footer Buttons */
@@ -827,5 +1001,325 @@ ion-datetime {
     pointer-events: auto;
     transform: translateX(0);
     z-index: 1;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-container {
+    padding: 0.875rem 0.75rem calc(3rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .hero-section {
+    margin-bottom: 1.5rem;
+
+    .gradient-text {
+      font-size: clamp(1.8rem, 8vw, 2.25rem);
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+  }
+
+  .planner-grid,
+  .right-column {
+    gap: 1rem;
+  }
+
+  .glass-card {
+    min-width: 0;
+    padding: 1rem;
+  }
+
+  .tasks-header {
+    align-items: stretch;
+    gap: 0.75rem;
+
+    h2 {
+      font-size: 1.35rem;
+    }
+
+    .header-actions {
+      width: 100%;
+      justify-content: flex-start;
+      gap: 0.35rem;
+
+      .planner-tool-btn {
+        flex: 1 1 0;
+        min-width: 0;
+        min-height: 46px;
+        justify-content: flex-start;
+        gap: 0.4rem;
+        padding-inline: 0.65rem;
+        font-size: 0.8rem;
+
+        span {
+          overflow: visible;
+          line-height: 1.2;
+        }
+      }
+    }
+  }
+
+  .task-list {
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .task-row {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 72px;
+    grid-template-areas: 'check info actions';
+    gap: 0.5rem;
+    padding: 0.7rem;
+    align-items: center;
+
+    &:hover {
+      transform: none;
+    }
+
+    .check-icon {
+      grid-area: check;
+      width: 36px;
+      height: 44px;
+      margin: 0;
+      font-size: 1.75rem;
+    }
+
+    .task-info {
+      grid-area: info;
+      align-self: center;
+
+      .task-title {
+        display: block;
+        width: 100%;
+        white-space: normal;
+        overflow: visible;
+        overflow-wrap: anywhere;
+        text-overflow: clip;
+        font-size: 1rem;
+        line-height: 1.4;
+        text-align: left;
+      }
+
+      .task-meta {
+        align-items: flex-start;
+        font-size: 0.8rem;
+      }
+
+      .task-date {
+        white-space: normal;
+        line-height: 1.4;
+      }
+    }
+
+    .action-icons {
+      grid-area: actions;
+      justify-content: flex-end;
+      gap: 0;
+      margin: 0;
+
+      .edit-icon,
+      .delete-icon {
+        width: 36px;
+        height: 40px;
+        font-size: 1.1rem;
+
+        ion-icon {
+          width: 1.1rem;
+          height: 1.1rem;
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+
+  .add-task-form {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 14px;
+  }
+
+  .task-form-heading {
+    align-items: flex-start;
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+
+    .task-form-icon {
+      flex-basis: 38px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+    }
+
+    p {
+      font-size: 0.84rem;
+    }
+  }
+
+  .form-inputs {
+    gap: 0.85rem;
+    margin-bottom: 0.25rem;
+
+    app-input {
+      display: block;
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .form-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.85rem;
+    margin-bottom: 0;
+    padding-top: 0.85rem;
+  }
+
+  .task-date-field {
+    gap: 0.4rem;
+  }
+
+  .task-field-label {
+    font-size: 0.85rem;
+  }
+
+  .modern-date-picker {
+    width: 100%;
+    min-height: 50px;
+    justify-content: flex-start;
+    border-radius: 10px;
+    font-size: 0.9rem;
+
+    .date-change-hint {
+      margin-left: auto;
+    }
+  }
+
+  .form-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+    padding-top: 0.1rem;
+
+    app-button {
+      display: block;
+      min-width: 0;
+      width: 100%;
+
+      ::ng-deep ion-button {
+        width: 100%;
+        min-height: 48px;
+        margin: 0;
+        --padding-start: 0.5rem;
+        --padding-end: 0.5rem;
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  .task-calendar-card {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+
+    ion-datetime {
+      padding-inline: 0;
+
+      &::part(calendar-day) {
+        min-width: 0;
+        padding-inline: 0;
+      }
+    }
+  }
+
+  .task-calendar-footer {
+    padding: 0.35rem 0.5rem;
+
+    ion-button {
+      min-height: 44px;
+      margin: 0;
+    }
+  }
+
+  .timer-card {
+    padding: 1.25rem 1rem;
+
+    h2 {
+      margin-bottom: 0.75rem;
+      font-size: 1.3rem;
+    }
+  }
+
+  .timer-display {
+    margin: 1rem 0 1.25rem;
+    font-size: clamp(2.5rem, 11vw, 3.25rem);
+    line-height: 1.1;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .custom-time-input {
+    width: min(100%, 20rem);
+    justify-content: center;
+    gap: 0.15rem;
+    padding: 0.25rem 0.4rem;
+
+    input {
+      flex: 0 1 3.25rem;
+      width: 3.25rem;
+      min-width: 0;
+      min-height: 44px;
+      padding: 0.4rem 0.15rem;
+      font-size: 1.1rem;
+    }
+
+    span {
+      flex: 0 0 auto;
+      padding-right: 0.35rem;
+    }
+  }
+
+  .small-presets {
+    width: 100%;
+    gap: 0.5rem;
+
+    button {
+      flex: 1 1 0;
+      min-height: 44px;
+      padding-inline: 0.5rem;
+    }
+  }
+
+  .timer-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 0.5rem;
+
+    app-button {
+      display: block;
+      min-width: 0;
+      width: 100%;
+
+      ::ng-deep ion-button {
+        width: 100%;
+        min-height: 48px;
+        margin: 0;
+        --padding-start: 0.5rem;
+        --padding-end: 0.5rem;
+        font-size: 0.9rem;
+
+        &::part(native) {
+          white-space: nowrap;
+        }
+      }
+    }
   }
 }

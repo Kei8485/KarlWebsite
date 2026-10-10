@@ -35,6 +35,7 @@ export class PlannerPage implements OnInit, OnDestroy {
   
   // Task Form & Sorting State
   isAddingTask: boolean = false;
+  isSavingTask = false;
   sortOrder: 'asc' | 'desc' = 'asc';
   newTaskTitle: string = '';
   newTaskSubject: string = '';
@@ -204,51 +205,41 @@ export class PlannerPage implements OnInit, OnDestroy {
     }
 
     const isEditing = this.editingTaskId !== null;
+    const taskData = {
+      title: this.newTaskTitle.trim(),
+      subject: this.newTaskSubject.trim(),
+      due_date: new Date(this.newTaskDate).toISOString()
+    };
 
-    const modal = await this.modalCtrl.create({
-      component: ConfirmModalComponent,
-      cssClass: 'transparent-modal',
-      componentProps: {
-        title: isEditing ? 'Update Task' : 'Add New Task',
-        message: isEditing 
-          ? `Save changes to "<strong>${this.newTaskTitle}</strong>"?` 
-          : `Are you sure you want to add "<strong>${this.newTaskTitle}</strong>" to your upcoming tasks?`,
-        confirmText: isEditing ? 'Update Task' : 'Create Task',
-        isDanger: false
-      }
-    });
-    
-    await modal.present();
-    const { data } = await modal.onWillDismiss();
-    
-    // 🚨 FIXED: Now it only saves if they clicked Confirm, and taskData is defined!
-    if (data === true) {
-      const taskData = { 
-        title: this.newTaskTitle, 
-        subject: this.newTaskSubject, 
-        due_date: new Date(this.newTaskDate).toISOString() 
-      };
+    this.isSavingTask = true;
+    const saveRequest = isEditing
+      ? this.plannerService.updateTask(this.editingTaskId!, taskData)
+      : this.plannerService.addTask(this.currentUserId, taskData);
 
-      if (isEditing) {
-        this.plannerService.updateTask(this.editingTaskId!, taskData).subscribe({
-          next: () => {
-            this.cancelAddTask(); 
-            this.loadTasks(); 
-            this.showNotification('Task Updated', 'Your task has been successfully updated! ✅');
-          },
-          error: () => this.showNotification('Error', 'Failed to update the task. Please try again.', true)
-        });
-      } else {
-        this.plannerService.addTask(this.currentUserId, taskData).subscribe({
-          next: () => {
-            this.cancelAddTask(); 
-            this.loadTasks(); 
-            this.showNotification('Task Added', 'Your task has been successfully added! ✅');
-          },
-          error: () => this.showNotification('Error', 'Failed to save the task. Please try again.', true)
-        });
-      }
-    }
+    saveRequest
+      .pipe(finalize(() => {
+        this.isSavingTask = false;
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: () => {
+          this.cancelAddTask();
+          this.loadTasks();
+          this.showNotification(
+            isEditing ? 'Task Updated' : 'Task Added',
+            isEditing
+              ? 'Your task has been successfully updated!'
+              : 'Your task has been successfully added!'
+          );
+        },
+        error: () => this.showNotification(
+          'Error',
+          isEditing
+            ? 'Failed to update the task. Please try again.'
+            : 'Failed to save the task. Please try again.',
+          true
+        )
+      });
   }
 
   toggleTask(taskId: number) {

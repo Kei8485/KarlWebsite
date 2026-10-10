@@ -2,7 +2,7 @@
   <ion-toolbar class="header-toolbar">
     <div class="nav-container">
       <!-- 1. Brand & Logo -->
-      <div class="nav-brand">
+      <a class="nav-brand" routerLink="/subjects" aria-label="ApexEng subjects">
         <div class="logo-icon">
           <ion-icon name="construct-outline"></ion-icon>
         </div>
@@ -10,7 +10,7 @@
           <span class="brand-title">ApexEng</span>
           <span class="brand-subtitle">APEX ENGINEERING</span>
         </div>
-      </div>
+      </a>
       <!-- HAMBURGER BUTTON (Mobile Only) -->
       <button class="mobile-menu-btn" (click)="toggleMenu()">
         <ion-icon

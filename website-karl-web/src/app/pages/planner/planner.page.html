@@ -19,26 +19,26 @@
               <div class="tasks-header">
                 <h2>Upcoming Tasks</h2>
                 <div class="header-actions">
-                  <!-- Toggle Button to switch to Schedule Study -->
-                  <ion-button
-                    fill="clear"
-                    color="medium"
+                  <button
+                    type="button"
                     (click)="toggleView()"
-                    class="sort-btn"
+                    class="sort-btn planner-tool-btn"
+                    title="Open study schedule"
+                    aria-label="Open study schedule"
                   >
-                    <ion-icon slot="icon-only" name="time-outline"></ion-icon>
-                  </ion-button>
-                  <ion-button
-                    fill="clear"
-                    color="medium"
+                    <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+                    <span>Study schedule</span>
+                  </button>
+                  <button
+                    type="button"
                     (click)="toggleSort()"
-                    class="sort-btn"
+                    class="sort-btn planner-tool-btn"
+                    [attr.title]="'Tasks sorted ' + (sortOrder === 'asc' ? 'earliest due first' : 'latest due first') + '. Tap to reverse order.'"
+                    [attr.aria-label]="'Sorted ' + (sortOrder === 'asc' ? 'earliest due first' : 'latest due first') + '. Tap to reverse order.'"
                   >
-                    <ion-icon
-                      slot="icon-only"
-                      name="swap-vertical-outline"
-                    ></ion-icon>
-                  </ion-button>
+                    <ion-icon name="swap-vertical-outline" aria-hidden="true"></ion-icon>
+                    <span>Due: {{ sortOrder === 'asc' ? 'Soonest first' : 'Latest first' }}</span>
+                  </button>
 
                   <!-- 🚨 Uses YOUR custom component -->
                   <app-button
@@ -57,34 +57,48 @@
                 *ngIf="isAddingTask"
                 [class.editing-mode]="editingTaskId !== null"
               >
-                <div class="editing-label" *ngIf="editingTaskId !== null">
-                  <ion-icon name="create-outline"></ion-icon>
-                  Editing Task
+                <div class="task-form-heading">
+                  <div class="task-form-icon" aria-hidden="true">
+                    <ion-icon
+                      [name]="editingTaskId !== null ? 'create-outline' : 'add-outline'"
+                    ></ion-icon>
+                  </div>
+                  <div>
+                    <h3>{{ editingTaskId !== null ? 'Edit task' : 'Add a task' }}</h3>
+                    <p>Enter the task details and choose when it is due.</p>
+                  </div>
                 </div>
 
                 <div class="form-inputs">
-                  <!-- 🚨 REPLACED with your custom app-input component! -->
                   <app-input
                     [(value)]="newTaskTitle"
-                    placeholder="What are you working on?"
+                    inputId="planner-task-title"
+                    label="Task name"
+                    placeholder="e.g. Review chapter 3"
                   ></app-input>
 
-                  <!-- 🚨 REPLACED with your custom app-input component! -->
                   <app-input
                     [(value)]="newTaskSubject"
-                    placeholder="Category (e.g. Math, Coding)"
+                    inputId="planner-task-subject"
+                    label="Subject or category"
+                    placeholder="e.g. Math or Coding"
                   ></app-input>
                 </div>
 
                 <div class="form-bottom">
-                  <!-- Sleek Pill Date Picker - Now a FULL clickable button! -->
-                  <button
-                    id="open-calendar-modal"
-                    class="modern-date-picker full-click-btn"
-                  >
-                    <ion-icon name="calendar-outline"></ion-icon>
-                    <span>{{ newTaskDate | date:'mediumDate' }}</span>
-                  </button>
+                  <div class="task-date-field">
+                    <span class="task-field-label">Due date</span>
+                    <button
+                      id="open-calendar-modal"
+                      type="button"
+                      class="modern-date-picker full-click-btn"
+                      aria-label="Choose task due date"
+                    >
+                      <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+                      <span>{{ newTaskDate | date:'mediumDate' }}</span>
+                      <span class="date-change-hint">Change date</span>
+                    </button>
+                  </div>
 
                   <ion-modal
                     #calendarModal
@@ -93,38 +107,19 @@
                     class="transparent-modal"
                   >
                     <ng-template>
-                      <!-- 🚨 Wrapper Card -->
-                      <div
-                        style="
-                          width: 350px;
-                          margin: auto;
-                          background: var(--navy);
-                          border-radius: 16px;
-                          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-                        "
-                      >
+                      <div class="task-calendar-card">
                         <ion-datetime
                           #myDatetime
                           id="datetime"
                           presentation="date"
                           [(ngModel)]="newTaskDate"
-                          [min]="todayDate"
+                          [min]="editingTaskId === null ? todayDate : undefined"
                           max="2030"
                           style="box-shadow: none; border-radius: 16px 16px 0 0"
                         >
-                          <!-- We removed the slot="buttons" from inside here! -->
                         </ion-datetime>
 
-                        <!-- 🚨 Buttons moved OUTSIDE the calendar so they are always visible! -->
-                        <div
-                          style="
-                            display: flex;
-                            justify-content: flex-end;
-                            padding: 8px 16px;
-                            border-top: 1px solid rgba(255, 255, 255, 0.05);
-                          "
-                        >
-                          <!-- Action Bar -->
+                        <div class="task-calendar-footer">
                           <div class="calendar-action-bar">
                             <ion-button
                               fill="clear"
@@ -149,16 +144,18 @@
                   </ion-modal>
 
                   <div class="form-actions">
-                    <!-- 🚨 Uses YOUR custom component -->
                     <app-button
                       label="Cancel"
-                      variant="transparent"
+                      variant="outline"
+                      [disabled]="isSavingTask"
                       (clicked)="cancelAddTask()"
                     ></app-button>
 
                     <app-button
-                      [label]="editingTaskId ? 'Update' : 'Confirm'"
+                      [label]="editingTaskId !== null ? 'Save changes' : 'Add task'"
                       variant="primary"
+                      [loading]="isSavingTask"
+                      [loadingLabel]="editingTaskId !== null ? 'Saving changes...' : 'Adding task...'"
                       (clicked)="addTask()"
                     ></app-button>
                   </div>
@@ -236,17 +233,23 @@
                   <!-- Trash Can -->
                   <!-- Edit & Delete Icons -->
                   <div class="action-icons">
-                    <ion-icon
-                      name="create-outline"
+                    <button
+                      type="button"
                       class="edit-icon"
+                      [attr.aria-label]="'Edit ' + task.title"
                       (click)="editTask(task)"
-                    ></ion-icon>
+                    >
+                      <ion-icon name="create-outline"></ion-icon>
+                    </button>
 
-                    <ion-icon
-                      name="trash-outline"
+                    <button
+                      type="button"
                       class="delete-icon"
+                      [attr.aria-label]="'Delete ' + task.title"
                       (click)="confirmDelete(task.id)"
-                    ></ion-icon>
+                    >
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </button>
                   </div>
                 </div>
               </div>

@@ -4,32 +4,106 @@
   </ion-refresher>
 
   <div class="subjects-container">
-    <!-- Modern Header -->
-    <p class="text-body">Catalogue</p>
-    <h1 class="text-h1">Select a Subject</h1>
-    <p class="text-muted">Choose a module to continue your engineering path.</p>
+    <header class="subjects-heading">
+      <div class="heading-copy">
+        <div class="heading-topline">
+          <p class="heading-kicker">
+            <ion-icon
+              class="heading-book-icon"
+              name="book-outline"
+              aria-hidden="true"
+            ></ion-icon>
+            <span>Catalogue</span>
+          </p>
+        </div>
+        <h1 class="heading-title">Select a <span>Subject</span></h1>
+        <div class="heading-description">
+          <span class="description-icon" aria-hidden="true">
+            <ion-icon name="compass-outline"></ion-icon>
+          </span>
+          <p>
+            Choose a module to continue your
+            <strong>engineering path.</strong>
+          </p>
+        </div>
+      </div>
+      <div class="blueprint-animation" aria-hidden="true">
+        <svg
+          class="blueprint-wind"
+          viewBox="0 0 1000 300"
+          preserveAspectRatio="none"
+        >
+          <path
+            class="wind-trail wind-trail--one"
+            d="M80 176 C210 88 278 226 414 151 S625 77 748 151 S884 217 960 125"
+          />
+          <path
+            class="wind-trail wind-trail--two"
+            d="M35 205 C168 120 267 256 399 184 S622 107 750 180 S887 239 980 159"
+          />
+          <path
+            class="wind-trail wind-trail--three"
+            d="M105 141 C226 69 307 187 438 126 S638 64 772 128 S899 178 965 96"
+          />
+        </svg>
+        <div class="blueprint-orbit-art">
+          <span class="blueprint-ring blueprint-ring--outer"></span>
+          <span class="blueprint-ring blueprint-ring--inner"></span>
+          <span class="blueprint-node blueprint-node--one">
+            <span></span>
+          </span>
+          <span class="blueprint-node blueprint-node--two">
+            <span></span>
+          </span>
+          <span class="blueprint-node blueprint-node--three">
+            <span></span>
+          </span>
+          <span class="blueprint-node blueprint-node--four">
+            <span></span>
+          </span>
+        </div>
+      </div>
+    </header>
 
-    <div class="subjects-status" *ngIf="isLoading" role="status" aria-live="polite">
+    <div
+      class="subjects-status"
+      *ngIf="isLoading"
+      role="status"
+      aria-live="polite"
+    >
       <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
       <p>Loading subjects...</p>
     </div>
 
-    <div class="subjects-status subjects-error" *ngIf="!isLoading && loadError" role="alert">
+    <div
+      class="subjects-status subjects-error"
+      *ngIf="!isLoading && loadError"
+      role="alert"
+    >
       <p>{{ loadError }}</p>
       <button type="button" (click)="fetchSubjects()">Try again</button>
     </div>
 
-    <div class="subjects-status" *ngIf="!isLoading && !loadError && databaseSubjects.length === 0" role="status">
+    <div
+      class="subjects-status"
+      *ngIf="!isLoading && !loadError && databaseSubjects.length === 0"
+      role="status"
+    >
       <p>No subjects are available yet.</p>
     </div>
 
     <!-- Cards Grid -->
-    <ion-grid *ngIf="!isLoading && !loadError && databaseSubjects.length > 0" style="margin-top: 40px; padding: 0">
+    <ion-grid
+      class="subjects-grid"
+      *ngIf="!isLoading && !loadError && databaseSubjects.length > 0"
+    >
       <ion-row>
         <ion-col size="12" size-md="6" *ngFor="let subject of databaseSubjects">
           <app-card class="modern-card">
             <!-- Sleek Category Tag -->
-            <span class="subject-tag">{{ (subject.category | uppercase) || 'MATHEMATICS' }}</span>
+            <span class="subject-tag"
+              >{{ (subject.category | uppercase) || 'MATHEMATICS' }}</span
+            >
 
             <!-- Title Layout -->
             <h2 class="subject-title">
@@ -40,8 +114,10 @@
               {{ subject.title }}
             </h2>
 
-            <!-- Description -->
-            <p class="subject-desc">{{ subject.description }}</p>
+            <section class="subject-overview" aria-label="Subject overview">
+              <span class="overview-label">Subject Description</span>
+              <p class="subject-desc">{{ subject.description }}</p>
+            </section>
 
             <!-- Footer with glowing dot -->
             <div class="subject-footer">
@@ -50,6 +126,7 @@
               >
 
               <app-button
+                class="subject-action"
                 variant="primary"
                 label="Open topic tree"
                 routerLink="/topic-tree/{{subject.id}}"

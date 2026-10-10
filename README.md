@@ -4,6 +4,11 @@ An engineering learning platform built with **Ionic + Angular** (frontend) and *
 
 ---
 
+## local opening
+
+- **Ionic:** ionic serve --host=0.0.0.0
+- **Django:** python manage.py runserver 0.0.0.0:8000
+
 ## Deployment
 
 - **Frontend:** Hosted on [Netlify](https://netlify.com) (e.g. `apexeng.netlify.app`)

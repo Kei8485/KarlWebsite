@@ -15,7 +15,7 @@
 
   @media (max-width: 576px) {
     padding: 16px 12px;
-    margin-bottom: 80px;
+    margin-bottom: 202px;
   }
 }
 
@@ -129,6 +129,7 @@
     color: #cbd5e1;
     line-height: 1.7;
     flex: 1;
+    min-width: 0;
     overflow-y: auto;
     padding-right: 0.5rem;
     white-space: pre-wrap; /* MAGIC FIX: Preserves newlines from Django text fields! */
@@ -156,9 +157,18 @@
         color: #4facfe;
         text-decoration: underline;
         text-underline-offset: 3px;
+        overflow-wrap: anywhere;
 
         &:hover {
           color: #00f2fe;
+        }
+      }
+
+      p {
+        margin: 0 0 0.85rem;
+
+        &:last-child {
+          margin-bottom: 0;
         }
       }
 
@@ -413,9 +423,13 @@
     }
 
     .notes-content {
-      max-height: 60vh;
-      font-size: 1rem;
+      max-height: none;
+      overflow: visible;
+      font-size: 0.98rem;
+      line-height: 1.6;
       padding-right: 0;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
     }
   }
 

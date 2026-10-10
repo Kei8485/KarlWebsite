@@ -14,6 +14,7 @@ import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
 })
 export class AppInputComponent {
   @Input() label: string = '';
+  @Input() inputId: string = '';
   @Input() placeholder: string = '';
   @Input() type: 'text' | 'email' | 'password' | 'number' = 'text';
   @Input() value: string = '';

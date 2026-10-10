@@ -5,8 +5,8 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { arrowForwardOutline } from 'ionicons/icons';
-import { IonContent, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonSpinner } from '@ionic/angular';
+import { arrowForwardOutline, bookOutline, compassOutline } from 'ionicons/icons';
+import { IonContent, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonSpinner, IonIcon } from '@ionic/angular';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
 import { AppCardComponent } from '../../components/molecules/app-card/app-card.component';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
@@ -26,6 +26,7 @@ import { RouterModule } from '@angular/router';
     IonCol,
     IonGrid,
     IonSpinner,
+    IonIcon,
     AppButtonComponent,
     AppCardComponent,
     IonRefresher,
@@ -45,7 +46,7 @@ export class SubjectsPage implements OnInit {
     private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {
-    addIcons({ arrowForwardOutline });
+    addIcons({ arrowForwardOutline, bookOutline, compassOutline });
     const savedName = localStorage.getItem('userName');
     if (savedName) {
       this.currentUserName = savedName;

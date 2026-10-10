@@ -22,7 +22,7 @@
   @media (max-width: 768px) {
     padding: 1rem !important;
     margin: 0 auto !important;
-    margin-bottom: 3rem !important;
+    margin-bottom: 2rem !important;
   }
 }
 .hero-section {
@@ -301,11 +301,14 @@
   }
   
   /* 🚨 NEW: Allow the row to break into two lines on mobile! */
-  @media (max-width: 480px) {
-    min-height: 76px;
-    grid-template-columns: 24px minmax(0, 1fr) auto auto;
-    gap: 0.5rem;
-    padding: 0.85rem;
+  @media (max-width: 576px) {
+    min-height: 88px;
+    grid-template-columns: 26px minmax(0, 1fr) 44px;
+    grid-template-areas:
+      'index info delete'
+      'index role delete';
+    gap: 0.15rem 0.6rem;
+    padding: 0.75rem;
   }
 
   .user-index {
@@ -321,7 +324,8 @@
     font-size: 0.9rem;
     font-weight: 700;
 
-    @media (max-width: 480px) {
+    @media (max-width: 576px) {
+      grid-area: index;
       width: 26px;
       height: 26px;
     }
@@ -331,15 +335,20 @@
     min-width: 0;
     overflow: hidden;   
 
+    @media (max-width: 576px) {
+      grid-area: info;
+      align-self: end;
+    }
+
     .user-name {
       font-weight: bold;
       font-size: 1.1rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      
-      @media (max-width: 480px) {
+      @media (max-width: 576px) {
         white-space: normal;
+        font-size: 1rem;
         word-break: break-word; 
       }
     }
@@ -354,10 +363,11 @@
       text-overflow: ellipsis;
       line-height: 1.4; 
       
-      @media (max-width: 480px) {
+      @media (max-width: 576px) {
+        color: #aab6ca;
+        font-size: 0.85rem;
         white-space: normal;
-        /* Changed to break-word so it only cuts the word if absolutely necessary */
-        word-break: break-word; 
+        overflow-wrap: anywhere;
       }
     }
 
@@ -372,7 +382,9 @@
     margin-left: 0.5rem;
     
     /* 🚨 NEW: Reset the margin for the second row */
-    @media (max-width: 480px) {
+    @media (max-width: 576px) {
+      grid-area: role;
+      justify-self: start;
       font-size: 0.7rem;
       padding: 0.3rem 0.6rem;
       margin-left: 0;
@@ -400,6 +412,13 @@
     margin-left: 0;
     cursor: pointer;
     transition: 0.2s ease;
+
+    @media (max-width: 576px) {
+      grid-area: delete;
+      width: 44px;
+      height: 44px;
+      justify-self: end;
+    }
 
     &:disabled {
       cursor: not-allowed;
@@ -574,6 +593,14 @@ input.input-error {
 .views-container {
   position: relative;
   min-height: 700px;
+
+  @media (max-width: 576px) {
+    min-height: 0;
+
+    .view-panel {
+      margin-bottom: 2rem;
+    }
+  }
 }
 
 .view-panel {
@@ -751,7 +778,7 @@ input.input-error {
 
 @media (max-width: 576px) {
   .page-container {
-    padding: 0.75rem !important;
+    padding: 0.75rem 0.75rem calc(4rem + env(safe-area-inset-bottom)) !important;
   }
 
   .pill-toggle {
@@ -821,6 +848,12 @@ input.input-error {
     }
   }
 
+  .form-group input,
+  .form-group .custom-select {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
   .topic-row {
     gap: 0.75rem;
     padding: 0.8rem;
@@ -841,64 +874,8 @@ input.input-error {
       gap: 0.75rem;
     }
   }
-
   .quiz-choices {
     grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* Topics Tab Scaffold */
-.topic-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.topic-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 1.25rem;
-  
-  .topic-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-    
-    h3 {
-      margin: 0;
-      font-size: 1.1rem;
-      color: #e2e8f0;
-    }
-    
-    .topic-actions {
-      display: flex;
-      gap: 0.75rem;
-      
-      ion-icon {
-        font-size: 1.2rem;
-        color: #8b96ab;
-        cursor: pointer;
-        transition: color 0.2s ease;
-        
-        &:hover { color: #fff; }
-        &.danger-icon:hover { color: #ef4444; }
-      }
-    }
-  }
-  
-  .topic-details {
-    p {
-      margin: 0.25rem 0;
-      font-size: 0.9rem;
-      color: #94a3b8;
-      
-      span {
-        color: #cbd5e1;
-        font-weight: 600;
-      }
-    }
   }
 }
 

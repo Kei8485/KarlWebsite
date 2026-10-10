@@ -1,8 +1,15 @@
 <div class="app-input-wrapper">
-  <label *ngIf="label" class="app-input-label text-label">{{ label }}</label>
+  <label
+    *ngIf="label"
+    class="app-input-label text-label"
+    [attr.for]="inputId || null"
+    >{{ label }}</label
+  >
 
   <ion-input
     [type]="inputType"
+    [id]="inputId || null"
+    [attr.aria-label]="label || null"
     fill="outline"
     [placeholder]="placeholder"
     [value]="value"

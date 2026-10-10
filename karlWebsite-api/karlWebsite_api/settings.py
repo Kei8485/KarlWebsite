@@ -35,6 +35,8 @@ ALLOWED_HOSTS = [
     ).split(',')
     if host.strip()
 ]
+if '192.168.1.11' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('192.168.1.11')
 render_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME', '').strip()
 if render_hostname and render_hostname not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(render_hostname)
@@ -158,6 +160,7 @@ DEFAULT_FROM_EMAIL = os.environ.get(
 default_cors_origins = [
     'http://localhost:4200',
     'http://localhost:8100',
+    'http://192.168.1.11:8100',
     'https://6enginear.netlify.app',
 ]
 configured_cors_origins = [

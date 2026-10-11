@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, ModalController, IonPicker, IonPickerColumn, IonPickerColumnOption, IonSpinner } from '@ionic/angular';
@@ -23,6 +23,7 @@ import { IonButtons } from "@ionic/angular";
   imports: [IonContent, IonButton, IonIcon, IonDatetime, IonModal, IonSpinner, CommonModule, FormsModule, AppButtonComponent, AppInputComponent, ScheduleStudyComponent]
 })
 export class PlannerPage implements OnInit, OnDestroy {
+  @ViewChild(ScheduleStudyComponent) private scheduleStudy?: ScheduleStudyComponent;
   
   showSchedule: boolean = false; // Toggle state for flip card
   currentUserId: number = 1; 
@@ -50,6 +51,7 @@ export class PlannerPage implements OnInit, OnDestroy {
   newTaskDate: string = this.getLocalISOString();
   todayDate: string = this.getLocalISOString();
   editingTaskId: number | null = null; // 🚨 Edit State
+  private taskFormSavedState = '';
 
   get timerMinutes(): number { return this.focusTimer.timerMinutes; }
   set timerMinutes(value: number) { this.focusTimer.timerMinutes = value; }
@@ -86,8 +88,96 @@ export class PlannerPage implements OnInit, OnDestroy {
     });
   }
 
-  toggleView() {
+  async toggleView() {
+    if (this.showSchedule) {
+      if (this.scheduleStudy && !await this.scheduleStudy.confirmLeaveForm(true)) return;
+    } else if (this.isAddingTask) {
+      if (!await this.confirmLeaveTaskForm()) return;
+      this.resetTaskForm();
+    }
     this.showSchedule = !this.showSchedule;
+  }
+
+  async canDeactivate(): Promise<boolean> {
+    const hasUnsavedChanges = this.hasUnsavedTaskChanges() ||
+      !!this.scheduleStudy?.hasUnsavedChanges();
+    if (!hasUnsavedChanges) return true;
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Discard planner changes?',
+        message: 'You have unsaved planner changes. If you leave this page, <strong>your changes will be lost</strong>.',
+        confirmText: 'Discard',
+        cancelText: 'Keep Editing',
+        isDanger: true
+      }
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    if (data !== true) return false;
+
+    this.resetTaskForm();
+    this.scheduleStudy?.discardUnsavedChanges();
+    return true;
+  }
+
+  hasUnsavedChangesForNavigation(): boolean {
+    return this.hasUnsavedTaskChanges() || !!this.scheduleStudy?.hasUnsavedChanges();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  warnBeforeLeavingPage(event: BeforeUnloadEvent) {
+    if (!this.hasUnsavedTaskChanges() && !this.scheduleStudy?.hasUnsavedChanges()) return;
+    event.preventDefault();
+    event.returnValue = '';
+  }
+
+  private async confirmLeaveTaskForm(): Promise<boolean> {
+    if (!this.hasUnsavedTaskChanges()) return true;
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Discard task changes?',
+        message: 'This task form has unsaved changes. If you leave it, <strong>your changes will be lost</strong>.',
+        confirmText: 'Discard',
+        cancelText: 'Keep Editing',
+        isDanger: true
+      }
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    return data === true;
+  }
+
+  private hasUnsavedTaskChanges(): boolean {
+    if (!this.isAddingTask) return false;
+    return JSON.stringify({
+      title: this.newTaskTitle,
+      subject: this.newTaskSubject,
+      date: this.newTaskDate,
+      editingTaskId: this.editingTaskId
+    }) !== this.taskFormSavedState;
+  }
+
+  private markTaskFormSaved() {
+    this.taskFormSavedState = JSON.stringify({
+      title: this.newTaskTitle,
+      subject: this.newTaskSubject,
+      date: this.newTaskDate,
+      editingTaskId: this.editingTaskId
+    });
+  }
+
+  beginAddTask() {
+    this.newTaskTitle = '';
+    this.newTaskSubject = '';
+    this.newTaskDate = this.getLocalISOString();
+    this.editingTaskId = null;
+    this.isAddingTask = true;
+    this.markTaskFormSaved();
   }
 
   ngOnInit() {
@@ -155,19 +245,28 @@ export class PlannerPage implements OnInit, OnDestroy {
     this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
   }
 
-  cancelAddTask() {
+  async cancelAddTask() {
+    if (!await this.confirmLeaveTaskForm()) return;
+    this.resetTaskForm();
+  }
+
+  private resetTaskForm() {
     this.isAddingTask = false;
     this.newTaskTitle = '';
     this.newTaskSubject = '';
     this.editingTaskId = null;  
+    this.newTaskDate = this.getLocalISOString();
+    this.taskFormSavedState = '';
   }
 
-  editTask(task: any) {
+  async editTask(task: any) {
+    if (this.isAddingTask && !await this.confirmLeaveTaskForm()) return;
     this.isAddingTask = true;
     this.editingTaskId = task.id;
     this.newTaskTitle = task.title;
     this.newTaskSubject = task.subject;
     this.newTaskDate = task.due_date;
+    this.markTaskFormSaved();
   }
 
   loadTasks() {
@@ -223,7 +322,7 @@ export class PlannerPage implements OnInit, OnDestroy {
       }))
       .subscribe({
         next: () => {
-          this.cancelAddTask();
+          this.resetTaskForm();
           this.loadTasks();
           this.showNotification(
             isEditing ? 'Task Updated' : 'Task Added',

@@ -1,4 +1,4 @@
-# ApexEng
+# EngiNear
 
 An engineering learning platform built with **Ionic + Angular** (frontend) and **Django + Django REST Framework** (backend).
 
@@ -11,8 +11,8 @@ An engineering learning platform built with **Ionic + Angular** (frontend) and *
 
 ## Deployment
 
-- **Frontend:** Hosted on [Netlify](https://netlify.com) (e.g. `apexeng.netlify.app`)
-- **Backend:** Hosted on [Render](https://render.com) (e.g. `apexeng-api.onrender.com`)
+- **Frontend:** Hosted on [Netlify](https://netlify.com) (e.g. `EngiNear.netlify.app`)
+- **Backend:** Hosted on [Render](https://render.com) (e.g. `EngiNear-api.onrender.com`)
 - **Database:** Hosted on [Supabase](https://supabase.com)
 - **EmailAPI:** Used https://app.brevo.com/
 

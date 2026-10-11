@@ -74,7 +74,7 @@ export class AppHeaderComponent implements OnInit {
       cssClass: 'transparent-modal', // Keeps our cool glass effect background
       componentProps: {
         title: 'Log Out?',
-        message: 'Are you sure you want to log out of ApexEng?',
+        message: 'Are you sure you want to log out of EngiNear?',
         confirmText: 'Log Out',
         isDanger: true // Turns the confirm button Red!
       }

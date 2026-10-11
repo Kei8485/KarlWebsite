@@ -4,21 +4,11 @@
       class="glass-card editor-card"
       style="max-width: 900px; margin: 0 auto; margin-top: 2rem"
     >
-      <div
-        class="editor-header"
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 2rem;
-        "
-      >
-        <div style="display: flex; align-items: center; gap: 1rem">
-          <ion-icon
-            name="arrow-back-outline"
-            style="font-size: 1.5rem; color: #4facfe; cursor: pointer"
-            (click)="goBack()"
-          ></ion-icon>
+      <div class="editor-header">
+        <div class="editor-heading">
+          <button class="back-button" type="button" aria-label="Back" (click)="goBack()">
+            <ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon>
+          </button>
           <h2 style="margin: 0; color: white">
             {{ topicId === 'new' ? 'New Topic' : 'Edit Topic' }}
           </h2>
@@ -180,11 +170,10 @@
             </div>
           </div>
 
-          <div style="text-align: right; margin-top: 1rem">
+          <div class="quiz-item-actions">
             <app-button
               variant="danger-outline"
               label="Remove Question"
-              size="small"
               icon="trash-outline"
               (clicked)="removeQuestion(i)"
             ></app-button>
@@ -206,18 +195,10 @@
         </div>
       </div>
 
-      <div
-        style="
-          margin-top: 1.5rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        "
-      >
+      <div class="quiz-add-action">
         <app-button
           variant="outline"
           label="+ Add Another Question"
-          size="small"
           (clicked)="addQuestion()"
         ></app-button>
       </div>

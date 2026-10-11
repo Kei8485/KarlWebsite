@@ -366,7 +366,7 @@
                 <span>{{ cmsLoadingMessage }}</span>
               </div>
 
-              <div style="margin-top: 1.5rem; display: flex; gap: 1rem">
+              <div class="editor-actions">
                 <app-button
                   variant="primary"
                   label="Save Changes"
@@ -416,11 +416,14 @@
                       <span class="topic-title">{{ topic.title }}</span>
                     </div>
                     <div class="topic-row-actions">
-                      <ion-icon
-                        name="pencil-outline"
+                      <button
                         class="action-icon edit"
+                        type="button"
+                        [attr.aria-label]="'Edit topic ' + topic.title"
                         (click)="goToEditTopic(topic.id)"
-                      ></ion-icon>
+                      >
+                        <ion-icon name="pencil-outline" aria-hidden="true"></ion-icon>
+                      </button>
                       <button
                         class="action-icon delete"
                         type="button"
@@ -456,7 +459,7 @@
                   </div>
                 </div>
 
-                <div style="margin-top: 1.5rem">
+                <div class="topic-add-action" style="margin-top: 1.5rem">
                   <app-button
                     variant="primary"
                     label="Add New Topic"

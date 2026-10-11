@@ -1,12 +1,12 @@
 <div class="schedule-study-wrapper">
   <!-- Tabs Navigation -->
   <div class="schedule-tabs">
-    <button [class.active]="activeTab === 'new'" (click)="activeTab = 'new'">
+    <button [class.active]="activeTab === 'new'" (click)="selectTab('new')">
       New
     </button>
     <button
       [class.active]="activeTab === 'upcoming'"
-      (click)="activeTab = 'upcoming'"
+      (click)="selectTab('upcoming')"
     >
       Upcoming
       <span class="badge" *ngIf="upcomingStudies.length > 0">{{
@@ -15,7 +15,7 @@
     </button>
     <button
       [class.active]="activeTab === 'archived'"
-      (click)="activeTab = 'archived'"
+      (click)="selectTab('archived')"
     >
       Archived
     </button>
@@ -124,7 +124,12 @@
 
   <!-- 2. UPCOMING SESSIONS -->
   <div class="tab-content list-content" *ngIf="activeTab === 'upcoming'">
-    <div class="empty-state" *ngIf="upcomingStudies.length === 0">
+    <div class="schedule-loading" *ngIf="isLoadingTabData" role="status" aria-live="polite">
+      <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+      <span>Loading upcoming sessions...</span>
+    </div>
+
+    <div class="empty-state" *ngIf="!isLoadingTabData && upcomingStudies.length === 0">
       <p>No upcoming study sessions.</p>
     </div>
 
@@ -167,7 +172,12 @@
 
   <!-- 3. ARCHIVED SESSIONS (Already sent) -->
   <div class="tab-content list-content" *ngIf="activeTab === 'archived'">
-    <div class="empty-state" *ngIf="archivedStudies.length === 0">
+    <div class="schedule-loading" *ngIf="isLoadingTabData" role="status" aria-live="polite">
+      <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+      <span>Loading archived sessions...</span>
+    </div>
+
+    <div class="empty-state" *ngIf="!isLoadingTabData && archivedStudies.length === 0">
       <p>No archived sessions.</p>
     </div>
 

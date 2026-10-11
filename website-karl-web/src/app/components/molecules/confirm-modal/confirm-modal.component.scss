@@ -61,6 +61,10 @@
   font-size: 1rem;
   line-height: 1.6;
   margin: 0 0 2rem 0;
+
+  ::ng-deep strong {
+    color: #ef4444;
+  }
 }
 
 .modal-actions {

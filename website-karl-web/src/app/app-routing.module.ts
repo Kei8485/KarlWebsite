@@ -2,6 +2,9 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { adminGuard } from './guards/admin-guard';
+import { manageTopicCanDeactivateGuard } from './guards/manage-topic-can-deactivate.guard';
+import { manageUsersCanDeactivateGuard } from './guards/manage-users-can-deactivate.guard';
+import { plannerCanDeactivateGuard } from './guards/planner-can-deactivate.guard';
 const routes: Routes = [ 
   // pag gagawa ng bagong page gagawing loadComponent tas gagawing Page ung dulo
  {
@@ -31,7 +34,8 @@ const routes: Routes = [
   {
     path: 'manage-users',
     loadComponent: () => import('./pages/manage-users/manage-users.page').then( m => m.ManageUsersPage),
-    canActivate: [authGuard, adminGuard]
+    canActivate: [authGuard, adminGuard],
+    canDeactivate: [manageUsersCanDeactivateGuard]
   },
   {
     path: 'topic-detail/:id',
@@ -41,12 +45,14 @@ const routes: Routes = [
   {
     path: 'planner',
      loadComponent: () => import('./pages/planner/planner.page').then( m => m.PlannerPage),
-     canActivate: [authGuard]
+     canActivate: [authGuard],
+     canDeactivate: [plannerCanDeactivateGuard]
   },
   {
     path: 'manage-topic/:subjectId/:topicId',
     loadComponent: () => import('./pages/manage-topic/manage-topic.page').then( m => m.ManageTopicPage),
-    canActivate: [authGuard, adminGuard]
+    canActivate: [authGuard, adminGuard],
+    canDeactivate: [manageTopicCanDeactivateGuard]
   },
   {
   path: 'community',

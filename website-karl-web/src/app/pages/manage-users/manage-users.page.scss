@@ -231,6 +231,12 @@
   text-align: center;
 }
 
+.editor-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
 .users-loading ion-spinner {
   width: 36px;
   height: 36px;
@@ -839,41 +845,28 @@ input.input-error {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 
-  .tab-content > div[style*="display: flex"] {
-    flex-wrap: wrap;
-
-    app-button {
-      flex: 1 1 100%;
-      min-width: 0;
-    }
-  }
-
   .form-group input,
   .form-group .custom-select {
     min-height: 48px;
     font-size: 1rem;
   }
 
-  .topic-row {
-    gap: 0.75rem;
-    padding: 0.8rem;
+  .editor-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
 
-    .topic-row-info {
-      flex: 1 1 auto;
+    app-button {
       min-width: 0;
-      gap: 0.65rem;
     }
 
-    .topic-title {
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-
-    .topic-row-actions {
-      flex: 0 0 auto;
-      gap: 0.75rem;
+    ::ng-deep ion-button {
+      width: 100%;
+      min-height: 48px;
+      margin: 0;
     }
   }
+
   .quiz-choices {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -997,6 +990,12 @@ input.input-error {
     gap: 1rem;
 
     .action-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      background: transparent;
       font-size: 1.25rem;
       cursor: pointer;
       color: #8B96AB;
@@ -1023,6 +1022,75 @@ input.input-error {
       
       &.delete:hover {
         color: #ff4d4d;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .topic-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+    padding: 0.85rem;
+
+    .topic-row-info {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      align-items: start;
+      gap: 0.5rem;
+      min-width: 0;
+      width: 100%;
+
+      .topic-number {
+        display: flex;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        min-width: 28px;
+        height: 28px;
+        aspect-ratio: 1;
+        box-sizing: border-box;
+        padding: 0;
+        line-height: 1;
+        text-align: center;
+      }
+
+      .topic-title {
+        display: block;
+        min-width: 0;
+        width: 100%;
+        white-space: normal;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+    }
+
+    .topic-row-actions {
+      grid-column: 1 / -1;
+      justify-self: end;
+      align-self: auto;
+      align-items: center;
+      gap: 0.25rem;
+
+      .action-icon {
+        display: inline-grid;
+        flex: 0 0 38px;
+        width: 38px;
+        min-width: 38px;
+        height: 38px;
+        place-items: center;
+        font-size: 1rem;
+
+        ion-icon,
+        ion-spinner {
+          display: block;
+          width: 18px;
+          height: 18px;
+          margin: 0;
+        }
       }
     }
   }

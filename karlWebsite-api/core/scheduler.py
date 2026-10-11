@@ -33,7 +33,7 @@ def send_scheduled_emails():
                         <span style="color:#fff;font-size:14px;font-weight:700;">AE</span>
                       </td>
                       <td style="padding-left:12px;">
-                        <span style="color:#fff;font-size:18px;font-weight:700;">ApexEng Planner</span>
+                        <span style="color:#fff;font-size:18px;font-weight:700;">EngiNear Planner</span>
                       </td>
                     </tr></table>
                   </td>

@@ -91,7 +91,7 @@ class User(models.Model):
                             Your access code<br>is ready.
                         </h1>
                         <p style="color:#94a3b8;font-size:15px;line-height:1.6;margin:0 0 32px 0;">
-                            Use your email address and the code below to log in to ApexEng and start learning.
+                            Use your email address and the code below to log in to EngiNear and start learning.
                         </p>
                         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
                             <tr>

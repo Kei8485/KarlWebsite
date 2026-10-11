@@ -1,5 +1,5 @@
 import { environment } from '../../../environments/environment';
-import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -46,9 +46,57 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
   subjectsList: any[] = [];
   activeSubject: any = null;
   expandedTopicId: number | null = null;
+  private savedSubjectState = 'null';
 
-  setViewMode(mode: 'users' | 'system') {
+  async setViewMode(mode: 'users' | 'system') {
+    if (mode === this.viewMode) return;
+    if (this.viewMode === 'system' && !await this.confirmLeaveSubjectEditor()) return;
     this.viewMode = mode;
+  }
+
+  async canDeactivate(): Promise<boolean> {
+    const canLeave = await this.confirmLeaveSubjectEditor();
+    if (canLeave) this.markSubjectChangesSaved();
+    return canLeave;
+  }
+
+  hasUnsavedChangesForNavigation(): boolean {
+    return this.hasUnsavedSubjectChanges();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  warnBeforeLeavingPage(event: BeforeUnloadEvent) {
+    if (!this.hasUnsavedSubjectChanges()) return;
+    event.preventDefault();
+    event.returnValue = '';
+  }
+
+  private hasUnsavedSubjectChanges(): boolean {
+    return JSON.stringify(this.activeSubject) !== this.savedSubjectState;
+  }
+
+  private markSubjectChangesSaved() {
+    this.savedSubjectState = JSON.stringify(this.activeSubject);
+  }
+
+  private async confirmLeaveSubjectEditor(): Promise<boolean> {
+    if (!this.hasUnsavedSubjectChanges()) return true;
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Leave without saving?',
+        message: 'You have unsaved subject changes. If you leave this editor, <strong>your changes will be lost</strong>.',
+        confirmText: 'Leave',
+        cancelText: 'Keep Editing',
+        isDanger: true
+      }
+    });
+
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    return data === true;
   }
 
   get cmsLoadingMessage(): string {
@@ -303,8 +351,10 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
       next: (data) => {
         this.subjectsList = data;
         if (this.activeSubject) {
-           // Refresh active subject data
-           this.activeSubject = this.subjectsList.find(s => s.id === this.activeSubject.id) || null;
+          if (!this.hasUnsavedSubjectChanges()) {
+            this.activeSubject = this.subjectsList.find(s => s.id === this.activeSubject.id) || null;
+            this.markSubjectChangesSaved();
+          }
         }
         this.cdr.detectChanges();
       },
@@ -312,15 +362,18 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     });
   }
 
-  selectSubject(subject: any) {
+  async selectSubject(subject: any) {
     if (this.crudLoading) return;
+    if (!await this.confirmLeaveSubjectEditor()) return;
     // Deep clone to avoid mutating the list until saved
     this.activeSubject = JSON.parse(JSON.stringify(subject));
+    this.markSubjectChangesSaved();
     this.cmsTab = 'info';
   }
 
-  addNewSubject() {
+  async addNewSubject() {
     if (this.crudLoading) return;
+    if (!await this.confirmLeaveSubjectEditor()) return;
     this.activeSubject = {
       title: '',
       description: '',
@@ -328,6 +381,7 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
       course_code: '',
       topics: []
     };
+    this.markSubjectChangesSaved();
     this.cmsTab = 'info';
   }
 
@@ -358,7 +412,10 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
         this.http.put(`${this.apiSystemUrl}/subjects/manage/${this.activeSubject.id}/`, this.activeSubject)
           .pipe(finalize(() => this.finishCmsLoading(requestStartedAt)))
           .subscribe({
-          next: () => this.loadSubjects(),
+          next: () => {
+            this.markSubjectChangesSaved();
+            this.loadSubjects();
+          },
           error: (err) => {
             this.cmsErrorMessage = err.error?.error || 'Could not save the subject. Please try again.';
             console.error('Error saving subject:', err);
@@ -371,6 +428,7 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
           .subscribe({
           next: (newSub: any) => {
             this.activeSubject = newSub;
+            this.markSubjectChangesSaved();
             this.loadSubjects();
           },
           error: (err) => {
@@ -410,6 +468,7 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
         .subscribe({
         next: () => {
           this.activeSubject = null;
+          this.markSubjectChangesSaved();
           this.loadSubjects();
         },
         error: (err) => {

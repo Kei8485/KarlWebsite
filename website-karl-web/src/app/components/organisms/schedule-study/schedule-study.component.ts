@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonIcon, IonDatetime, IonModal, IonButton, IonButtons, ModalController } from '@ionic/angular';
+import { IonIcon, IonDatetime, IonModal, IonButton, IonButtons, IonSpinner, ModalController } from '@ionic/angular';
 import { Subscription, finalize, forkJoin, interval } from 'rxjs';
 import { AppButtonComponent } from '../../atoms/app-button/app-button.component';
 import { AppInputComponent } from '../../atoms/app-input/app-input.component';
@@ -15,7 +15,7 @@ import { PlannerService } from '../../../services/planner';
   templateUrl: './schedule-study.component.html',
   styleUrls: ['./schedule-study.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonIcon, IonDatetime, IonModal, IonButton, AppButtonComponent, AppInputComponent]
+  imports: [CommonModule, FormsModule, IonIcon, IonDatetime, IonModal, IonButton, IonSpinner, AppButtonComponent, AppInputComponent]
 })
 export class ScheduleStudyComponent implements OnInit, OnDestroy {
   scheduleTitle: string = '';
@@ -33,8 +33,10 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
   selectedArchivedIds = new Set<number>();
   isDeletingArchived = false;
   editingStudyId: number | null = null; // Track if we're editing an existing study
-  private isLoadingStudies = false;
+  isLoadingStudies = false;
+  isLoadingTabData = false;
   private refreshSubscription?: Subscription;
+  private savedFormState = '';
 
   get allArchivedSelected() {
     return this.archivedStudies.length > 0 &&
@@ -65,6 +67,7 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.markFormSaved();
     this.loadStudies();
     this.refreshSubscription = interval(15000).subscribe(() => this.loadStudies());
   }
@@ -73,13 +76,20 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
     this.refreshSubscription?.unsubscribe();
   }
 
-  loadStudies() {
-    if (!this.currentUserId || this.isLoadingStudies) return;
+  loadStudies(showTabLoader = false) {
+    if (!this.currentUserId) return;
+    if (this.isLoadingStudies) {
+      this.isLoadingTabData ||= showTabLoader;
+      return;
+    }
 
     this.isLoadingStudies = true;
+    this.isLoadingTabData = showTabLoader;
     this.plannerService.getScheduledStudies(this.currentUserId)
       .pipe(finalize(() => {
         this.isLoadingStudies = false;
+        this.isLoadingTabData = false;
+        this.cdr.detectChanges();
       }))
       .subscribe({
         next: (res: any[]) => {
@@ -180,15 +190,79 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
     this.scheduleTitle = study.title;
     this.scheduleSubject = study.subject || '';
     this.scheduleDate = this.getLocalISOString(study.scheduled_time);
+    this.markFormSaved();
     this.activeTab = 'new';
   }
 
-  cancelEdit() {
+  hasUnsavedChanges(): boolean {
+    return this.activeTab === 'new' && this.getCurrentFormState() !== this.savedFormState;
+  }
+
+  discardUnsavedChanges() {
+    this.resetForm();
+  }
+
+  async confirmLeaveForm(discard = false): Promise<boolean> {
+    if (!this.hasUnsavedChanges()) {
+      if (discard) this.resetForm();
+      return true;
+    }
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      animated: false,
+      componentProps: {
+        title: 'Discard schedule changes?',
+        message: 'This schedule form has unsaved changes. If you leave it, <strong>your changes will be lost</strong>.',
+        confirmText: 'Discard',
+        cancelText: 'Keep Editing',
+        isDanger: true
+      }
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    if (data !== true) return false;
+
+    if (discard) this.resetForm();
+    return true;
+  }
+
+  async selectTab(tab: 'new' | 'upcoming' | 'archived') {
+    if (tab === this.activeTab) return;
+    if (this.activeTab === 'new' && !await this.confirmLeaveForm(true)) return;
+    this.activeTab = tab;
+    if (tab === 'new') {
+      this.resetForm();
+    } else {
+      this.loadStudies(true);
+    }
+  }
+
+  async cancelEdit() {
+    if (!await this.confirmLeaveForm(true)) return;
+    this.activeTab = 'upcoming';
+  }
+
+  private getCurrentFormState(): string {
+    return JSON.stringify({
+      title: this.scheduleTitle,
+      subject: this.scheduleSubject,
+      date: this.scheduleDate,
+      editingStudyId: this.editingStudyId
+    });
+  }
+
+  private markFormSaved() {
+    this.savedFormState = this.getCurrentFormState();
+  }
+
+  private resetForm() {
     this.editingStudyId = null;
     this.scheduleTitle = '';
     this.scheduleSubject = '';
     this.scheduleDate = this.getLocalISOString();
-    this.activeTab = 'upcoming';
+    this.markFormSaved();
   }
 
   async confirmCancelStudy(studyId: number) {
@@ -280,7 +354,8 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
             this.upcomingStudies = this.upcomingStudies
               .map(study => study.id === res.id ? res : study)
               .sort((a, b) => new Date(a.scheduled_time).getTime() - new Date(b.scheduled_time).getTime());
-            this.cancelEdit();
+            this.resetForm();
+            this.activeTab = 'upcoming';
             this.cdr.detectChanges();
             await this.showNotification('Schedule Updated', 'Your study session has been updated successfully! ✅', false);
           },
@@ -299,6 +374,7 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
           this.scheduleTitle = '';
           this.scheduleSubject = '';
           this.scheduleDate = this.getLocalISOString();
+          this.markFormSaved();
           this.activeTab = 'upcoming';
           this.cdr.detectChanges();
           await this.showNotification('Schedule Set', 'Your study session has been scheduled successfully! ✅', false);

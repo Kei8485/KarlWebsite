@@ -1,5 +1,5 @@
 import { environment } from '../../../environments/environment';
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -46,10 +46,44 @@ export class ManageTopicPage implements OnInit {
   ngOnInit() {
     this.subjectId = this.route.snapshot.paramMap.get('subjectId');
     this.topicId = this.route.snapshot.paramMap.get('topicId');
+    this.markChangesSaved();
 
     if (this.topicId && this.topicId !== 'new') {
       this.loadTopic();
     }
+  }
+
+  async canDeactivate(): Promise<boolean> {
+    if (!this.hasUnsavedChanges()) return true;
+
+    const modal = await this.modalCtrl.create({
+      component: ConfirmModalComponent,
+      cssClass: 'transparent-modal',
+      componentProps: {
+        title: 'Leave without saving?',
+        message: 'You have unsaved changes. If you leave this page, <strong>your changes will be lost</strong>.',
+        confirmText: 'Leave',
+        cancelText: 'Keep Editing',
+        isDanger: true
+      }
+    });
+
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    if (data !== true) return false;
+    this.markChangesSaved();
+    return true;
+  }
+
+  hasUnsavedChangesForNavigation(): boolean {
+    return this.hasUnsavedChanges();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  warnBeforeLeavingPage(event: BeforeUnloadEvent) {
+    if (!this.hasUnsavedChanges()) return;
+    event.preventDefault();
+    event.returnValue = '';
   }
 
   goBack() {
@@ -73,6 +107,7 @@ export class ManageTopicPage implements OnInit {
 
         this.topic = JSON.parse(JSON.stringify(topic));
         if (!this.topic.questions) this.topic.questions = [];
+        this.markChangesSaved();
         this.isLoadingTopic = false;
         this.cdr.detectChanges();
       },
@@ -91,6 +126,22 @@ export class ManageTopicPage implements OnInit {
   topicLoadError = '';
   topicSaveError = '';
   videoUrlError = '';
+  private savedState = '';
+
+  private hasUnsavedChanges(): boolean {
+    return this.getCurrentState() !== this.savedState;
+  }
+
+  private getCurrentState(): string {
+    return JSON.stringify({
+      topic: this.topic,
+      deletedQuestions: this.deletedQuestions
+    });
+  }
+
+  private markChangesSaved() {
+    this.savedState = this.getCurrentState();
+  }
 
   addQuestion() {
     if (!this.topic.questions) {
@@ -112,7 +163,7 @@ export class ManageTopicPage implements OnInit {
       cssClass: 'transparent-modal',
       componentProps: {
         title: 'Remove Question?',
-        message: 'Are you sure you want to remove this question? Click Save All Changes above to apply this removal.',
+        message: 'Are you sure you want to remove this question? <strong>Click Save All Changes above to apply</strong> this removal.',
         confirmText: 'Remove Question',
         cancelText: 'Back',
         isDanger: true
@@ -276,6 +327,7 @@ export class ManageTopicPage implements OnInit {
 
     this.deletedQuestions = [];
     this.isSaving = false;
+    this.markChangesSaved();
     this.goBack();
   }
 

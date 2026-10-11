@@ -1,7 +1,9 @@
+from datetime import timedelta
 from unittest.mock import patch
 
 from django.contrib.auth.hashers import check_password, make_password
 from django.test import TestCase, override_settings
+from django.utils import timezone
 from anymail.exceptions import AnymailUnsupportedFeature
 from rest_framework.test import APIClient
 
@@ -40,6 +42,31 @@ class SubjectContentAuthenticationTests(TestCase):
             with self.subTest(endpoint=endpoint):
                 response = self.client.get(endpoint)
                 self.assertEqual(response.status_code, 200)
+
+    def test_authenticated_requests_extend_the_session_expiration(self):
+        user = User.objects.create(email='active-reader@example.com')
+        token, session = SessionToken.issue(user)
+        previous_expiration = timezone.now() + timedelta(days=6)
+        session.expires_at = previous_expiration
+        session.save(update_fields=['expires_at'])
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+
+        response = self.client.get('/api/subjects/')
+
+        self.assertEqual(response.status_code, 200)
+        session.refresh_from_db()
+        self.assertGreater(session.expires_at, previous_expiration)
+
+    def test_expired_sessions_are_rejected(self):
+        user = User.objects.create(email='expired-reader@example.com')
+        token, session = SessionToken.issue(user)
+        session.expires_at = timezone.now() - timedelta(seconds=1)
+        session.save(update_fields=['expires_at'])
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+
+        response = self.client.get('/api/subjects/')
+
+        self.assertEqual(response.status_code, 401)
 
 
 class LoginAuthenticationTests(TestCase):

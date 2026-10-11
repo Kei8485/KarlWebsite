@@ -213,6 +213,10 @@
         <h2 class="text-h1">Welcome back</h2>
         <p class="text-body text-muted">Please sign in to continue learning.</p>
 
+        <p class="session-expired-message" role="alert" *ngIf="sessionExpired">
+          Your session expired and you were signed out. Please sign in again.
+        </p>
+
         <app-input
           label="Email Address"
           type="email"

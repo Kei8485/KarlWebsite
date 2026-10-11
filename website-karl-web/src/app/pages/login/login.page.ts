@@ -1,9 +1,9 @@
-import { Component, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
+import { Component, ChangeDetectorRef, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { personOutline, keyOutline, mailOutline, lockClosedOutline, logInOutline, constructOutline, locateOutline, bookOutline, shieldCheckmarkOutline, peopleOutline } from 'ionicons/icons';
 import { IonContent, IonGrid, IonRow, IonCol, IonIcon, IonModal, ModalController } from '@ionic/angular';
-import { Router } from '@angular/router';  
+import { ActivatedRoute, Router } from '@angular/router';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
 import { AppInputComponent } from '../../components/atoms/app-input/app-input.component';
 import { AuthService } from '../../services/auth';
@@ -26,7 +26,7 @@ import { ForgotCodeModalComponent } from '../../components/molecules/forgot-code
     AppInputComponent,
   ]
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   @ViewChild('featureTrack') featureTrack?: ElementRef<HTMLElement>;
 
   readonly featureIndices = [0, 1, 2, 3];
@@ -37,10 +37,12 @@ export class LoginPage {
   loginError: string = '';
   isShaking: boolean = false;
   isLoginModalOpen: boolean = false;
+  sessionExpired = false;
   activeFeatureIndex = 0;
 
   constructor(
     private authService: AuthService,
+    private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
     private modalCtrl: ModalController
@@ -57,6 +59,13 @@ export class LoginPage {
        shieldCheckmarkOutline,
        peopleOutline,
      });
+  }
+
+  ngOnInit() {
+    this.sessionExpired = this.route.snapshot.queryParamMap.get('sessionExpired') === 'true';
+    if (this.sessionExpired) {
+      this.isLoginModalOpen = true;
+    }
   }
 
   openLoginModal() {

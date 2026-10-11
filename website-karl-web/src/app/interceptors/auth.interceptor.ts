@@ -21,7 +21,9 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
         localStorage.removeItem('email');
         localStorage.removeItem('userName');
         localStorage.removeItem('userRole');
-        void router.navigate(['/login']);
+        void router.navigate(['/login'], {
+          queryParams: { sessionExpired: 'true' },
+        });
       }
 
       return throwError(() => error);

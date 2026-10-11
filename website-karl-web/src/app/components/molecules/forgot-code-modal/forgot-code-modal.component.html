@@ -51,7 +51,7 @@
         [disabled]="isLoading"
         [attr.aria-busy]="isLoading"
       >
-        <ion-spinner *ngIf="isLoading" name="crescent" aria-hidden="true"></ion-spinner>
+        <app-loading-indicator *ngIf="isLoading" size="small"></app-loading-indicator>
         <ion-icon name="paper-plane-outline" *ngIf="!isLoading"></ion-icon>
         <span>{{ isLoading ? 'Sending your code...' : 'Send New Code' }}</span>
       </button>

@@ -74,6 +74,30 @@
   overflow: hidden;
 }
 
+.video-parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.video-parts button {
+  min-height: 40px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--surface-panel-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #c3ccda;
+  font: inherit;
+  cursor: pointer;
+}
+
+.video-parts button.active {
+  border-color: rgba(79, 172, 254, 0.6);
+  background: rgba(79, 172, 254, 0.15);
+  color: #69b8ff;
+}
+
 /* Video Player */
 .video-card {
   padding: 1rem;

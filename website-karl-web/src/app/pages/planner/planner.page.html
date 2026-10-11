@@ -170,8 +170,7 @@
                   role="status"
                   aria-live="polite"
                 >
-                  <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-                  <span>Loading your tasks...</span>
+                  <app-loading-indicator label="Loading your tasks..." size="large"></app-loading-indicator>
                 </div>
 
                 <div
@@ -180,8 +179,7 @@
                   role="status"
                   aria-live="polite"
                 >
-                  <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-                  <span>Updating tasks...</span>
+                  <app-loading-indicator label="Updating tasks..." size="large"></app-loading-indicator>
                 </div>
 
                 <div class="task-list-status task-list-error" *ngIf="taskLoadError" role="alert">
@@ -262,7 +260,7 @@
                   [attr.aria-busy]="isDeletingCompletedTasks"
                   (click)="deleteCompletedTasks()"
                 >
-                  <ion-spinner *ngIf="isDeletingCompletedTasks" name="crescent"></ion-spinner>
+                  <app-loading-indicator *ngIf="isDeletingCompletedTasks" size="small"></app-loading-indicator>
                   <ion-icon *ngIf="!isDeletingCompletedTasks" name="trash-outline"></ion-icon>
                   <span>{{ isDeletingCompletedTasks ? 'Deleting...' : 'Delete (' + completedTasks.length + ')' }}</span>
                 </button>

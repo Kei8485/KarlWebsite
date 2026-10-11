@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonIcon, IonDatetime, IonModal, IonButton, IonButtons, IonSpinner, ModalController } from '@ionic/angular';
+import { IonIcon, IonDatetime, IonModal, IonButton, IonButtons, ModalController } from '@ionic/angular';
 import { Subscription, finalize, forkJoin, interval } from 'rxjs';
 import { AppButtonComponent } from '../../atoms/app-button/app-button.component';
+import { LoadingIndicatorComponent } from '../../atoms/loading-indicator/loading-indicator.component';
 import { AppInputComponent } from '../../atoms/app-input/app-input.component';
 import { ConfirmModalComponent } from '../../molecules/confirm-modal/confirm-modal.component';
 import { addIcons } from 'ionicons';
@@ -15,7 +16,7 @@ import { PlannerService } from '../../../services/planner';
   templateUrl: './schedule-study.component.html',
   styleUrls: ['./schedule-study.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonIcon, IonDatetime, IonModal, IonButton, IonSpinner, AppButtonComponent, AppInputComponent]
+  imports: [CommonModule, FormsModule, IonIcon, IonDatetime, IonModal, IonButton, AppButtonComponent, AppInputComponent, LoadingIndicatorComponent]
 })
 export class ScheduleStudyComponent implements OnInit, OnDestroy {
   scheduleTitle: string = '';

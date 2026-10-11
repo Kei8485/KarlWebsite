@@ -436,10 +436,8 @@
       opacity: 1;
       cursor: wait;
 
-      ion-spinner {
-        width: 22px;
-        height: 22px;
-        color: #4facfe;
+      app-loading-indicator {
+        transform: scale(0.8);
       }
     }
     
@@ -703,10 +701,8 @@ input.input-error {
   text-align: center;
   padding: 1.5rem;
 
-  ion-spinner {
-    width: 42px;
-    height: 42px;
-    color: #4facfe;
+  app-loading-indicator {
+    font-size: 1rem;
   }
 }
 

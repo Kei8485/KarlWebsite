@@ -5,9 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { Router } from '@angular/router';
-import { IonContent, IonIcon, IonSelect, IonSelectOption, IonSpinner, ModalController } from '@ionic/angular';
+import { IonContent, IonIcon, IonSelect, IonSelectOption, ModalController } from '@ionic/angular';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
+import { LoadingIndicatorComponent } from '../../components/atoms/loading-indicator/loading-indicator.component';
 import { addIcons } from 'ionicons';
 import { trashOutline, personAddOutline, saveOutline, pencilOutline, addOutline, bookOutline } from 'ionicons/icons';
 
@@ -18,7 +19,7 @@ import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/
   templateUrl: './manage-users.page.html',
   styleUrls: ['./manage-users.page.scss'],
   standalone: true,
-  imports: [IonContent, IonIcon, IonSelect, IonSelectOption, IonSpinner, CommonModule, FormsModule, AppButtonComponent]
+  imports: [IonContent, IonIcon, IonSelect, IonSelectOption, CommonModule, FormsModule, AppButtonComponent, LoadingIndicatorComponent]
 })
 export class ManageUsersPage implements OnInit, OnDestroy  {
   private readonly deleteLoadingMinDurationMs = 700;

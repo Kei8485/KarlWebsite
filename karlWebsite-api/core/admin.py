@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import User, Subject, Topic, PlannerTask, StudySession, ScheduledStudy, QuizQuestion
+from .models import User, Subject, Topic, TopicVideo, PlannerTask, StudySession, ScheduledStudy, QuizQuestion
 
 
 
@@ -62,3 +62,8 @@ class ScheduledStudyAdmin(admin.ModelAdmin):
 
 admin.site.register(QuizQuestion)
 
+
+@admin.register(TopicVideo)
+class TopicVideoAdmin(admin.ModelAdmin):
+    list_display = ['id', 'topic', 'order', 'url']
+    list_filter = ['topic__subject']

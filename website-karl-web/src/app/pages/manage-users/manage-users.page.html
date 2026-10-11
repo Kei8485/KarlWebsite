@@ -107,7 +107,7 @@
                 role="status"
                 aria-live="polite"
               >
-                <ion-spinner name="crescent"></ion-spinner>
+                <app-loading-indicator size="small"></app-loading-indicator>
                 <span>
                   {{ isConfirmingUserCreation
                     ? 'Please confirm account creation...'
@@ -161,13 +161,11 @@
               role="status"
               aria-live="polite"
             >
-              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-              <span>Deleting user...</span>
+              <app-loading-indicator label="Deleting user..." size="large"></app-loading-indicator>
             </div>
 
             <div class="users-loading" *ngIf="isLoadingUsers" role="status" aria-live="polite">
-              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-              <span>Loading users and admins...</span>
+              <app-loading-indicator label="Loading users and admins..." size="large"></app-loading-indicator>
             </div>
 
             <div class="users-load-error" *ngIf="usersLoadError" role="alert">
@@ -209,10 +207,10 @@
                   [attr.aria-busy]="crudLoading === 'delete-user-' + user.id"
                   (click)="deleteUser(user.id)"
                 >
-                  <ion-spinner
+                  <app-loading-indicator
                     *ngIf="crudLoading === 'delete-user-' + user.id"
-                    name="crescent"
-                  ></ion-spinner>
+                    size="small"
+                  ></app-loading-indicator>
                   <ion-icon
                     *ngIf="crudLoading !== 'delete-user-' + user.id"
                     name="trash-outline"
@@ -244,8 +242,7 @@
               aria-live="polite"
               aria-busy="true"
             >
-              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-              <span>{{ cmsLoadingMessage }}</span>
+              <app-loading-indicator [label]="cmsLoadingMessage" size="large"></app-loading-indicator>
             </div>
             <h2>Content Library</h2>
             <div class="placeholder-list">
@@ -272,8 +269,7 @@
               aria-live="polite"
               aria-busy="true"
             >
-              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-              <span>{{ cmsLoadingMessage }}</span>
+              <app-loading-indicator [label]="cmsLoadingMessage" size="large"></app-loading-indicator>
             </div>
 
             <div class="editor-header">
@@ -362,8 +358,7 @@
                 role="status"
                 aria-live="polite"
               >
-                <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-                <span>{{ cmsLoadingMessage }}</span>
+                <app-loading-indicator [label]="cmsLoadingMessage" size="large"></app-loading-indicator>
               </div>
 
               <div class="editor-actions">
@@ -432,10 +427,10 @@
                         [attr.aria-busy]="crudLoading === 'delete-topic-' + topic.id"
                         (click)="deleteTopic(topic)"
                       >
-                        <ion-spinner
+                        <app-loading-indicator
                           *ngIf="crudLoading === 'delete-topic-' + topic.id"
-                          name="crescent"
-                        ></ion-spinner>
+                          size="small"
+                        ></app-loading-indicator>
                         <ion-icon
                           *ngIf="crudLoading !== 'delete-topic-' + topic.id"
                           name="trash-outline"

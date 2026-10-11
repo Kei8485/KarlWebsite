@@ -15,7 +15,6 @@
       <div class="video-section">
         <div class="glass-card video-card">
           <div class="video-wrapper">
-            <!-- dYs" Add *ngIf right here on the iframe! -->
             <iframe
               *ngIf="safeVideoUrl"
               [src]="safeVideoUrl"
@@ -32,13 +31,23 @@
             >
             </iframe>
 
-            <!-- (Optional) Fallback text if the topic doesn't have a video -->
             <div
               *ngIf="!safeVideoUrl && !isLoading"
               style="color: #8b96ab; text-align: center; padding-top: 20%"
             >
               No video available for this topic.
             </div>
+          </div>
+          <div class="video-parts" *ngIf="topic.videos?.length">
+            <button
+              *ngFor="let video of topic.videos; let i = index"
+              type="button"
+              [class.active]="selectedVideoIndex === i"
+              [attr.aria-pressed]="selectedVideoIndex === i"
+              (click)="selectVideo(i)"
+            >
+              Part {{ i + 1 }}
+            </button>
           </div>
         </div>
       </div>

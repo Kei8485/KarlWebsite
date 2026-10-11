@@ -6,8 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { arrowForwardOutline, bookOutline, compassOutline } from 'ionicons/icons';
-import { IonContent, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonSpinner, IonIcon } from '@ionic/angular';
+import { IonContent, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonIcon } from '@ionic/angular';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
+import { LoadingIndicatorComponent } from '../../components/atoms/loading-indicator/loading-indicator.component';
 import { AppCardComponent } from '../../components/molecules/app-card/app-card.component';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 
@@ -25,9 +26,9 @@ import { RouterModule } from '@angular/router';
     IonRow,
     IonCol,
     IonGrid,
-    IonSpinner,
     IonIcon,
     AppButtonComponent,
+    LoadingIndicatorComponent,
     AppCardComponent,
     IonRefresher,
     IonRefresherContent,

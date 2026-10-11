@@ -24,8 +24,7 @@
     </div>
 
     <div *ngIf="isLoading" class="loading-state">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Loading module data...</p>
+      <app-loading-indicator label="Loading module data..." size="large"></app-loading-indicator>
     </div>
 
     <!-- Empty State (if no topics in DB) -->

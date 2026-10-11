@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, ModalController, IonPicker, IonPickerColumn, IonPickerColumnOption, IonSpinner } from '@ionic/angular';
+import { IonContent, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonModal, ModalController, IonPicker, IonPickerColumn, IonPickerColumnOption } from '@ionic/angular';
 import { PlannerService } from '../../services/planner'; 
 import { finalize, forkJoin, Subscription } from 'rxjs';
 import { FocusTimerService } from '../../services/focus-timer';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/confirm-modal.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component'; 
+import { LoadingIndicatorComponent } from '../../components/atoms/loading-indicator/loading-indicator.component';
 import { AppInputComponent } from '../../components/atoms/app-input/app-input.component'; 
 import { ScheduleStudyComponent } from '../../components/organisms/schedule-study/schedule-study.component';
 
@@ -20,7 +21,7 @@ import { IonButtons } from "@ionic/angular";
   templateUrl: './planner.page.html',
   styleUrls: ['./planner.page.scss'],
   standalone: true,
-  imports: [IonContent, IonButton, IonIcon, IonDatetime, IonModal, IonSpinner, CommonModule, FormsModule, AppButtonComponent, AppInputComponent, ScheduleStudyComponent]
+  imports: [IonContent, IonButton, IonIcon, IonDatetime, IonModal, CommonModule, FormsModule, AppButtonComponent, AppInputComponent, ScheduleStudyComponent, LoadingIndicatorComponent]
 })
 export class PlannerPage implements OnInit, OnDestroy {
   @ViewChild(ScheduleStudyComponent) private scheduleStudy?: ScheduleStudyComponent;

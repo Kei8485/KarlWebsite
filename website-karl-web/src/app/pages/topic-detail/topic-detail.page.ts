@@ -26,7 +26,8 @@ export class TopicDetailPage implements OnInit {
   topicId: string | null = null;
   topic: any = {}; // Starts empty so the HTML doesn't crash while loading!
   linkifiedNotes = '';
-  safeVideoUrl!: SafeResourceUrl;
+  safeVideoUrl: SafeResourceUrl | null = null;
+  selectedVideoIndex = 0;
   isLoading = true;
 
   // Quiz State
@@ -62,31 +63,17 @@ export class TopicDetailPage implements OnInit {
     return this.selectedAnswers[question.id] === question.correct_option;
   }
 
-    fetchTopicDetail() {
+  fetchTopicDetail() {
     this.http.get(`${environment.apiUrl}/topics/${this.topicId}/`).subscribe({
       next: (data: any) => {
         this.topic = data;
         this.linkifiedNotes = this.linkifyNoteUrls(this.topic.notes || '');
-        
-        if (this.topic.youtube_url) {
-          
-          // ðŸš¨ THE MAGIC CONVERTER ðŸš¨
-          let finalUrl = this.topic.youtube_url;
-          
-          // 1. If it's a standard desktop link (youtube.com/watch?v=12345)
-          if (finalUrl.includes('watch?v=')) {
-            const videoId = finalUrl.split('watch?v=')[1].split('&')[0];
-            finalUrl = `https://www.youtube.com/embed/${videoId}`;
-          } 
-          // 2. If it's a mobile share link (youtu.be/12345)
-          else if (finalUrl.includes('youtu.be/')) {
-            const videoId = finalUrl.split('youtu.be/')[1].split('?')[0];
-            finalUrl = `https://www.youtube.com/embed/${videoId}`;
-          }
-
-          // Now we trust the perfectly formatted URL!
-          this.safeVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(finalUrl);
+        if (!Array.isArray(this.topic.videos)) {
+          this.topic.videos = this.topic.youtube_url
+            ? [{ url: this.topic.youtube_url, order: 1 }]
+            : [];
         }
+        this.selectVideo(0);
         
         this.isLoading = false;
         this.cdr.detectChanges(); 
@@ -97,6 +84,36 @@ export class TopicDetailPage implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  selectVideo(index: number) {
+    this.selectedVideoIndex = index;
+    const videoUrl = this.topic.videos?.[index]?.url;
+    if (!videoUrl) {
+      this.safeVideoUrl = null;
+      return;
+    }
+
+    let finalUrl = videoUrl;
+    try {
+      const parsedUrl = new URL(videoUrl);
+      const host = parsedUrl.hostname.toLowerCase().replace(/^www\./, '');
+      if (host === 'youtu.be') {
+        finalUrl = `https://www.youtube.com/embed/${parsedUrl.pathname.slice(1)}`;
+      } else if (host === 'youtube.com' || host.endsWith('.youtube.com')) {
+        const videoId = parsedUrl.searchParams.get('v');
+        if (videoId) {
+          finalUrl = `https://www.youtube.com/embed/${videoId}`;
+        } else if (/^\/(shorts|live)\//.test(parsedUrl.pathname)) {
+          finalUrl = `https://www.youtube.com/embed/${parsedUrl.pathname.split('/')[2]}`;
+        }
+      }
+    } catch {
+      this.safeVideoUrl = null;
+      return;
+    }
+
+    this.safeVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(finalUrl);
   }
 
   private linkifyNoteUrls(notes: string): string {

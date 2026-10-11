@@ -1,13 +1,14 @@
 import { Component, Input, Output, EventEmitter, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonButton, IonIcon, IonSpinner } from '@ionic/angular';
+import { IonButton, IonIcon } from '@ionic/angular';
+import { LoadingIndicatorComponent } from '../loading-indicator/loading-indicator.component';
 
 @Component({
   selector: 'app-button',
   templateUrl: './app-button.component.html',
   styleUrls: ['./app-button.component.scss'],
   standalone: true,
-  imports: [IonIcon, IonSpinner, CommonModule, IonButton]
+  imports: [IonIcon, CommonModule, IonButton, LoadingIndicatorComponent]
 })
 export class AppButtonComponent {
   @Input() label: string = 'Button';

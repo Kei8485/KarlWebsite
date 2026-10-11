@@ -13,7 +13,7 @@
   (click)="handleClick($event)"
   class="app-btn app-btn--{{ variant }} app-btn--{{ size }}"
 >
-  <ion-spinner *ngIf="loading" name="crescent" slot="start"></ion-spinner>
+  <app-loading-indicator *ngIf="loading" size="small" slot="start"></app-loading-indicator>
   <ion-icon
     *ngIf="icon && iconPosition === 'start' && !loading"
     [name]="icon"

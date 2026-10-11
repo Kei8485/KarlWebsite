@@ -267,10 +267,11 @@ ion-content {
   .mobile-brand-tagline {
     color: #9fb3d1;
     font-family: var(--font-sans);
-    font-size: 0.58rem;
+    font-size: 0.65rem;
     font-weight: 600;
-    letter-spacing: 0.19em;
+    letter-spacing: 0.08em;
     line-height: 1.2;
+    text-transform: none;
   }
 
   .login-container ion-col:last-child {

@@ -4,11 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonIcon, IonSpinner, ModalController } from '@ionic/angular';
+import { IonContent, IonIcon, ModalController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { trashOutline, saveOutline, addOutline, bookOutline, arrowBackOutline } from 'ionicons/icons';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
+import { LoadingIndicatorComponent } from '../../components/atoms/loading-indicator/loading-indicator.component';
 import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/confirm-modal.component';
 
 @Component({
@@ -16,7 +17,7 @@ import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/
   templateUrl: './manage-topic.page.html',
   styleUrls: ['./manage-topic.page.scss'],
   standalone: true,
-  imports: [IonContent, IonIcon, IonSpinner, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent]
+  imports: [IonContent, IonIcon, CommonModule, FormsModule, AppHeaderComponent, AppButtonComponent, LoadingIndicatorComponent]
 })
 export class ManageTopicPage implements OnInit {
   private route = inject(ActivatedRoute);
@@ -33,7 +34,7 @@ export class ManageTopicPage implements OnInit {
   topic: any = {
     title: '',
     description: '',
-    youtube_url: '',
+    videos: [],
     notes: '',
     order: 1,
     questions: []
@@ -106,6 +107,11 @@ export class ManageTopicPage implements OnInit {
         }
 
         this.topic = JSON.parse(JSON.stringify(topic));
+        if (!Array.isArray(this.topic.videos)) {
+          this.topic.videos = this.topic.youtube_url
+            ? [{ url: this.topic.youtube_url, order: 1 }]
+            : [];
+        }
         if (!this.topic.questions) this.topic.questions = [];
         this.markChangesSaved();
         this.isLoadingTopic = false;
@@ -126,6 +132,8 @@ export class ManageTopicPage implements OnInit {
   topicLoadError = '';
   topicSaveError = '';
   videoUrlError = '';
+  saveStatusMessage = 'Saving topic details...';
+  isConfirmingVideoRemoval = false;
   private savedState = '';
 
   private hasUnsavedChanges(): boolean {
@@ -155,6 +163,47 @@ export class ManageTopicPage implements OnInit {
       option_d: '',
       correct_option: 'A'
     });
+  }
+
+  addVideo() {
+    this.topic.videos.push({
+      url: '',
+      order: this.topic.videos.length + 1
+    });
+  }
+
+  async removeVideo(index: number) {
+    if (this.isConfirmingVideoRemoval || this.isSaving) return;
+    this.isConfirmingVideoRemoval = true;
+    this.cdr.detectChanges();
+
+    try {
+      const modal = await this.modalCtrl.create({
+        component: ConfirmModalComponent,
+        cssClass: 'transparent-modal',
+        componentProps: {
+          title: 'Remove Video?',
+          message: `Are you sure you want to remove Part ${index + 1}? <strong>Click Save All Changes above to apply</strong> this removal.`,
+          confirmText: 'Remove Video',
+          cancelText: 'Back',
+          isDanger: true
+        }
+      });
+
+      await modal.present();
+      const { data } = await modal.onWillDismiss();
+      if (data !== true) return;
+
+      this.topic.videos.splice(index, 1);
+      this.topic.videos.forEach((video: { order: number }, videoIndex: number) => {
+        video.order = videoIndex + 1;
+      });
+      this.clearTopicErrors();
+      this.cdr.detectChanges();
+    } finally {
+      this.isConfirmingVideoRemoval = false;
+      this.cdr.detectChanges();
+    }
   }
 
   async removeQuestion(index: number) {
@@ -204,10 +253,13 @@ export class ManageTopicPage implements OnInit {
     
     if (data === true) {
       this.isSaving = true;
+      this.saveStatusMessage = 'Saving topic details...';
       this.topicSaveError = '';
       this.videoUrlError = '';
+      this.cdr.detectChanges();
       const payload = {
         ...this.topic,
+        youtube_url: this.topic.videos[0]?.url || '',
         subject: this.subjectId
       };
 
@@ -218,6 +270,7 @@ export class ManageTopicPage implements OnInit {
           },
           error: (err) => {
             this.isSaving = false;
+            this.cdr.detectChanges();
             console.error('Error saving topic:', err);
             this.handleTopicSaveError(err, 'Could not save the topic. Please try again.');
           }
@@ -230,6 +283,7 @@ export class ManageTopicPage implements OnInit {
           },
           error: (err) => {
             this.isSaving = false;
+            this.cdr.detectChanges();
             console.error('Error creating topic:', err);
             this.handleTopicSaveError(err, 'Could not create the topic. Please try again.');
           }
@@ -248,7 +302,7 @@ export class ManageTopicPage implements OnInit {
     const fieldErrors = response && typeof response === 'object'
       ? response as Record<string, unknown>
       : {};
-    const videoUrlErrors = fieldErrors['youtube_url'];
+    const videoUrlErrors = fieldErrors['youtube_url'] || fieldErrors['videos'];
 
     this.videoUrlError = Array.isArray(videoUrlErrors)
       ? videoUrlErrors.join(' ')
@@ -266,7 +320,7 @@ export class ManageTopicPage implements OnInit {
     if (!response || typeof response !== 'object') return fallback;
 
     const details = response as Record<string, unknown>;
-    for (const key of ['detail', 'error', 'message', 'youtube_url', 'title', 'notes']) {
+    for (const key of ['detail', 'error', 'message', 'youtube_url', 'videos', 'title', 'notes']) {
       const value = details[key];
       if (typeof value === 'string' && value.trim()) return value;
       if (Array.isArray(value) && value.length) return value.join(' ');
@@ -285,6 +339,7 @@ export class ManageTopicPage implements OnInit {
   private getFieldLabel(field: string): string {
     const labels: Record<string, string> = {
       youtube_url: 'Video URL',
+      videos: 'Video URLs',
       title: 'Topic title',
       notes: 'Notes',
       subject: 'Subject',
@@ -294,6 +349,8 @@ export class ManageTopicPage implements OnInit {
   }
 
   async saveQuizzes() {
+    this.saveStatusMessage = 'Saving quiz questions...';
+    this.cdr.detectChanges();
     const requests: any[] = [];
     
     for (const id of this.deletedQuestions) {
@@ -327,6 +384,7 @@ export class ManageTopicPage implements OnInit {
 
     this.deletedQuestions = [];
     this.isSaving = false;
+    this.cdr.detectChanges();
     this.markChangesSaved();
     this.goBack();
   }

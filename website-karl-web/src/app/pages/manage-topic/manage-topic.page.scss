@@ -81,6 +81,95 @@
   line-height: 1.5;
 }
 
+.video-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.video-editor-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.12);
+
+  .form-group {
+    flex: 1;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+}
+
+.remove-video-button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 8px;
+  background: rgba(248, 113, 113, 0.08);
+  color: #fca5a5;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 1rem;
+  }
+}
+
+.video-empty-hint {
+  margin: 0;
+  color: #8b96ab;
+  font-size: 0.9rem;
+}
+
+.save-loading-overlay {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+  background: rgba(3, 9, 21, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: all;
+}
+
+.save-loading-card {
+  width: min(100%, 360px);
+  padding: 2rem 1.5rem;
+  border: 1px solid rgba(79, 172, 254, 0.28);
+  border-radius: 18px;
+  background: #111d32;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45), 0 0 32px rgba(79, 172, 254, 0.12);
+  text-align: center;
+
+  h2 {
+    margin: 1.25rem 0 0.5rem;
+    color: #fff;
+    font-size: 1.25rem;
+  }
+
+  p {
+    margin: 0;
+    color: #c2cee0;
+    line-height: 1.5;
+  }
+
+  small {
+    display: block;
+    margin-top: 0.75rem;
+    color: #8998b0;
+  }
+}
+
 .topic-loading,
 .topic-load-error {
   min-height: 240px;
@@ -91,12 +180,6 @@
   gap: 0.85rem;
   color: #aab6ca;
   text-align: center;
-
-  ion-spinner {
-    width: 36px;
-    height: 36px;
-    color: #4facfe;
-  }
 
   p {
     margin: 0;
@@ -288,6 +371,17 @@
     min-width: 0;
     padding: 1rem;
     border-radius: 12px;
+  }
+
+  .video-editor-row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.85rem;
+  }
+
+  .remove-video-button {
+    justify-content: center;
   }
 
   .quiz-choices {

@@ -25,8 +25,7 @@
       </div>
 
       <div class="topic-loading" *ngIf="isLoadingTopic" role="status" aria-live="polite">
-        <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-        <span>Loading topic...</span>
+        <app-loading-indicator label="Loading topic..." size="large"></app-loading-indicator>
       </div>
 
       <div class="topic-load-error" *ngIf="topicLoadError" role="alert">
@@ -52,17 +51,40 @@
         />
       </div>
 
-      <div class="form-group">
-        <label>Video URL</label>
-        <input
-          type="text"
-          [(ngModel)]="topic.youtube_url"
-          (ngModelChange)="clearTopicErrors()"
-          placeholder="https://youtube.com/..."
-          class="dummy-input"
-          [class.input-invalid]="videoUrlError"
-        />
+      <div class="video-editor-list">
+        <div class="video-editor-row" *ngFor="let video of topic.videos; let i = index">
+          <div class="form-group">
+            <label>Part {{ i + 1 }} Video URL</label>
+            <input
+              type="url"
+              [(ngModel)]="video.url"
+              (ngModelChange)="clearTopicErrors()"
+              placeholder="https://youtube.com/..."
+              class="dummy-input"
+              [class.input-invalid]="videoUrlError"
+            />
+          </div>
+          <button
+            class="remove-video-button"
+            type="button"
+            [disabled]="isSaving || isConfirmingVideoRemoval"
+            [attr.aria-label]="'Remove Part ' + (i + 1)"
+            (click)="removeVideo(i)"
+          >
+            <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+            Remove
+          </button>
+        </div>
         <small class="field-error" *ngIf="videoUrlError" role="alert">{{ videoUrlError }}</small>
+        <p class="video-empty-hint" *ngIf="topic.videos.length === 0">
+          No videos added yet.
+        </p>
+        <app-button
+          variant="outline"
+          label="+ Add Video"
+          icon="add-outline"
+          (clicked)="addVideo()"
+        ></app-button>
       </div>
 
       <div class="form-group">
@@ -204,5 +226,22 @@
       </div>
       </ng-container>
     </div>
+
   </div>
 </ion-content>
+
+<div
+  class="save-loading-overlay"
+  *ngIf="isSaving"
+  role="status"
+  aria-live="assertive"
+  aria-atomic="true"
+  aria-busy="true"
+>
+  <div class="save-loading-card">
+    <app-loading-indicator size="large" aria-hidden="true"></app-loading-indicator>
+    <h2>Saving your changes</h2>
+    <p>{{ saveStatusMessage }}</p>
+    <small>Please keep this page open.</small>
+  </div>
+</div>

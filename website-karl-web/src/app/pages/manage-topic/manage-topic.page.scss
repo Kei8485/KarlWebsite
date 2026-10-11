@@ -1,6 +1,6 @@
 
 .custom-bg {
-  --background: #0f172a;
+  --background: var(--navy);
 }
 
 .views-container {
@@ -10,10 +10,10 @@
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-panel);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--surface-panel-border);
   border-radius: 12px;
   padding: 1.5rem;
 }

@@ -52,6 +52,18 @@
   --navy: oklch(0.24 0.045 259);
   --navy-foreground: oklch(0.97 0.008 247);
   --blueprint: oklch(0.58 0.11 240);
+  --brand-accent: #4facfe;
+  --brand-accent-strong: #3b82f6;
+  --brand-accent-gradient: linear-gradient(
+    100deg,
+    var(--brand-accent),
+    var(--brand-accent-strong)
+  );
+  --surface-panel: rgba(255, 255, 255, 0.035);
+  --surface-panel-hover: rgba(255, 255, 255, 0.055);
+  --surface-panel-border: rgba(255, 255, 255, 0.08);
+  --surface-inset: rgba(15, 23, 42, 0.65);
+  --text-secondary: #aab6ca;
   
   /* Difficulty Badges (Basic = Green, Mid = Yellow, Hard = Red) */
   --level-basic: oklch(0.52 0.13 158);
@@ -81,5 +93,4 @@
   --text-size-sm: 0.875rem;   /* matches text-body-sm / text-muted */
   --text-size-label: 0.75rem; /* matches text-label */
 }
-
 

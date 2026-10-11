@@ -26,7 +26,7 @@
   .gradient-text {
     font-size: 2.5rem;
     font-weight: 800;
-    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    background: var(--brand-accent-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 0.5rem;
@@ -49,8 +49,8 @@
 
 /* Base Glass Card */
 .glass-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface-panel);
+  border: 1px solid var(--surface-panel-border);
   border-radius: 16px;
   padding: 2rem;
   backdrop-filter: blur(10px);
@@ -1035,28 +1035,46 @@ ion-datetime {
   .tasks-header {
     align-items: stretch;
     gap: 0.75rem;
+    margin-bottom: 1rem;
 
     h2 {
-      font-size: 1.35rem;
+      font-size: clamp(1.25rem, 6vw, 1.55rem);
+      line-height: 1.25;
+      text-align: left;
     }
 
     .header-actions {
+      display: grid;
       width: 100%;
-      justify-content: flex-start;
-      gap: 0.35rem;
+      gap: 0.55rem;
 
       .planner-tool-btn {
-        flex: 1 1 0;
+        display: flex;
         min-width: 0;
-        min-height: 46px;
-        justify-content: flex-start;
-        gap: 0.4rem;
-        padding-inline: 0.65rem;
-        font-size: 0.8rem;
+        width: 100%;
+        min-height: 48px;
+        justify-content: center;
+        gap: 0.55rem;
+        padding: 0.65rem 0.75rem;
+        font-size: 0.9rem;
+        white-space: normal;
+        text-align: center;
 
         span {
-          overflow: visible;
+          min-width: 0;
+          overflow-wrap: anywhere;
           line-height: 1.2;
+        }
+      }
+
+      > app-button {
+        display: block;
+        width: 100%;
+
+        ::ng-deep ion-button {
+          width: 100%;
+          min-height: 48px;
+          margin: 0;
         }
       }
     }
@@ -1070,11 +1088,15 @@ ion-datetime {
 
   .task-row {
     display: grid;
-    grid-template-columns: 36px minmax(0, 1fr) 72px;
-    grid-template-areas: 'check info actions';
-    gap: 0.5rem;
-    padding: 0.7rem;
-    align-items: center;
+    grid-template-columns: 38px minmax(0, 1fr);
+    grid-template-areas:
+      'check info'
+      'check actions';
+    column-gap: 0.65rem;
+    row-gap: 0.7rem;
+    min-width: 0;
+    padding: 0.85rem;
+    border-radius: 12px;
 
     &:hover {
       transform: none;
@@ -1084,53 +1106,70 @@ ion-datetime {
       grid-area: check;
       width: 36px;
       height: 44px;
-      margin: 0;
-      font-size: 1.75rem;
+      align-self: start;
+      margin: 0.1rem 0 0;
+      font-size: 1.7rem;
     }
 
     .task-info {
       grid-area: info;
-      align-self: center;
+      width: 100%;
+      min-width: 0;
+      align-self: start;
+      gap: 0.55rem;
 
       .task-title {
         display: block;
         width: 100%;
         white-space: normal;
-        overflow: visible;
         overflow-wrap: anywhere;
-        text-overflow: clip;
-        font-size: 1rem;
-        line-height: 1.4;
+        font-size: 1.05rem;
+        line-height: 1.35;
         text-align: left;
       }
 
       .task-meta {
-        align-items: flex-start;
-        font-size: 0.8rem;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+        min-width: 0;
+        font-size: 0.85rem;
+      }
+
+      .subject-badge {
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
       }
 
       .task-date {
         white-space: normal;
-        line-height: 1.4;
+        overflow-wrap: anywhere;
+        line-height: 1.45;
+
+        ion-icon {
+          flex: 0 0 auto;
+        }
       }
     }
 
     .action-icons {
       grid-area: actions;
       justify-content: flex-end;
-      gap: 0;
+      gap: 0.5rem;
       margin: 0;
 
       .edit-icon,
       .delete-icon {
-        width: 36px;
-        height: 40px;
+        display: inline-grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
         font-size: 1.1rem;
 
         ion-icon {
-          width: 1.1rem;
-          height: 1.1rem;
-          font-size: 1.1rem;
+          width: 1.2rem;
+          height: 1.2rem;
+          font-size: 1.2rem;
         }
       }
     }

@@ -7,16 +7,20 @@
 
   <div class="topic-content">
     <h3 class="topic-title">{{ topic.title }}</h3>
-    <p class="topic-notes">
-      {{
-        topic.notes ||
-          "Master the fundamentals of this topic to progress further."
-      }}
-    </p>
+    <section class="topic-description-panel" aria-label="Topic description">
+      <span class="topic-description-label">Topic description</span>
+      <p class="topic-description-text">
+        {{
+          topic.notes ||
+            "Master the fundamentals of this topic to progress further."
+        }}
+      </p>
+    </section>
   </div>
 
-  <div class="topic-action">
+  <div class="topic-footer">
     <app-button
+      class="topic-action"
       label="Start Learning"
       variant="primary"
       icon="arrow-forward-outline"

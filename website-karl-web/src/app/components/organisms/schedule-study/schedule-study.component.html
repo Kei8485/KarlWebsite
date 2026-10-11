@@ -111,11 +111,14 @@
           *ngIf="editingStudyId"
           label="Cancel Edit"
           variant="outline"
+          [disabled]="isSavingSchedule"
           (clicked)="cancelEdit()"
         ></app-button>
         <app-button
           [label]="editingStudyId ? 'Update Schedule' : 'Set Schedule'"
           variant="primary"
+          [loading]="isSavingSchedule"
+          [loadingLabel]="editingStudyId ? 'Updating schedule...' : 'Setting schedule...'"
           (clicked)="saveSchedule()"
         ></app-button>
       </div>
@@ -132,7 +135,11 @@
       <p>No upcoming study sessions.</p>
     </div>
 
-    <div class="schedule-item" *ngFor="let study of upcomingStudies">
+    <div
+      class="schedule-item"
+      *ngFor="let study of upcomingStudies"
+      [style.display]="isLoadingTabData ? 'none' : null"
+    >
       <div class="info">
         <h4>{{ study.title }}</h4>
         <p class="time">
@@ -160,10 +167,18 @@
         </button>
         <button
           class="cancel-btn"
+          type="button"
+          [disabled]="cancellingStudyIds.has(study.id) || cancellingStudyIds.size > 0 || isDeletingArchived || isSavingSchedule"
+          [attr.aria-busy]="cancellingStudyIds.has(study.id)"
+          [attr.aria-label]="cancellingStudyIds.has(study.id) ? 'Cancelling ' + study.title : 'Cancel ' + study.title"
           (click)="confirmCancelStudy(study.id)"
           title="Cancel Session"
         >
-          <ion-icon name="trash-outline"></ion-icon>
+          @if (cancellingStudyIds.has(study.id)) {
+            <app-loading-indicator size="small"></app-loading-indicator>
+          } @else {
+            <ion-icon name="trash-outline"></ion-icon>
+          }
         </button>
       </div>
     </div>
@@ -179,7 +194,7 @@
       <p>No archived sessions.</p>
     </div>
 
-    <div class="archive-actions" *ngIf="archivedStudies.length > 0">
+    <div class="archive-actions" *ngIf="!isLoadingTabData && archivedStudies.length > 0">
       <label class="archive-select-all">
         <input
           type="checkbox"
@@ -194,11 +209,17 @@
         <button
           type="button"
           class="archive-delete-btn"
-          [disabled]="selectedArchivedIds.size === 0 || isDeletingArchived"
+          [disabled]="selectedArchivedIds.size === 0 || isDeletingArchived || isSavingSchedule || cancellingStudyIds.size > 0"
+          [attr.aria-busy]="isDeletingArchived"
           (click)="deleteArchivedStudies(false)"
         >
-          <ion-icon name="trash-outline"></ion-icon>
-          Delete selected ({{ selectedArchivedIds.size }})
+          @if (isDeletingArchived) {
+            <app-loading-indicator size="small"></app-loading-indicator>
+            Deleting...
+          } @else {
+            <ion-icon name="trash-outline"></ion-icon>
+            Delete selected ({{ selectedArchivedIds.size }})
+          }
         </button>
       </div>
     </div>
@@ -206,6 +227,7 @@
     <div
       class="schedule-item archived"
       *ngFor="let study of archivedStudies"
+      [style.display]="isLoadingTabData ? 'none' : null"
       [class.selected]="selectedArchivedIds.has(study.id)"
     >
       <label class="archive-select" [attr.aria-label]="'Select ' + study.title">

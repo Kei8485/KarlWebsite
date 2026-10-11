@@ -5,11 +5,137 @@
 }
 :host {
   display: block;
+  position: relative;
+  isolation: isolate;
   background: var(--background, #091222); 
   min-height: 100vh;
   color: white;
   width: 100vw;
   overflow-x: hidden; /* Kills the scrollbar */
+}
+
+ion-content {
+  --background: transparent;
+}
+
+.admin-ambient {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 15% 12%, rgba(17, 101, 190, 0.18), transparent 38%),
+    radial-gradient(ellipse at 88% 68%, rgba(0, 196, 220, 0.1), transparent 34%),
+    radial-gradient(ellipse at 55% 110%, rgba(84, 68, 205, 0.12), transparent 42%);
+}
+
+.admin-ambient-grid {
+  position: absolute;
+  inset: -30%;
+  background:
+    linear-gradient(rgba(107, 176, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(107, 176, 255, 0.045) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 50% 45%, #000 8%, transparent 75%);
+  transform: perspective(850px) rotateX(58deg) rotateZ(-12deg) scale(1.5);
+  transform-origin: center;
+  animation: admin-grid-drift 32s linear infinite;
+  will-change: background-position, transform;
+}
+
+.admin-orbit {
+  position: absolute;
+  border: 1px solid rgba(91, 173, 255, 0.12);
+  border-radius: 50%;
+  box-shadow: inset 0 0 42px rgba(49, 121, 221, 0.035), 0 0 42px rgba(49, 121, 221, 0.035);
+  transform: rotate(-22deg);
+
+  &::before,
+  &::after {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border: 1px solid rgba(127, 211, 255, 0.8);
+    border-radius: 50%;
+    background: #58baff;
+    box-shadow: 0 0 12px 3px rgba(54, 166, 255, 0.5);
+    content: "";
+  }
+
+  &::before {
+    top: 18%;
+    left: 16%;
+  }
+
+  &::after {
+    right: 12%;
+    bottom: 24%;
+    width: 4px;
+    height: 4px;
+    opacity: 0.7;
+  }
+}
+
+.admin-orbit--primary {
+  top: -30vw;
+  right: -12vw;
+  width: min(78vw, 980px);
+  aspect-ratio: 1.24;
+  animation: admin-orbit-drift 38s ease-in-out infinite alternate;
+}
+
+.admin-orbit--secondary {
+  bottom: -58vw;
+  left: -30vw;
+  width: min(78vw, 920px);
+  aspect-ratio: 1.1;
+  border-color: rgba(64, 209, 231, 0.1);
+  animation: admin-orbit-drift-reverse 46s ease-in-out infinite alternate;
+}
+
+.admin-ambient-glow {
+  position: absolute;
+  top: 16%;
+  left: -18rem;
+  width: 34rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(22, 127, 255, 0.13), rgba(38, 105, 218, 0.045) 42%, transparent 70%);
+  filter: blur(10px);
+  animation: admin-glow-float 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.page-container {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes admin-grid-drift {
+  from {
+    background-position: 0 0, 0 0;
+    transform: perspective(850px) rotateX(58deg) rotateZ(-12deg) scale(1.5) translate3d(-1%, -1%, 0);
+  }
+  to {
+    background-position: 96px 48px, 48px 96px;
+    transform: perspective(760px) rotateX(53deg) rotateZ(-7deg) scale(1.56) translate3d(1%, 1%, 0);
+  }
+}
+
+@keyframes admin-orbit-drift {
+  from { transform: rotate(-22deg) translate3d(0, 0, 0) scale(0.98); }
+  to { transform: rotate(-12deg) translate3d(-2%, 2%, 0) scale(1.04); }
+}
+
+@keyframes admin-orbit-drift-reverse {
+  from { transform: rotate(18deg) translate3d(0, 0, 0) scale(1.02); }
+  to { transform: rotate(8deg) translate3d(2%, -2%, 0) scale(0.96); }
+}
+
+@keyframes admin-glow-float {
+  from { transform: translate3d(0, 0, 0) scale(0.92); }
+  to { transform: translate3d(52vw, 12vh, 0) scale(1.18); }
 }
 /* 🚨 2. Lock the Page Container to the screen limits */
 .page-container {
@@ -978,6 +1104,43 @@ input.input-error {
       color: white;
       font-weight: 500;
       font-size: 1.05rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .admin-ambient-grid {
+      inset: -18%;
+      background-size: 38px 38px;
+      opacity: 0.75;
+      transform: perspective(720px) rotateX(62deg) rotateZ(-9deg) scale(1.35);
+    }
+
+    .admin-orbit--primary {
+      top: 2%;
+      right: -54%;
+      width: 125vw;
+      opacity: 0.8;
+    }
+
+    .admin-orbit--secondary {
+      bottom: -28%;
+      left: -73%;
+      width: 130vw;
+      opacity: 0.65;
+    }
+
+    .admin-ambient-glow {
+      top: 12%;
+      left: -14rem;
+      width: 28rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .admin-ambient-grid,
+    .admin-orbit,
+    .admin-ambient-glow {
+      animation: none;
     }
   }
 

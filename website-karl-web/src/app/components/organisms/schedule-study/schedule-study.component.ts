@@ -33,9 +33,12 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
   archivedStudies: any[] = [];
   selectedArchivedIds = new Set<number>();
   isDeletingArchived = false;
+  isSavingSchedule = false;
+  cancellingStudyIds = new Set<number>();
   editingStudyId: number | null = null; // Track if we're editing an existing study
   isLoadingStudies = false;
   isLoadingTabData = false;
+  private hasLoadedStudies = false;
   private refreshSubscription?: Subscription;
   private savedFormState = '';
 
@@ -80,12 +83,12 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
   loadStudies(showTabLoader = false) {
     if (!this.currentUserId) return;
     if (this.isLoadingStudies) {
-      this.isLoadingTabData ||= showTabLoader;
+      this.isLoadingTabData ||= showTabLoader && !this.hasLoadedStudies;
       return;
     }
 
     this.isLoadingStudies = true;
-    this.isLoadingTabData = showTabLoader;
+    this.isLoadingTabData = showTabLoader && !this.hasLoadedStudies;
     this.plannerService.getScheduledStudies(this.currentUserId)
       .pipe(finalize(() => {
         this.isLoadingStudies = false;
@@ -96,6 +99,7 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
         next: (res: any[]) => {
           this.upcomingStudies = res.filter(study => !study.is_sent);
           this.archivedStudies = res.filter(study => study.is_sent);
+          this.hasLoadedStudies = true;
           const archivedIds = new Set(this.archivedStudies.map(study => study.id));
           this.selectedArchivedIds = new Set(
             [...this.selectedArchivedIds].filter(id => archivedIds.has(id))
@@ -136,7 +140,7 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
   }
 
   async deleteArchivedStudies(deleteAll: boolean) {
-    if (this.isDeletingArchived) return;
+    if (this.isDeletingArchived || this.isSavingSchedule || this.cancellingStudyIds.size > 0) return;
 
     const studiesToDelete = deleteAll
       ? [...this.archivedStudies]
@@ -267,6 +271,8 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
   }
 
   async confirmCancelStudy(studyId: number) {
+    if (this.cancellingStudyIds.size > 0 || this.isDeletingArchived || this.isSavingSchedule) return;
+
     const modal = await this.modalCtrl.create({
       component: ConfirmModalComponent,
       cssClass: 'transparent-modal',
@@ -282,17 +288,25 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
     const { data } = await modal.onWillDismiss();
     
     if (data === true) {
-      this.plannerService.deleteScheduledStudy(studyId).subscribe({
-        next: () => {
-          this.upcomingStudies = this.upcomingStudies.filter(study => study.id !== studyId);
-          this.archivedStudies = this.archivedStudies.filter(study => study.id !== studyId);
+      this.cancellingStudyIds.add(studyId);
+      this.cdr.detectChanges();
+
+      this.plannerService.deleteScheduledStudy(studyId)
+        .pipe(finalize(() => {
+          this.cancellingStudyIds.delete(studyId);
           this.cdr.detectChanges();
-        },
-        error: async () => {
-          this.cdr.detectChanges();
-          await this.showNotification('Error', 'Failed to cancel study session. Please try again.', true);
-        }
-      });
+        }))
+        .subscribe({
+          next: () => {
+            this.upcomingStudies = this.upcomingStudies.filter(study => study.id !== studyId);
+            this.archivedStudies = this.archivedStudies.filter(study => study.id !== studyId);
+            this.cdr.detectChanges();
+          },
+          error: async (err) => {
+            console.error('Failed to cancel scheduled study session:', err);
+            await this.showNotification('Error', 'Failed to cancel study session. Please try again.', true);
+          }
+        });
     }
   }
 
@@ -313,6 +327,8 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
   }
 
   async saveSchedule() {
+    if (this.isSavingSchedule || this.isDeletingArchived || this.cancellingStudyIds.size > 0) return;
+
     if (!this.currentUserId) {
       await this.showNotification('Missing ID', 'Error: No User ID found. Try logging out and logging back in.', true);
       return;
@@ -350,41 +366,55 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
       const { data } = await modal.onWillDismiss();
       
       if (data === true) {
-        this.plannerService.updateScheduledStudy(this.editingStudyId, payload).subscribe({
-          next: async (res: any) => {
-            this.upcomingStudies = this.upcomingStudies
-              .map(study => study.id === res.id ? res : study)
-              .sort((a, b) => new Date(a.scheduled_time).getTime() - new Date(b.scheduled_time).getTime());
-            this.resetForm();
-            this.activeTab = 'upcoming';
+        this.isSavingSchedule = true;
+        this.cdr.detectChanges();
+        this.plannerService.updateScheduledStudy(this.editingStudyId, payload)
+          .pipe(finalize(() => {
+            this.isSavingSchedule = false;
             this.cdr.detectChanges();
-            await this.showNotification('Schedule Updated', 'Your study session has been updated successfully! ✅', false);
-          },
-          error: async () => {
-            this.cdr.detectChanges();
-            await this.showNotification('Error', 'Failed to update study session. Please try again.', true);
-          }
-        });
+          }))
+          .subscribe({
+            next: async (res: any) => {
+              this.upcomingStudies = this.upcomingStudies
+                .map(study => study.id === res.id ? res : study)
+                .sort((a, b) => new Date(a.scheduled_time).getTime() - new Date(b.scheduled_time).getTime());
+              this.resetForm();
+              this.activeTab = 'upcoming';
+              this.cdr.detectChanges();
+              await this.showNotification('Schedule Updated', 'Your study session has been updated successfully! ✅', false);
+            },
+            error: async (err) => {
+              console.error('Failed to update scheduled study session:', err);
+              await this.showNotification('Error', 'Failed to update study session. Please try again.', true);
+            }
+          });
       }
     } else {
       // Create new schedule
-      this.plannerService.scheduleStudy(this.currentUserId, payload).subscribe({
-        next: async (res: any) => {
-          this.upcomingStudies = [...this.upcomingStudies, res]
-            .sort((a, b) => new Date(a.scheduled_time).getTime() - new Date(b.scheduled_time).getTime());
-          this.scheduleTitle = '';
-          this.scheduleSubject = '';
-          this.scheduleDate = this.getLocalISOString();
-          this.markFormSaved();
-          this.activeTab = 'upcoming';
+      this.isSavingSchedule = true;
+      this.cdr.detectChanges();
+      this.plannerService.scheduleStudy(this.currentUserId, payload)
+        .pipe(finalize(() => {
+          this.isSavingSchedule = false;
           this.cdr.detectChanges();
-          await this.showNotification('Schedule Set', 'Your study session has been scheduled successfully! ✅', false);
-        },
-        error: async () => {
-          this.cdr.detectChanges();
-          await this.showNotification('Error', 'Failed to schedule study session. Please try again.', true);
-        }
-      });
+        }))
+        .subscribe({
+          next: async (res: any) => {
+            this.upcomingStudies = [...this.upcomingStudies, res]
+              .sort((a, b) => new Date(a.scheduled_time).getTime() - new Date(b.scheduled_time).getTime());
+            this.scheduleTitle = '';
+            this.scheduleSubject = '';
+            this.scheduleDate = this.getLocalISOString();
+            this.markFormSaved();
+            this.activeTab = 'upcoming';
+            this.cdr.detectChanges();
+            await this.showNotification('Schedule Set', 'Your study session has been scheduled successfully! ✅', false);
+          },
+          error: async (err) => {
+            console.error('Failed to schedule study session:', err);
+            await this.showNotification('Error', 'Failed to schedule study session. Please try again.', true);
+          }
+        });
     }
   }
 }

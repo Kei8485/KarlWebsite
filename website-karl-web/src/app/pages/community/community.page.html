@@ -1,18 +1,26 @@
 <ion-content>
   <div class="community-container">
+    <div class="community-blueprint-animation" aria-hidden="true">
+      <div class="community-grid-plane"></div>
+    </div>
     <div class="community-card">
       <div class="card-icon">
-        <ion-icon name="people-outline"></ion-icon>
+        <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
       </div>
       <h1 class="card-title">EngiNear Community</h1>
       <p class="card-desc">
         Join our group chat to ask questions, share notes, and stay updated with
         your classmates.
       </p>
-      <button class="gc-btn" (click)="openGC()">
-        <ion-icon name="logo-facebook"></ion-icon>
+      <button
+        class="gc-btn"
+        type="button"
+        aria-label="Join the EngiNear Messenger group chat (opens in a new tab)"
+        (click)="openGC()"
+      >
+        <ion-icon name="logo-facebook" aria-hidden="true"></ion-icon>
         <span>Join the Messenger Group Chat</span>
-        <ion-icon name="open-outline" class="btn-arrow"></ion-icon>
+        <ion-icon name="open-outline" class="btn-arrow" aria-hidden="true"></ion-icon>
       </button>
     </div>
   </div>

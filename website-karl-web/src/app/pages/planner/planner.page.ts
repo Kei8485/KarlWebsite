@@ -29,10 +29,13 @@ export class PlannerPage implements OnInit, OnDestroy {
   showSchedule: boolean = false; // Toggle state for flip card
   currentUserId: number = 1; 
   totalStudyTime: string = '0h 0m';
+  isLoadingStats = true;
+  isSavingStudySession = false;
   tasks: any[] = [];
   isLoadingTasks = false;
   taskLoadError = '';
   taskUpdateIds = new Set<number>();
+  deletingTaskIds = new Set<number>();
   isDeletingCompletedTasks = false;
   
   // Task Form & Sorting State
@@ -61,6 +64,7 @@ export class PlannerPage implements OnInit, OnDestroy {
   get originalTimeLeft(): number { return this.focusTimer.originalTimeLeft; }
   set originalTimeLeft(value: number) { this.focusTimer.originalTimeLeft = value; }
   get isTimerRunning(): boolean { return this.focusTimer.isTimerRunning; }
+  get isAutoSavingStudySession(): boolean { return this.focusTimer.isSavingSession; }
   get displayTime(): string { return this.focusTimer.displayTime; }
   get inputHours(): number { return this.focusTimer.inputHours; }
   set inputHours(value: number) { this.focusTimer.inputHours = value; }
@@ -292,10 +296,21 @@ export class PlannerPage implements OnInit, OnDestroy {
   }
 
   loadStats() {
-    this.plannerService.getWeeklyStats(this.currentUserId).subscribe(res => {
-      this.totalStudyTime = res.formatted_time;
-      this.cdr.detectChanges(); 
-    });
+    this.isLoadingStats = true;
+    this.plannerService.getWeeklyStats(this.currentUserId)
+      .pipe(finalize(() => {
+        this.isLoadingStats = false;
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (res) => {
+          this.totalStudyTime = res.formatted_time;
+        },
+        error: (err) => {
+          console.error('Error loading weekly study stats:', err);
+          void this.showNotification('Stats Unavailable', 'Could not load your weekly focus time. Please try again later.', true);
+        }
+      });
   }
 
   async addTask() {
@@ -343,7 +358,7 @@ export class PlannerPage implements OnInit, OnDestroy {
   }
 
   toggleTask(taskId: number) {
-    if (this.taskUpdateIds.has(taskId) || this.isDeletingCompletedTasks) return;
+    if (this.taskUpdateIds.has(taskId) || this.deletingTaskIds.has(taskId) || this.isDeletingCompletedTasks) return;
     const task = this.tasks.find(item => item.id === taskId);
     if (!task) return;
 
@@ -414,6 +429,8 @@ export class PlannerPage implements OnInit, OnDestroy {
   }
 
   async confirmDelete(taskId: number) {
+    if (this.deletingTaskIds.has(taskId) || this.isDeletingCompletedTasks || this.taskUpdateIds.has(taskId)) return;
+
     const modal = await this.modalCtrl.create({
       component: ConfirmModalComponent,
       cssClass: 'transparent-modal',
@@ -426,11 +443,26 @@ export class PlannerPage implements OnInit, OnDestroy {
     });
     await modal.present();
     const { data } = await modal.onWillDismiss();
-    
+
     if (data === true) {
-      this.plannerService.deleteTask(taskId).subscribe(() => {
-        this.loadTasks();
-      });
+      this.deletingTaskIds.add(taskId);
+      this.cdr.detectChanges();
+
+      this.plannerService.deleteTask(taskId)
+        .pipe(finalize(() => {
+          this.deletingTaskIds.delete(taskId);
+          this.cdr.detectChanges();
+        }))
+        .subscribe({
+          next: () => {
+            this.tasks = this.tasks.filter(task => task.id !== taskId);
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Error deleting task:', err);
+            void this.showNotification('Delete Failed', 'Could not delete the task. Please try again.', true);
+          }
+        });
     }
   }
 
@@ -492,6 +524,7 @@ export class PlannerPage implements OnInit, OnDestroy {
   }
 
   async doneTimer() {
+    if (this.isSavingStudySession) return;
     const elapsedSeconds = this.originalTimeLeft - this.timeLeft;
     const elapsedMinutes = Math.max(1, Math.round(elapsedSeconds / 60));
 
@@ -510,16 +543,24 @@ export class PlannerPage implements OnInit, OnDestroy {
 
     if (data === true) {
       this.stopTimer();
-      this.plannerService.saveStudySession(this.currentUserId, elapsedMinutes).subscribe({
-        next: () => {
-          this.loadStats();
-          this.showNotification('Session Saved!', `Great work! ${elapsedMinutes} minute(s) saved to your Weekly Focus! 🎉`);
-          this.resetTimer();
-        },
-        error: () => {
-          this.showNotification('Error', 'Could not save your session. Please try again.', true);
-        }
-      });
+      this.isSavingStudySession = true;
+      this.cdr.detectChanges();
+      this.plannerService.saveStudySession(this.currentUserId, elapsedMinutes)
+        .pipe(finalize(() => {
+          this.isSavingStudySession = false;
+          this.cdr.detectChanges();
+        }))
+        .subscribe({
+          next: () => {
+            this.loadStats();
+            void this.showNotification('Session Saved!', `Great work! ${elapsedMinutes} minute(s) saved to your Weekly Focus! 🎉`);
+            this.resetTimer();
+          },
+          error: (err) => {
+            console.error('Error saving study session:', err);
+            void this.showNotification('Error', 'Could not save your session. Please try again.', true);
+          }
+        });
     }
   }
 

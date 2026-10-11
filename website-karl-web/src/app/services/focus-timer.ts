@@ -15,6 +15,7 @@ export class FocusTimerService {
   timeLeft = 0;
   originalTimeLeft = 0;
   isTimerRunning = false;
+  isSavingSession = false;
   displayTime = '00:00:00';
   inputHours = 0;
   inputMinutes = 0;
@@ -120,9 +121,17 @@ export class FocusTimerService {
       return;
     }
 
+    this.isSavingSession = true;
+    this.timerUpdatedSubject.next();
     this.plannerService.saveStudySession(userId, minutes).subscribe({
-      next: () => this.completionSubject.next({ minutes, saved: true }),
+      next: () => {
+        this.isSavingSession = false;
+        this.timerUpdatedSubject.next();
+        this.completionSubject.next({ minutes, saved: true });
+      },
       error: (error: unknown) => {
+        this.isSavingSession = false;
+        this.timerUpdatedSubject.next();
         console.error('Could not save the completed focus timer session:', error);
         this.completionSubject.next({ minutes, saved: false });
       }
@@ -131,7 +140,7 @@ export class FocusTimerService {
 
   private playAlarm(): void {
     this.stopAlarm();
-    this.alarm = new Audio('/assets/audio/ssstik.io_1790134444520.mp3');
+    this.alarm = new Audio('/assets/audio/drumRignTone.mp3');
     this.alarm.loop = true;
     void this.alarm.play().catch((error: unknown) => {
       console.error('Could not play the focus timer alarm:', error);

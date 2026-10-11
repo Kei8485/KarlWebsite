@@ -1,9 +1,28 @@
 <ion-app>
-  <app-header *ngIf="showHeader"></app-header>
+  @if (showHeader) {
+    <app-header></app-header>
+  }
 
   <!-- Pushes the page down by 80px ONLY if the header is visible -->
   <ion-router-outlet
     [animated]="true"
     [style.marginTop]="showHeader ? '70px' : '0px'"
   ></ion-router-outlet>
+
+  @if (isNavigationLoading()) {
+    <div
+      class="navigation-loading-overlay"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      aria-busy="true"
+    >
+      <div class="navigation-loading-card">
+        <app-loading-indicator size="large" aria-hidden="true"></app-loading-indicator>
+        <h2>Opening your page</h2>
+        <p>Discarding changes and loading the next page...</p>
+        <small>Please wait a moment.</small>
+      </div>
+    </div>
+  }
 </ion-app>

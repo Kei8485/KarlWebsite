@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true">
-    <div class="page-container">
+    <div id="planner-page" class="page-container">
       <div class="hero-section">
         <h1 class="gradient-text">Study Planner</h1>
         <p class="subtitle">
@@ -206,14 +206,19 @@
                     type="button"
                     class="check-icon"
                     [class.is-updating]="taskUpdateIds.has(task.id)"
-                    [disabled]="taskUpdateIds.has(task.id) || isDeletingCompletedTasks"
+                    [disabled]="taskUpdateIds.has(task.id) || deletingTaskIds.has(task.id) || isDeletingCompletedTasks"
+                    [attr.aria-busy]="taskUpdateIds.has(task.id)"
                     [attr.aria-label]="task.is_completed ? 'Mark task incomplete' : 'Mark task complete'"
                     [attr.aria-pressed]="task.is_completed"
                     (click)="toggleTask(task.id)"
                   >
-                    <ion-icon
-                      [name]="task.is_completed ? 'checkmark-circle-outline' : 'ellipse-outline'"
-                    ></ion-icon>
+                    @if (taskUpdateIds.has(task.id)) {
+                      <app-loading-indicator size="small"></app-loading-indicator>
+                    } @else {
+                      <ion-icon
+                        [name]="task.is_completed ? 'checkmark-circle-outline' : 'ellipse-outline'"
+                      ></ion-icon>
+                    }
                   </button>
 
                   <!-- 🚨 PRO UI: Removes text labels and uses Badges & Icons instead -->
@@ -243,10 +248,19 @@
                     <button
                       type="button"
                       class="delete-icon"
-                      [attr.aria-label]="'Delete ' + task.title"
+                      [disabled]="deletingTaskIds.has(task.id) || deletingTaskIds.size > 0 || taskUpdateIds.has(task.id) || isDeletingCompletedTasks"
+                      [attr.aria-label]="deletingTaskIds.has(task.id) ? 'Deleting ' + task.title : 'Delete ' + task.title"
+                      [attr.aria-busy]="deletingTaskIds.has(task.id)"
                       (click)="confirmDelete(task.id)"
                     >
-                      <ion-icon name="trash-outline"></ion-icon>
+                      @if (deletingTaskIds.has(task.id)) {
+                        <app-loading-indicator
+                          size="small"
+                          aria-hidden="true"
+                        ></app-loading-indicator>
+                      } @else {
+                        <ion-icon name="trash-outline"></ion-icon>
+                      }
                     </button>
                   </div>
                 </div>
@@ -256,7 +270,7 @@
                 <button
                   type="button"
                   class="delete-completed-btn"
-                  [disabled]="taskUpdateIds.size > 0"
+                  [disabled]="taskUpdateIds.size > 0 || isDeletingCompletedTasks"
                   [attr.aria-busy]="isDeletingCompletedTasks"
                   (click)="deleteCompletedTasks()"
                 >
@@ -304,7 +318,11 @@
           <!-- STATS WIDGET -->
           <div class="glass-card stats-card">
             <h3>Weekly Focus</h3>
-            <div class="stat-value">{{ totalStudyTime }}</div>
+            @if (isLoadingStats) {
+              <app-loading-indicator label="Loading weekly focus..." size="small"></app-loading-indicator>
+            } @else {
+              <div class="stat-value">{{ totalStudyTime }}</div>
+            }
             <p class="stat-label">Total time studied this week</p>
           </div>
 
@@ -317,7 +335,7 @@
               {{ displayTime }}
             </div>
 
-            <div class="time-presets" *ngIf="!isTimerRunning">
+            <div class="time-presets" *ngIf="!isTimerRunning && !isAutoSavingStudySession">
               <!-- MAIN SELECTOR: 3-Part Custom Time Input -->
               <div class="custom-time-input">
                 <input
@@ -375,7 +393,7 @@
             <div class="timer-controls">
               <!-- NOT running: Show Start + Reset -->
               <app-button
-                *ngIf="!isTimerRunning"
+                *ngIf="!isTimerRunning && !isAutoSavingStudySession"
                 label="Start Focus"
                 icon="play-outline"
                 variant="primary"
@@ -383,7 +401,7 @@
               ></app-button>
 
               <app-button
-                *ngIf="!isTimerRunning"
+                *ngIf="!isTimerRunning && !isAutoSavingStudySession"
                 label="Reset"
                 icon="refresh-outline"
                 variant="transparent"
@@ -396,6 +414,8 @@
                 label="Done"
                 icon="checkmark-outline"
                 variant="primary"
+                [loading]="isSavingStudySession"
+                loadingLabel="Saving session..."
                 (clicked)="doneTimer()"
               ></app-button>
 
@@ -404,8 +424,16 @@
                 label="Reset"
                 icon="refresh-outline"
                 variant="outline"
+                [disabled]="isSavingStudySession"
                 (clicked)="confirmReset()"
               ></app-button>
+
+              @if (isAutoSavingStudySession || isSavingStudySession) {
+                <app-loading-indicator
+                  label="Saving your focus session..."
+                  size="medium"
+                ></app-loading-indicator>
+              }
             </div>
           </div>
         </div>

@@ -195,3 +195,145 @@ ion-router-outlet {
 ion-router-outlet > .ion-page {
   background: var(--background);
 }
+
+app-planner ion-content {
+  --background: radial-gradient(ellipse at 12% 4%, rgba(37, 99, 235, 0.14), transparent 36%), var(--background);
+}
+
+app-planner #planner-page {
+  position: relative;
+  isolation: isolate;
+}
+
+app-planner #planner-page::before {
+  position: fixed;
+  z-index: -1;
+  inset: -12vmax;
+  background:
+    radial-gradient(ellipse at 18% 22%, rgba(37, 99, 235, 0.2), transparent 34%),
+    radial-gradient(ellipse at 78% 46%, rgba(20, 184, 166, 0.1), transparent 32%),
+    radial-gradient(ellipse at 52% 88%, rgba(99, 102, 241, 0.12), transparent 38%);
+  content: "";
+  pointer-events: none;
+  animation: planner-ambient-drift 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+app-planner #planner-page .hero-section {
+  animation: planner-enter 600ms ease-out both;
+}
+
+app-planner #planner-page .hero-section::before {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: #8ecbff;
+  content: "YOUR PERSONAL STUDY HUB";
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+app-planner #planner-page .hero-section .gradient-text {
+  background-image: linear-gradient(105deg, #8bd2ff, #4facfe 55%, #818cf8);
+  background-size: 180% auto;
+  animation: planner-shimmer 7s ease-in-out infinite alternate;
+}
+
+@media (min-width: 900px) {
+  app-planner #planner-page .planner-grid {
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.9fr);
+  }
+}
+
+app-planner #planner-page .glass-card:not(.front):not(.back) {
+  border-color: rgba(148, 190, 255, 0.14);
+  background: linear-gradient(145deg, rgba(30, 48, 75, 0.94), rgba(19, 32, 54, 0.96));
+  box-shadow: 0 18px 45px rgba(2, 8, 23, 0.2);
+  animation: planner-enter 650ms ease-out both;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+app-planner #planner-page .glass-card:not(.front):not(.back):hover {
+  border-color: rgba(96, 165, 250, 0.3);
+  box-shadow: 0 22px 48px rgba(2, 8, 23, 0.28), 0 0 24px rgba(37, 99, 235, 0.08);
+}
+
+app-planner #planner-page .stats-card {
+  background: radial-gradient(ellipse at 50% 110%, rgba(14, 165, 233, 0.15), transparent 58%),
+    linear-gradient(145deg, rgba(27, 48, 75, 0.96), rgba(18, 32, 55, 0.96));
+}
+
+app-planner #planner-page .stats-card .stat-value {
+  color: #65caff;
+  text-shadow: 0 0 28px rgba(56, 189, 248, 0.22);
+}
+
+app-planner #planner-page .timer-card {
+  background: radial-gradient(ellipse at 50% 48%, rgba(59, 130, 246, 0.12), transparent 56%),
+    linear-gradient(145deg, rgba(27, 45, 72, 0.97), rgba(17, 29, 50, 0.98));
+}
+
+app-planner #planner-page .timer-display.running {
+  animation: timer-glow 2s ease-in-out infinite;
+}
+
+app-planner #planner-page .delete-icon:disabled {
+  min-width: 28px;
+  min-height: 28px;
+  cursor: wait;
+  opacity: 0.8;
+}
+
+app-planner #planner-page .delete-icon app-loading-indicator {
+  display: inline-flex;
+  width: 1.4rem;
+  height: 1.4rem;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes planner-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes planner-shimmer {
+  to { background-position: 100% center; }
+}
+
+@keyframes timer-glow {
+  50% { text-shadow: 0 0 30px rgba(79, 172, 254, 0.5); }
+}
+
+@keyframes planner-ambient-drift {
+  from { transform: translate3d(-1.5%, -1%, 0) scale(1); }
+  to { transform: translate3d(1.5%, 1%, 0) scale(1.06); }
+}
+
+@media (max-width: 576px) {
+  app-planner #planner-page::before {
+    inset: -8vmax;
+    background:
+      radial-gradient(ellipse at 16% 18%, rgba(37, 99, 235, 0.16), transparent 38%),
+      radial-gradient(ellipse at 82% 54%, rgba(20, 184, 166, 0.08), transparent 36%),
+      radial-gradient(ellipse at 46% 92%, rgba(99, 102, 241, 0.1), transparent 40%);
+    animation-duration: 30s;
+  }
+
+  app-planner #planner-page .hero-section::before { font-size: 0.62rem; }
+  app-planner #planner-page .timer-display { font-size: clamp(2.25rem, 10vw, 3rem); }
+}
+
+@media (max-width: 360px) {
+  app-planner #planner-page.page-container { padding-inline: 0.625rem !important; }
+  app-planner #planner-page .timer-display { font-size: clamp(2rem, 9.5vw, 2.5rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  app-planner #planner-page .hero-section,
+  app-planner #planner-page .hero-section .gradient-text,
+  app-planner #planner-page .glass-card,
+  app-planner #planner-page .timer-display.running,
+  app-planner #planner-page::before { animation: none; }
+  app-planner #planner-page .glass-card { transition: none; }
+}

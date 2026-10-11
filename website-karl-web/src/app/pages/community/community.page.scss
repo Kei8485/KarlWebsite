@@ -1,27 +1,142 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+ion-content {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
 .community-container {
+  position: relative;
+  isolation: isolate;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  min-height: 70vh;
-  padding: 20px;
+  box-sizing: border-box;
+  min-height: 100%;
+  padding: clamp(3rem, 9vh, 6rem) clamp(1rem, 4vw, 2.5rem) 1rem;
+  overflow: hidden;
+}
+
+.community-blueprint-animation {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 45%, rgba(10, 69, 122, 0.28), transparent 70%);
+
+  &::before {
+    position: absolute;
+    z-index: 1;
+    top: -55%;
+    left: -35%;
+    width: 72%;
+    height: 210%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(0, 174, 255, 0.2), rgba(0, 132, 255, 0.08) 38%, transparent 72%);
+    filter: blur(28px);
+    content: "";
+    pointer-events: none;
+    animation: community-bg-current 7s ease-in-out infinite alternate !important;
+    animation-play-state: running !important;
+    will-change: transform, opacity;
+  }
+}
+
+.community-grid-plane {
+  position: absolute;
+  z-index: 1;
+  inset: -35% -20%;
+  background:
+    linear-gradient(rgba(100, 181, 255, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 181, 255, 0.15) 1px, transparent 1px);
+  background-size: 42px 42px;
+  transform-origin: center;
+  opacity: 0.9;
+  animation: community-desktop-grid-curl 8s ease-in-out infinite alternate !important;
+  animation-play-state: running !important;
+  will-change: transform, background-position;
+
+  &::before {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        90deg,
+        var(--background) 0%,
+        color-mix(in oklch, var(--background) 74%, transparent) 9%,
+        transparent 28%,
+        transparent 72%,
+        color-mix(in oklch, var(--background) 74%, transparent) 91%,
+        var(--background) 100%
+      ),
+      linear-gradient(180deg, var(--background) 0%, transparent 30%, transparent 72%, var(--background) 100%);
+    content: "";
+  }
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 22% 30%, rgba(0, 132, 255, 0.2), transparent 34%),
+      radial-gradient(ellipse at 80% 55%, rgba(0, 210, 255, 0.15), transparent 35%);
+    content: "";
+    animation: community-aurora-drift 12s ease-in-out infinite alternate;
+  }
 }
 
 .community-card {
-  background: rgba(15, 23, 42, 0.6);
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(145deg, rgba(17, 35, 59, 0.94), rgba(12, 25, 44, 0.9));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(100, 181, 255, 0.2);
   border-radius: 20px;
-  padding: 48px 40px;
+  padding: clamp(2rem, 6vw, 3rem) clamp(1.25rem, 5vw, 2.5rem);
   max-width: 480px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.38),
+    0 0 48px rgba(0, 132, 255, 0.08),
+    inset 0 1px 0 rgba(154, 205, 255, 0.08);
+  animation: community-card-arrive 700ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+
+  &::before {
+    position: absolute;
+    z-index: -1;
+    top: -55%;
+    left: -45%;
+    width: 80%;
+    height: 150%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(35, 125, 255, 0.09), transparent 68%);
+    content: "";
+    animation: community-card-glow 12s ease-in-out infinite alternate;
+  }
+
+  &:hover {
+    border-color: rgba(79, 172, 254, 0.2);
+    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.42), 0 0 42px rgba(0, 132, 255, 0.07);
+  }
 }
 
 .card-icon {
+  position: relative;
   width: 72px;
   height: 72px;
+  box-sizing: border-box;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(58, 123, 213, 0.2));
   border: 1px solid rgba(0, 210, 255, 0.25);
@@ -29,10 +144,25 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 24px;
+  box-shadow: 0 0 0 7px rgba(0, 210, 255, 0.045), 0 0 28px rgba(0, 210, 255, 0.12);
+  animation: community-icon-float 2.4s ease-in-out infinite, community-icon-aura 1.8s ease-in-out infinite !important;
+
+  &::after {
+    position: absolute;
+    inset: -7px;
+    border: 1px solid rgba(0, 210, 255, 0.17);
+    border-radius: inherit;
+    content: "";
+    animation: community-icon-ring 2.2s ease-out infinite;
+    pointer-events: none;
+  }
 
   ion-icon {
+    flex: 0 0 auto;
     font-size: 36px;
     color: #00d2ff;
+    filter: drop-shadow(0 0 6px rgba(0, 210, 255, 0.28));
+    animation: community-icon-symbol 2s ease-in-out infinite;
   }
 }
 
@@ -52,12 +182,15 @@
 }
 
 .gc-btn {
-  display: flex;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 18px;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  justify-items: center;
+  gap: clamp(0.4rem, 2vw, 0.75rem);
   width: 100%;
-  padding: 16px 24px;
+  min-height: 56px;
+  padding: 14px clamp(0.75rem, 3vw, 1.5rem);
+  box-sizing: border-box;
   background: linear-gradient(135deg, #0084ff, #0066cc);
   border: none;
   border-radius: 12px;
@@ -65,22 +198,213 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: 0 8px 22px rgba(0, 98, 204, 0.2);
+  transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
 
-  ion-icon { font-size: 20px; }
+  > ion-icon:first-child {
+    grid-column: 1;
+    font-size: 19px;
+  }
+
+  > span {
+    grid-column: 2;
+    min-width: 0;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
 
   .btn-arrow {
+    grid-column: 3;
+    justify-self: end;
     font-size: 16px;
     opacity: 0.7;
-    margin-left: auto;
   }
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px rgba(0, 132, 255, 0.35);
+    filter: brightness(1.08);
   }
 
   &:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.985);
   }
+
+  &:focus-visible {
+    outline: 3px solid rgba(117, 202, 255, 0.9);
+    outline-offset: 4px;
+  }
+}
+
+@keyframes community-desktop-grid-curl {
+  0% {
+    background-position: 0 0, 0 0;
+    transform: perspective(900px) rotateX(7deg) rotateZ(-5deg) scale(1.04) translate3d(-2%, -1%, 0);
+  }
+
+  50% {
+    background-position: 56px 42px, 42px 56px;
+    transform: perspective(720px) rotateX(31deg) rotateZ(5deg) scale(1.14) translate3d(2%, 0, 0);
+  }
+
+  100% {
+    background-position: 112px 84px, 84px 112px;
+    transform: perspective(850px) rotateX(12deg) rotateZ(-4deg) scale(1.08) translate3d(0, 2%, 0);
+  }
+}
+
+@keyframes community-bg-current {
+  from { opacity: 0.45; transform: translate3d(-7%, 0, 0) rotate(-16deg) scale(0.9); }
+  to { opacity: 1; transform: translate3d(185%, 7%, 0) rotate(16deg) scale(1.2); }
+}
+
+@media (min-width: 577px) {
+  .community-grid-plane {
+    animation: community-desktop-grid-curl 8s ease-in-out infinite alternate !important;
+    animation-play-state: running !important;
+  }
+
+  .community-card {
+    margin-top: clamp(0.75rem, 2vh, 1.5rem);
+  }
+}
+
+@keyframes community-aurora-drift {
+  from { transform: translate3d(-2%, -1%, 0) scale(1); }
+  to { transform: translate3d(2%, 1%, 0) scale(1.08); }
+}
+
+@keyframes community-card-arrive {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes community-card-glow {
+  from { transform: translate3d(0, 0, 0); opacity: 0.55; }
+  to { transform: translate3d(95%, 35%, 0); opacity: 1; }
+}
+
+@keyframes community-icon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+@keyframes community-icon-ring {
+  0% { opacity: 0.8; transform: scale(0.88); }
+  75%, 100% { opacity: 0; transform: scale(1.42); }
+}
+
+@keyframes community-icon-aura {
+  0%, 100% { box-shadow: 0 0 0 7px rgba(0, 210, 255, 0.045), 0 0 22px rgba(0, 210, 255, 0.1); }
+  50% { box-shadow: 0 0 0 11px rgba(0, 210, 255, 0.09), 0 0 38px rgba(0, 210, 255, 0.24); }
+}
+
+@keyframes community-icon-symbol {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2px) scale(1.07); }
+}
+
+@media (max-width: 576px) {
+  .community-container {
+    align-items: center;
+    min-height: 100%;
+    padding: 1.25rem 1rem calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .community-grid-plane {
+    inset: -20% -45%;
+    background-size: 32px 32px;
+    animation-duration: 8s !important;
+  }
+
+  .community-card {
+    max-width: 380px;
+    padding: clamp(2rem, 8vh, 3rem) clamp(1.25rem, 7vw, 2rem);
+    border-radius: 22px;
+  }
+
+  .card-title {
+    font-size: clamp(1.65rem, 7vw, 1.9rem);
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .card-desc {
+    max-width: 30ch;
+    margin-inline: auto;
+    margin-bottom: 1.75rem;
+    font-size: 0.95rem;
+    text-wrap: pretty;
+  }
+
+  .gc-btn {
+    grid-template-columns: 22px minmax(0, 1fr) 16px;
+    gap: 0.45rem;
+    min-height: 58px;
+    padding: 0.75rem 0.8rem;
+    border-radius: 14px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .community-blueprint-animation::before {
+    animation: community-bg-current-reduced 4s ease-in-out infinite alternate !important;
+  }
+
+  .community-grid-plane {
+    animation: community-grid-reduced 8s ease-in-out infinite alternate !important;
+  }
+
+  .community-grid-plane::after {
+    animation: community-aurora-reduced 10s ease-in-out infinite alternate !important;
+  }
+
+  .community-card,
+  .community-card::before {
+    animation: none !important;
+  }
+
+  .card-icon {
+    animation: community-icon-reduced 2.4s ease-in-out infinite !important;
+  }
+
+  .card-icon::after {
+    animation: none !important;
+  }
+
+  .community-card,
+  .gc-btn {
+    transition: none;
+  }
+
+  .card-icon ion-icon {
+    animation: community-symbol-reduced 2.4s ease-in-out infinite !important;
+  }
+}
+
+@keyframes community-grid-reduced {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 56px 56px, 56px 56px; }
+}
+
+@keyframes community-bg-current-reduced {
+  from { opacity: 0.25; }
+  to { opacity: 0.9; }
+}
+
+@keyframes community-aurora-reduced {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+
+@keyframes community-icon-reduced {
+  0%, 100% { box-shadow: 0 0 0 7px rgba(0, 210, 255, 0.045), 0 0 22px rgba(0, 210, 255, 0.1); }
+  50% { box-shadow: 0 0 0 11px rgba(0, 210, 255, 0.09), 0 0 38px rgba(0, 210, 255, 0.24); }
+}
+
+@keyframes community-symbol-reduced {
+  0%, 100% { opacity: 0.82; }
+  50% { opacity: 1; }
 }

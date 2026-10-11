@@ -1,16 +1,16 @@
 import { environment } from '../../../environments/environment';
-import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy, HostListener, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { Router } from '@angular/router';
-import { IonContent, IonIcon, IonSelect, IonSelectOption, ModalController } from '@ionic/angular';
+import { IonButton, IonContent, IonDatetime, IonIcon, IonModal, IonSelect, IonSelectOption, ModalController } from '@ionic/angular';
 import { AppHeaderComponent } from '../../components/organisms/app-header/app-header.component';
 import { AppButtonComponent } from '../../components/atoms/app-button/app-button.component';
 import { LoadingIndicatorComponent } from '../../components/atoms/loading-indicator/loading-indicator.component';
 import { addIcons } from 'ionicons';
-import { trashOutline, personAddOutline, saveOutline, pencilOutline, addOutline, bookOutline } from 'ionicons/icons';
+import { trashOutline, personAddOutline, saveOutline, pencilOutline, addOutline, bookOutline, calendarOutline } from 'ionicons/icons';
 
 import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/confirm-modal.component';
 
@@ -19,7 +19,7 @@ import { ConfirmModalComponent } from '../../components/molecules/confirm-modal/
   templateUrl: './manage-users.page.html',
   styleUrls: ['./manage-users.page.scss'],
   standalone: true,
-  imports: [IonContent, IonIcon, IonSelect, IonSelectOption, CommonModule, FormsModule, AppButtonComponent, LoadingIndicatorComponent]
+  imports: [IonButton, IonContent, IonDatetime, IonIcon, IonModal, IonSelect, IonSelectOption, CommonModule, FormsModule, AppButtonComponent, LoadingIndicatorComponent]
 })
 export class ManageUsersPage implements OnInit, OnDestroy  {
   private readonly deleteLoadingMinDurationMs = 700;
@@ -38,6 +38,11 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
   private hasLoadedUsers = false;
   currentFilter: string = 'all';
   searchQuery: string = '';
+  joinedFrom = '';
+  joinedTo = '';
+  draftJoinedDate: string | null = null;
+  activeJoinDate: 'from' | 'to' = 'from';
+  @ViewChild('joinedDateModal') joinedDateModal!: IonModal;
   viewMode: 'users' | 'system' = 'users';
   cmsTab: 'info' | 'topics' = 'info';
   showQuizEditor: boolean = false;
@@ -139,7 +144,7 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
   };
 
   constructor() {
-    addIcons({ trashOutline, personAddOutline, saveOutline, pencilOutline, addOutline, bookOutline });
+    addIcons({ trashOutline, personAddOutline, saveOutline, pencilOutline, addOutline, bookOutline, calendarOutline });
   }
 
   ionViewWillEnter() { this.loadSubjects(); }
@@ -164,9 +169,8 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
     }
   }
 
-  onSearchChange(event: any) {
-    // Simple placeholder to prevent compile errors
-    // You can implement actual search filtering here later
+  onSearchChange() {
+    this.filterUsers();
   }
 
   loadUsers(showLoader = !this.hasLoadedUsers) {
@@ -197,10 +201,79 @@ export class ManageUsersPage implements OnInit, OnDestroy  {
 
   applyFilter(filterType: string) {
     this.currentFilter = filterType;
+    this.filterUsers();
+  }
+
+  clearUserFilters() {
+    this.searchQuery = '';
+    this.joinedFrom = '';
+    this.joinedTo = '';
+    this.filterUsers();
+  }
+
+  async openJoinDatePicker(which: 'from' | 'to') {
+    this.activeJoinDate = which;
+    this.draftJoinedDate = (which === 'from' ? this.joinedFrom : this.joinedTo) || this.localToday();
+    await this.joinedDateModal.present();
+  }
+
+  async confirmJoinDate(datetime: IonDatetime) {
+    await datetime.confirm();
+    if (this.activeJoinDate === 'from') {
+      this.joinedFrom = this.draftJoinedDate ?? '';
+    } else {
+      this.joinedTo = this.draftJoinedDate ?? '';
+    }
+    this.filterUsers();
+    await this.joinedDateModal.dismiss(null, 'confirm');
+  }
+
+  async cancelJoinDate(datetime: IonDatetime) {
+    await datetime.cancel();
+    this.draftJoinedDate = null;
+    await this.joinedDateModal.dismiss(null, 'cancel');
+  }
+
+  private localToday(): string {
+    const now = new Date();
+    const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
+    return localDate.toISOString().slice(0, 10);
+  }
+
+  get hasInvalidJoinDateRange(): boolean {
+    return !!this.joinedFrom && !!this.joinedTo && this.joinedFrom > this.joinedTo;
+  }
+
+  private filterUsers() {
+    if (this.hasInvalidJoinDateRange) {
+      this.filteredUsers = [];
+      return;
+    }
+
     let temp = [...this.users];
 
-    if (filterType !== 'all') {
-      temp = temp.filter(u => u.role === filterType);
+    if (this.currentFilter !== 'all') {
+      temp = temp.filter(user => user.role === this.currentFilter);
+    }
+
+    const query = this.searchQuery.trim().toLocaleLowerCase();
+    if (query) {
+      temp = temp.filter(user =>
+        String(user.userName ?? '').toLocaleLowerCase().includes(query)
+        || String(user.email ?? '').toLocaleLowerCase().includes(query)
+      );
+    }
+
+    if (this.joinedFrom || this.joinedTo) {
+      const fromDate = this.joinedFrom ? new Date(`${this.joinedFrom}T00:00:00`) : null;
+      const toDate = this.joinedTo ? new Date(`${this.joinedTo}T23:59:59.999`) : null;
+
+      temp = temp.filter(user => {
+        const joinedAt = new Date(user.created_at).getTime();
+        return Number.isFinite(joinedAt)
+          && (!fromDate || joinedAt >= fromDate.getTime())
+          && (!toDate || joinedAt <= toDate.getTime());
+      });
     }
 
     this.filteredUsers = temp.sort((a, b) => {

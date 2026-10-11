@@ -101,6 +101,7 @@ export class PlannerPage implements OnInit, OnDestroy {
       this.resetTaskForm();
     }
     this.showSchedule = !this.showSchedule;
+    this.cdr.detectChanges();
   }
 
   async canDeactivate(): Promise<boolean> {
@@ -120,11 +121,12 @@ export class PlannerPage implements OnInit, OnDestroy {
       }
     });
     await modal.present();
-    const { data } = await modal.onDidDismiss();
+    const { data } = await modal.onWillDismiss();
     if (data !== true) return false;
 
     this.resetTaskForm();
     this.scheduleStudy?.discardUnsavedChanges();
+    this.cdr.detectChanges();
     return true;
   }
 
@@ -153,7 +155,7 @@ export class PlannerPage implements OnInit, OnDestroy {
       }
     });
     await modal.present();
-    const { data } = await modal.onDidDismiss();
+    const { data } = await modal.onWillDismiss();
     return data === true;
   }
 
@@ -253,6 +255,7 @@ export class PlannerPage implements OnInit, OnDestroy {
   async cancelAddTask() {
     if (!await this.confirmLeaveTaskForm()) return;
     this.resetTaskForm();
+    this.cdr.detectChanges();
   }
 
   private resetTaskForm() {
@@ -262,6 +265,7 @@ export class PlannerPage implements OnInit, OnDestroy {
     this.editingTaskId = null;  
     this.newTaskDate = this.getLocalISOString();
     this.taskFormSavedState = '';
+    this.cdr.detectChanges();
   }
 
   async editTask(task: any) {

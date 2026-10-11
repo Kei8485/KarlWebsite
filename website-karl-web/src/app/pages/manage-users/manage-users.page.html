@@ -129,7 +129,10 @@
             <!-- Header with Filter Tabs -->
 
             <div class="header-with-filters">
-              <h2>Current Users: {{ isLoadingUsers ? '...' : filteredUsers.length }}</h2>
+              <h2 class="users-list-title">
+                <span>Current Users</span>
+                <span class="user-count">{{ isLoadingUsers ? '...' : filteredUsers.length }}</span>
+              </h2>
 
               <div class="filter-tabs">
                 <button
@@ -154,6 +157,94 @@
                 </button>
               </div>
             </div>
+
+            <div class="user-filter-controls">
+              <label class="user-search-field">
+                <span>Search users</span>
+                <input
+                  type="search"
+                  [(ngModel)]="searchQuery"
+                  (ngModelChange)="onSearchChange()"
+                  placeholder="Name or email"
+                  autocomplete="off"
+                  aria-label="Search users by name or email"
+                />
+              </label>
+
+              <fieldset class="joined-date-filter">
+                <legend>Joined date range</legend>
+                <div class="joined-date-choice">
+                  <span>From</span>
+                  <button
+                    class="joined-date-button"
+                    type="button"
+                    aria-label="Choose joined from date"
+                    (click)="openJoinDatePicker('from')"
+                  >
+                    <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+                    <span>{{ joinedFrom ? (joinedFrom | date:'mediumDate') : 'Choose date' }}</span>
+                  </button>
+                </div>
+                <div class="joined-date-choice">
+                  <span>To</span>
+                  <button
+                    class="joined-date-button"
+                    type="button"
+                    aria-label="Choose joined to date"
+                    (click)="openJoinDatePicker('to')"
+                  >
+                    <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+                    <span>{{ joinedTo ? (joinedTo | date:'mediumDate') : 'Choose date' }}</span>
+                  </button>
+                </div>
+              </fieldset>
+
+              <button
+                class="clear-user-filters"
+                type="button"
+                [disabled]="!searchQuery && !joinedFrom && !joinedTo"
+                (click)="clearUserFilters()"
+              >
+                Clear search and dates
+              </button>
+            </div>
+
+            <ion-modal
+              #joinedDateModal
+              class="joined-user-calendar-modal transparent-modal"
+              [keepContentsMounted]="true"
+            >
+              <ng-template>
+                <div class="joined-user-calendar-card">
+                  <ion-datetime
+                    #joinedDateTime
+                    presentation="date"
+                    [(ngModel)]="draftJoinedDate"
+                    [min]="activeJoinDate === 'to' ? (joinedFrom || undefined) : undefined"
+                    [max]="activeJoinDate === 'from' ? (joinedTo || undefined) : undefined"
+                  ></ion-datetime>
+                  <div class="joined-user-calendar-footer">
+                    <ion-button
+                      fill="clear"
+                      class="joined-calendar-cancel"
+                      (click)="cancelJoinDate(joinedDateTime)"
+                    >
+                      Cancel
+                    </ion-button>
+                    <ion-button
+                      fill="clear"
+                      class="joined-calendar-confirm"
+                      (click)="confirmJoinDate(joinedDateTime)"
+                    >
+                      Confirm
+                    </ion-button>
+                  </div>
+                </div>
+              </ng-template>
+            </ion-modal>
+            <p class="filter-range-error" *ngIf="hasInvalidJoinDateRange" role="alert">
+              The start date must be on or before the end date.
+            </p>
 
             <!-- The List of Users -->
 
@@ -180,7 +271,7 @@
             </div>
 
             <div class="users-empty" *ngIf="!isLoadingUsers && !usersLoadError && filteredUsers.length === 0">
-              No users found for this filter.
+              No users match the selected filters.
             </div>
 
             <div class="user-list" *ngIf="!isLoadingUsers && !usersLoadError && filteredUsers.length > 0">

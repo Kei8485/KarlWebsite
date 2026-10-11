@@ -337,3 +337,229 @@ app-planner #planner-page .delete-icon app-loading-indicator {
   app-planner #planner-page::before { animation: none; }
   app-planner #planner-page .glass-card { transition: none; }
 }
+
+app-manage-users .user-filter-controls {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(220px, 1.25fr) auto;
+  align-items: end;
+  gap: 0.75rem;
+  min-width: 0;
+  margin: 0.25rem 0 1rem;
+}
+
+app-manage-users .user-search-field,
+app-manage-users .joined-date-choice {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+app-manage-users .user-search-field > span,
+app-manage-users .joined-date-choice > span,
+app-manage-users .joined-date-filter legend {
+  color: #aab6ca;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+app-manage-users .user-search-field input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 9px;
+  outline: none;
+  background: rgba(5, 13, 27, 0.48);
+  color: #f1f5f9;
+  font: inherit;
+  font-size: 0.85rem;
+  color-scheme: dark;
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+app-manage-users .user-search-field input:focus {
+  border-color: rgba(79, 172, 254, 0.72);
+  background: rgba(5, 13, 27, 0.72);
+  box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.12);
+}
+
+app-manage-users .joined-date-filter {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+app-manage-users .joined-date-filter legend {
+  grid-column: 1 / -1;
+  margin-bottom: 0.4rem;
+  padding: 0;
+}
+
+app-manage-users .joined-date-button {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 9px;
+  background: rgba(5, 13, 27, 0.48);
+  color: #e2e8f0;
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+app-manage-users .joined-date-button:focus-visible {
+  outline: 2px solid rgba(79, 172, 254, 0.8);
+  outline-offset: 2px;
+}
+
+app-manage-users .joined-date-button ion-icon {
+  flex: 0 0 auto;
+  color: #4facfe;
+  font-size: 1.05rem;
+}
+
+ion-modal.joined-user-calendar-modal {
+  --background: transparent;
+  --border-radius: 16px;
+}
+
+.joined-user-calendar-card {
+  box-sizing: border-box;
+  width: min(350px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  min-width: 0;
+  margin: auto;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--navy, #091222);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.joined-user-calendar-card ion-datetime {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  --background: var(--navy, #091222);
+  --title-color: var(--navy-foreground, #fff);
+  --color: var(--navy-foreground, #fff);
+  --wheel-fade-background-rgb: 9, 18, 34;
+  --wheel-highlight-background: rgba(255, 255, 255, 0.05);
+  --wheel-item-color: var(--muted-foreground, #8b96ab);
+  --ion-color-base: var(--primary);
+  box-shadow: none;
+  border-radius: 16px 16px 0 0;
+}
+
+.joined-user-calendar-card ion-datetime::part(month-year-button) {
+  color: var(--foreground, #fff);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.joined-user-calendar-card ion-datetime::part(calendar-day) {
+  min-width: 0;
+  padding-inline: 0;
+  font-family: var(--font-sans);
+}
+
+.joined-user-calendar-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--navy, #091222);
+}
+
+.joined-user-calendar-footer ion-button {
+  min-height: 44px;
+  margin: 0;
+  text-transform: capitalize;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  --border-radius: 8px;
+  --background-hover: rgba(255, 255, 255, 0.08);
+}
+
+.joined-user-calendar-footer .joined-calendar-cancel {
+  color: var(--muted-foreground, #8b96ab);
+  font-weight: 600;
+}
+
+.joined-user-calendar-footer .joined-calendar-confirm {
+  color: var(--primary, #4facfe);
+  font-weight: 700;
+}
+
+app-manage-users .clear-user-filters {
+  min-height: 42px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid rgba(79, 172, 254, 0.28);
+  border-radius: 9px;
+  background: rgba(79, 172, 254, 0.08);
+  color: #a9d7ff;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+app-manage-users .clear-user-filters:hover:not(:disabled) {
+  background: rgba(79, 172, 254, 0.16);
+}
+
+app-manage-users .clear-user-filters:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+app-manage-users .filter-range-error {
+  margin: -0.45rem 0 0.9rem;
+  color: #fca5a5;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1100px) {
+  app-manage-users .user-filter-controls {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.8rem;
+  }
+
+  app-manage-users .joined-date-filter {
+    width: 100%;
+  }
+
+  app-manage-users .clear-user-filters {
+    justify-self: end;
+  }
+}
+
+@media (max-width: 360px) {
+  app-manage-users .joined-date-filter {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  app-manage-users .clear-user-filters {
+    width: 100%;
+  }
+}

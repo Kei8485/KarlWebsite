@@ -226,10 +226,13 @@ export class ScheduleStudyComponent implements OnInit, OnDestroy {
       }
     });
     await modal.present();
-    const { data } = await modal.onDidDismiss();
+    const { data } = await modal.onWillDismiss();
     if (data !== true) return false;
 
-    if (discard) this.resetForm();
+    if (discard) {
+      this.resetForm();
+      this.cdr.detectChanges();
+    }
     return true;
   }
 
